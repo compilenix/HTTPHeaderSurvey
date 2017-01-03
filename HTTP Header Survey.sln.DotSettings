@@ -38,7 +38,7 @@
 	
 	<s:Boolean x:Key="/Default/CodeEditing/TypingAssist/Razor/FormatOnEnter/@EntryValue">False</s:Boolean>
 	<s:Boolean x:Key="/Default/CodeEditing/TypingAssist/Xaml/AutoInsertTagFooter/@EntryValue">False</s:Boolean>
-	<s:String x:Key="/Default/CodeInspection/ExcludedFiles/FilesAndFoldersToSkip2/=0971BE82_002DE8BA_002D486D_002DA44B_002D9C0A8C9FF82F_002Fd_003AMigrations/@EntryIndexedValue">ExplicitlyExcluded</s:String>
+	
 	<s:String x:Key="/Default/CodeInspection/ExcludedFiles/FilesAndFoldersToSkip2/=8F742D4C_002D794D_002D4365_002DBA89_002D2C67BFC4477F_002Fd_003AMoreLinq/@EntryIndexedValue">ExplicitlyExcluded</s:String>
 	<s:String x:Key="/Default/CodeInspection/Highlighting/AnalysisEnabled/@EntryValue">SOLUTION</s:String>
 	
@@ -678,7 +678,7 @@
 	<s:String x:Key="/Default/CodeStyle/Naming/XamlNaming/UserRules/=XAML_005FRESOURCE/@EntryIndexedValue">&lt;Policy Inspect="True" Prefix="" Suffix="" Style="AaBb" /&gt;</s:String>
 	<s:String x:Key="/Default/Environment/Editor/MatchingBraceHighlighting/Position/@EntryValue">BOTH_SIDES</s:String>
 	<s:Boolean x:Key="/Default/Environment/Editor/UseCamelHumps/@EntryValue">True</s:Boolean>
-	<s:Boolean x:Key="/Default/Environment/ExcludedFiles/FilesAndFoldersThirdParty/=0971BE82_002DE8BA_002D486D_002DA44B_002D9C0A8C9FF82F_002Fd_003AMigrations/@EntryIndexedValue">True</s:Boolean>
+	
 	<s:Boolean x:Key="/Default/Environment/ExcludedFiles/FilesAndFoldersThirdParty/=8F742D4C_002D794D_002D4365_002DBA89_002D2C67BFC4477F_002Fd_003AMoreLinq/@EntryIndexedValue">True</s:Boolean>
 	
 	

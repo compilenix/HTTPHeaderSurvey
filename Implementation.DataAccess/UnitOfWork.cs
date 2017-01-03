@@ -7,29 +7,29 @@ namespace Implementation.DataAccess
 {
     public class UnitOfWork : IUnitOfWork
     {
-        private readonly HttpHeaderDbContext _context;
+        internal readonly DataAccessContext Context;
 
         public IRequestJobRepository RequestJobs { get; private set; }
         public IRequestHeaderRepository RequestHeaders { get; private set; }
 
-        public UnitOfWork(HttpHeaderDbContext context)
+        public UnitOfWork()
         {
-            _context = context;
-            RequestJobs = new RequestJobRepository(_context);
-            RequestHeaders = new RequestHeaderRepository(_context);
+            Context = new DataAccessContext();
+            RequestJobs = new RequestJobRepository(Context);
+            RequestHeaders = new RequestHeaderRepository(Context);
         }
 
         /// <summary>Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.</summary>
         public void Dispose()
         {
-            _context?.Dispose();
+            Context?.Dispose();
         }
 
         public int Complete()
         {
             try
             {
-                return _context.SaveChanges();
+                return Context.SaveChanges();
             }
             catch (Exception e)
             {

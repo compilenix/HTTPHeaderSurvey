@@ -13,13 +13,12 @@ namespace Implementation.DataAccess.Repositories
     {
         //TODO Where to store / get from, this value?
         private readonly TimeSpan _scheduleTimeSpan;
-        private HttpHeaderDbContext HttpHeaderDbContext => Context as HttpHeaderDbContext;
+        private DataAccessContext DataAccessContext => Context as DataAccessContext;
 
-        public RequestJobRepository(HttpHeaderDbContext context) : base(context)
+        public RequestJobRepository(DataAccessContext context) : base(context)
         {
         }
 
-        // ReSharper disable once ReturnTypeCanBeEnumerable.Local
         private static IQueryable<RequestJob> RequestJobWithHeadersQueryable(IQueryable<RequestJob> query, bool doInclude)
         {
             return doInclude ? query.Include(h => h.Headers) : query;

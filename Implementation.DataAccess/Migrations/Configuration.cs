@@ -2,14 +2,14 @@ using System.Data.Entity.Migrations;
 
 namespace Implementation.DataAccess.Migrations
 {
-    internal sealed class Configuration : DbMigrationsConfiguration<HttpHeaderDbContext>
+    internal sealed class Configuration : DbMigrationsConfiguration<DataAccessContext>
     {
         public Configuration()
         {
             AutomaticMigrationsEnabled = false;
         }
 
-        protected override void Seed(HttpHeaderDbContext context)
+        protected override void Seed(DataAccessContext context)
         {
             //  This method will be called after migrating to the latest version.
 

@@ -1,19 +1,21 @@
 ﻿using System.Data.Entity;
 using System.Data.Entity.ModelConfiguration.Conventions;
+using System.Data.Entity.SqlServer;
 using Implementation.DataAccess.EntityConfigurations;
 using Integration.DataAccess.Entitys;
 
 namespace Implementation.DataAccess
 {
-    public class HttpHeaderDbContext : DbContext
+    public class DataAccessContext : DbContext
     {
-        //TODO DbSet's goes here
-        public virtual DbSet<RequestJob> RequestJobs { get; set; }
-        public virtual DbSet<RequestHeader> RequestHeaders { get; set; }
-        public virtual DbSet<ApplicationLog> ApplicationLogs { get; set; }
+        private SqlProviderServices _sqlProviderServices;
+        public DbSet<RequestJob> RequestJobs { get; set; }
+        public DbSet<RequestHeader> RequestHeaders { get; set; }
+        public DbSet<ApplicationLog> ApplicationLogs { get; set; }
 
-        public HttpHeaderDbContext() : base("name=HttpHeaderDbContext")
+        public DataAccessContext() : base("name=DataAccessContext")
         {
+            _sqlProviderServices = SqlProviderServices.Instance;
             Configuration.LazyLoadingEnabled = false;
         }
 

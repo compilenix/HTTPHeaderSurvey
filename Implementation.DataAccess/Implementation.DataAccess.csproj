@@ -47,13 +47,15 @@
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
-    <Reference Include="System.Data" />
+    <Reference Include="System.Data">
+      <Private>False</Private>
+    </Reference>
     <Reference Include="System.Net.Http" />
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="EntityConfigurations\RequestHeaderConfiguration.cs" />
-    <Compile Include="HttpHeaderDbContext.cs" />
+    <Compile Include="DataAccessContext.cs" />
     <Compile Include="Migrations\201612280334025_Initial.cs" />
     <Compile Include="Migrations\201612280334025_Initial.Designer.cs">
       <DependentUpon>201612280334025_Initial.cs</DependentUpon>

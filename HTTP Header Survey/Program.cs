@@ -14,7 +14,7 @@ namespace HTTPHeaderSurvey
         // ReSharper disable once UnusedParameter.Local
         private static void Main(string[] args)
         {
-            using (var unit = new UnitOfWork(new HttpHeaderDbContext()))
+            using (var unit = new UnitOfWork())
             {
                 unit.RequestHeaders.AddIfNotExisting(
                     new RequestHeader
@@ -28,19 +28,14 @@ namespace HTTPHeaderSurvey
             Console.WriteLine("start parallel batch processing of converted jobs");
             Parallel.ForEach(
                 new DataTransferObjectConverter().RequestJobsFromCsv(@"C:\Users\Compilenix\Downloads\top-1m.csv.new.csv", ',').Batch(10000),
-                new ParallelOptions { MaxDegreeOfParallelism = Environment.ProcessorCount * 2 },
+                new ParallelOptions { MaxDegreeOfParallelism = Environment.ProcessorCount },
                 ProcessBatch);
         }
 
         private static void ProcessBatch(IEnumerable<RequestJob> batch)
         {
-            using (var context = new HttpHeaderDbContext())
-            using (var unit = new UnitOfWork(context))
+            using (var unit = new UnitOfWork())
             {
-                context.Configuration.AutoDetectChangesEnabled = false;
-                context.Configuration.ValidateOnSaveEnabled = false;
-                context.Configuration.ProxyCreationEnabled = false;
-
                 var header = unit.RequestHeaders.Get(1);
 
                 foreach (var requestJob in batch)

@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using Implementation.Shared;
 using Integration.DataAccess.Entitys;
@@ -9,9 +8,9 @@ namespace Implementation.DataAccess.Repositories
 {
     public class RequestHeaderRepository : Repository<RequestHeader>, IRequestHeaderRepository
     {
-        private HttpHeaderDbContext HttpHeaderDbContext => Context as HttpHeaderDbContext;
+        private DataAccessContext DataAccessContext => Context as DataAccessContext;
 
-        public RequestHeaderRepository(HttpHeaderDbContext context) : base(context)
+        public RequestHeaderRepository(DataAccessContext context) : base(context)
         {
         }
 
@@ -26,7 +25,7 @@ namespace Implementation.DataAccess.Repositories
         /// </summary>
         public IEnumerable<RequestHeader> GetByHeader(string header)
         {
-            return Entities?.Where(h => string.Equals(h.Key, header, StringComparison.CurrentCultureIgnoreCase)).ToList();
+            return Entities?.Where(h => h.Key.ToLower() == header.ToLower()).ToList();
         }
 
         /// <summary>
@@ -35,7 +34,7 @@ namespace Implementation.DataAccess.Repositories
         public bool ContainsRequestHeader(string header, string headerValue)
         {
             var headerValueHash = HashUtils.Hash(headerValue);
-            return Entities.Any(j => string.Equals(j.Key, header, StringComparison.CurrentCultureIgnoreCase) && j.ValueHash == headerValueHash);
+            return Entities.Any(j => j.Key.ToLower() == header.ToLower() && j.ValueHash == headerValueHash);
         }
 
         /// <summary>

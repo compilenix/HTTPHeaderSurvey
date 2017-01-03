@@ -18,22 +18,21 @@ namespace Implementation.DataAccess.Migrations
             //AddColumn("dbo.RequestJobs", "UriHash", c => c.String(nullable: false, maxLength: 64));
             //CreateIndex("dbo.RequestJobs", "Method");
             //CreateIndex("dbo.RequestJobs", "UriHash");
-            Database.SetInitializer<HttpHeaderDbContext>(null);
+            Database.SetInitializer<DataAccessContext>(null);
 
             var sqlAddColumn = @"
 ALTER TABLE [dbo].[RequestJobs] ADD [UriHash] [nvarchar](64) NOT NULL DEFAULT '';
 CREATE INDEX [IX_Method] ON [dbo].[RequestJobs]([Method]);
 CREATE INDEX [IX_UriHash] ON [dbo].[RequestJobs]([UriHash]);";
 
-            using (var context = new HttpHeaderDbContext())
-            using (var unit = new UnitOfWork(context))
+            using (var unit = new UnitOfWork())
             {
-                context.Configuration.ProxyCreationEnabled = false;
-                context.Configuration.ValidateOnSaveEnabled = false;
+                unit.Context.Configuration.ProxyCreationEnabled = false;
+                unit.Context.Configuration.ValidateOnSaveEnabled = false;
 
-                context.Database.ExecuteSqlCommand(sqlAddColumn);
+                unit.Context.Database.ExecuteSqlCommand(sqlAddColumn);
 
-                foreach (var requestJob in context.RequestJobs.AsNoTracking())
+                foreach (var requestJob in unit.Context.RequestJobs.AsNoTracking())
                 {
                     requestJob.UriHash = HashUtils.Hash(requestJob.Uri);
                 }
