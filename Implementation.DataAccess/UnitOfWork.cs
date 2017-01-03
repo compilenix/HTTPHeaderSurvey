@@ -15,6 +15,7 @@ namespace Implementation.DataAccess
         public UnitOfWork()
         {
             Context = new DataAccessContext();
+            Context.Configuration.AutoDetectChangesEnabled = false;
             RequestJobs = new RequestJobRepository(Context);
             RequestHeaders = new RequestHeaderRepository(Context);
         }
@@ -29,6 +30,7 @@ namespace Implementation.DataAccess
         {
             try
             {
+                Context.ChangeTracker.DetectChanges();
                 return Context.SaveChanges();
             }
             catch (Exception e)
