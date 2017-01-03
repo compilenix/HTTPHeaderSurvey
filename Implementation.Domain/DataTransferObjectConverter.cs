@@ -4,6 +4,7 @@ using System.Data;
 using System.IO;
 using System.Linq;
 using System.Text;
+using Implementation.Shared;
 using Integration.DataAccess.Entitys;
 using Integration.Domain;
 
@@ -17,6 +18,7 @@ namespace Implementation.Domain
 
             using (var streamReader = new StreamReader(filePath, Encoding.UTF8))
             {
+                typeof(DataTransferObjectConverter).Log()?.Debug("Loading csv file");
                 dataTable.Columns.AddRange(GetDataColumnFromCsvHeader(seperator, streamReader));
 
                 while (!streamReader.EndOfStream)
@@ -26,6 +28,7 @@ namespace Implementation.Domain
                 }
             }
 
+            typeof(DataTransferObjectConverter).Log()?.Debug("Csv file loaded");
             return dataTable;
         }
 

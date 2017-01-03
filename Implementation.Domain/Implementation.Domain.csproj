@@ -36,6 +36,10 @@
       <HintPath>..\packages\AutoMapper.5.2.0\lib\net45\AutoMapper.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="log4net, Version=1.2.15.0, Culture=neutral, PublicKeyToken=669e0ddf0bb1aa2a, processorArchitecture=MSIL">
+      <HintPath>..\packages\log4net.2.0.5\lib\net45-full\log4net.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
@@ -54,6 +58,10 @@
     <ProjectReference Include="..\Implementation.DataAccess\Implementation.DataAccess.csproj">
       <Project>{0971be82-e8ba-486d-a44b-9c0a8c9ff82f}</Project>
       <Name>Implementation.DataAccess</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Implementation.Shared\Implementation.Shared.csproj">
+      <Project>{8F742D4C-794D-4365-BA89-2C67BFC4477F}</Project>
+      <Name>Implementation.Shared</Name>
     </ProjectReference>
     <ProjectReference Include="..\Integration.DataAccess\Integration.DataAccess.csproj">
       <Project>{E22A9B2D-CD61-49B9-B8BA-361B0CFF2A0A}</Project>

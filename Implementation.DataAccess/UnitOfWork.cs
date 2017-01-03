@@ -1,5 +1,6 @@
 ﻿using System;
 using Implementation.DataAccess.Repositories;
+using Implementation.Shared;
 using Integration.DataAccess;
 using Integration.DataAccess.Repositories;
 
@@ -33,9 +34,9 @@ namespace Implementation.DataAccess
                 Context.ChangeTracker.DetectChanges();
                 return Context.SaveChanges();
             }
-            catch (Exception e)
+            catch (Exception exception)
             {
-                Console.WriteLine(e);
+                this.Log()?.Error("Error completing unit", exception);
                 throw;
             }
         }

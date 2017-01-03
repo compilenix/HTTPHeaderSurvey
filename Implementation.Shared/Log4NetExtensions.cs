@@ -18,5 +18,10 @@ namespace Implementation.Shared
 
             return LogManager.GetLogger(obj);
         }
+
+        public static ILog Log(this object obj)
+        {
+            return obj.GetType().Log();
+        }
     }
 }

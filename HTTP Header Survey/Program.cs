@@ -25,7 +25,7 @@ namespace HTTPHeaderSurvey
                 unit.Complete();
             }
 
-            Console.WriteLine("start parallel batch processing of converted jobs");
+            typeof(Program).Log()?.Info("start parallel batch processing of converted jobs");
             Parallel.ForEach(
                 new DataTransferObjectConverter().RequestJobsFromCsv(@"C:\Users\Compilenix\Downloads\top-1m.csv.new.csv", ',').Batch(10000),
                 new ParallelOptions { MaxDegreeOfParallelism = Environment.ProcessorCount },
@@ -34,6 +34,7 @@ namespace HTTPHeaderSurvey
 
         private static void ProcessBatch(IEnumerable<RequestJob> batch)
         {
+            typeof(Program).Log()?.Debug("Start of a batch worker");
             using (var unit = new UnitOfWork())
             {
                 var header = unit.RequestHeaders.Get(1);
@@ -48,6 +49,7 @@ namespace HTTPHeaderSurvey
             }
 
             GarbageCollectionUtils.CollectNow();
+            typeof(Program).Log()?.Debug("A batch has been processed");
         }
     }
 }
