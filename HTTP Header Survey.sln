@@ -15,6 +15,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Implementation.Shared", "Im
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Implementation.DataAccess", "Implementation.DataAccess\Implementation.DataAccess.csproj", "{0971BE82-E8BA-486D-A44B-9C0A8C9FF82F}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Integration.Domain", "Integration.Domain\Integration.Domain.csproj", "{E9ACA8CB-41ED-4168-9742-0471AE8FF6AA}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Implementation.Domain", "Implementation.Domain\Implementation.Domain.csproj", "{010FCD06-1FFC-407C-8FB0-68CC6DB24512}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -37,6 +41,14 @@ Global
 		{0971BE82-E8BA-486D-A44B-9C0A8C9FF82F}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{0971BE82-E8BA-486D-A44B-9C0A8C9FF82F}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{0971BE82-E8BA-486D-A44B-9C0A8C9FF82F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E9ACA8CB-41ED-4168-9742-0471AE8FF6AA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E9ACA8CB-41ED-4168-9742-0471AE8FF6AA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E9ACA8CB-41ED-4168-9742-0471AE8FF6AA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E9ACA8CB-41ED-4168-9742-0471AE8FF6AA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{010FCD06-1FFC-407C-8FB0-68CC6DB24512}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{010FCD06-1FFC-407C-8FB0-68CC6DB24512}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{010FCD06-1FFC-407C-8FB0-68CC6DB24512}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{010FCD06-1FFC-407C-8FB0-68CC6DB24512}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -45,5 +57,7 @@ Global
 		{E22A9B2D-CD61-49B9-B8BA-361B0CFF2A0A} = {CAA6FE71-41D1-453B-BCB5-C1C6CD3A0DFC}
 		{8F742D4C-794D-4365-BA89-2C67BFC4477F} = {43273581-1856-48BD-AB37-8BEEE09AEA82}
 		{0971BE82-E8BA-486D-A44B-9C0A8C9FF82F} = {43273581-1856-48BD-AB37-8BEEE09AEA82}
+		{E9ACA8CB-41ED-4168-9742-0471AE8FF6AA} = {CAA6FE71-41D1-453B-BCB5-C1C6CD3A0DFC}
+		{010FCD06-1FFC-407C-8FB0-68CC6DB24512} = {43273581-1856-48BD-AB37-8BEEE09AEA82}
 	EndGlobalSection
 EndGlobal

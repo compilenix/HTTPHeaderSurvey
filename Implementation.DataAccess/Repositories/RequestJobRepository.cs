@@ -1,15 +1,17 @@
-﻿using Integration.DataAccess.Entitys;
-using Integration.DataAccess.Repositories;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Data.Entity;
 using System.Linq;
 using System.Linq.Expressions;
+using Implementation.Shared;
+using Integration.DataAccess.Entitys;
+using Integration.DataAccess.Repositories;
 
 namespace Implementation.DataAccess.Repositories
 {
     public class RequestJobRepository : Repository<RequestJob>, IRequestJobRepository
     {
+        //TODO Where to store / get from, this value?
         private readonly TimeSpan _scheduleTimeSpan;
         private HttpHeaderDbContext HttpHeaderDbContext => Context as HttpHeaderDbContext;
 
@@ -30,10 +32,12 @@ namespace Implementation.DataAccess.Repositories
 
         public IEnumerable<RequestJob> GetRequestJobsTodoAndNotScheduled(bool withRequestHeaders = false)
         {
-            return RequestJobWithHeadersQueryable(Entities?
-                .Where(j => j.LastCompletedDateTime <= DateTime.Now - _scheduleTimeSpan)
-                .Where(j => !j.IsRunOnce)
-                .Where(j => !j.IsCurrentlyScheduled), withRequestHeaders)?.ToList();
+            return
+                RequestJobWithHeadersQueryable(
+                    Entities?.Where(j => j.LastCompletedDateTime <= DateTime.Now - _scheduleTimeSpan)
+                        .Where(j => !j.IsRunOnce)
+                        .Where(j => !j.IsCurrentlyScheduled),
+                    withRequestHeaders)?.ToList();
         }
 
         public IEnumerable<RequestJob> GetRequestJobsRunOnce(bool withRequestHeaders = false)
@@ -53,7 +57,7 @@ namespace Implementation.DataAccess.Repositories
 
         public IEnumerable<RequestJob> GetAll(bool withRequestHeaders = false)
         {
-            return Entities.Include(j => j.Headers)?.ToList();
+            return Entities.Include(j => j.Headers)?.ToList() ?? new List<RequestJob>();
         }
 
         public IEnumerable<RequestJob> FindWithRequestHeaders(Expression<Func<RequestJob, bool>> predicate)
@@ -64,6 +68,31 @@ namespace Implementation.DataAccess.Repositories
         public RequestJob SingleOrDefaultWithRequestHeaders(Expression<Func<RequestJob, bool>> predicate)
         {
             return predicate != null ? Entities?.Include(j => j.Headers)?.SingleOrDefault(predicate) : null;
+        }
+
+        public bool ContainsRequestJob(string method, string uri)
+        {
+            var hash = HashUtils.Hash(uri);
+            return Entities.Any(j => j.Method == method && j.UriHash == hash);
+        }
+
+        public override RequestJob Add(RequestJob entity)
+        {
+            entity.UriHash = HashUtils.Hash(entity.Uri);
+            return base.Add(entity);
+        }
+
+        public RequestJob AddIfNotExisting(RequestJob job)
+        {
+            return !ContainsRequestJob(job.Method, job.Uri) ? Add(job) : null;
+        }
+
+        public void AddIfNotExisting(IEnumerable<RequestJob> jobs)
+        {
+            foreach (var requestJob in jobs)
+            {
+                AddIfNotExisting(requestJob);
+            }
         }
     }
 }

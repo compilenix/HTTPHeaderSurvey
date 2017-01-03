@@ -4,11 +4,6 @@ namespace Integration.DataAccess.Entitys
 {
     public class RequestHeader : BaseEntity
     {
-        public RequestHeader()
-        {
-            RequestJobs = new HashSet<RequestJob>();
-        }
-
         public int Id { get; set; }
 
         public string Key { get; set; }
@@ -18,5 +13,10 @@ namespace Integration.DataAccess.Entitys
         public string ValueHash { get; set; }
 
         public ICollection<RequestJob> RequestJobs { get; set; }
+
+        public RequestHeader()
+        {
+            RequestJobs = new HashSet<RequestJob>();
+        }
     }
 }

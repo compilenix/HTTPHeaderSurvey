@@ -33,7 +33,10 @@ namespace Implementation.Shared
         /// <param name="chain"></param>
         /// <param name="sslPolicyErrors"></param>
         /// <returns>true</returns>
-        public static bool ServerCertificateValidationCallbackHandler(object sender, X509Certificate certificate, X509Chain chain, SslPolicyErrors sslPolicyErrors)
+        public static bool ServerCertificateValidationCallbackHandler(object sender,
+                                                                      X509Certificate certificate,
+                                                                      X509Chain chain,
+                                                                      SslPolicyErrors sslPolicyErrors)
         {
             return true;
         }
@@ -58,7 +61,11 @@ namespace Implementation.Shared
         /// <param name="headers"></param>
         /// <param name="httpVersion">Defaults to HttpVersion.Version11 if null</param>
         /// <returns></returns>
-        public static async Task<HttpResponseMessage> MakeSimpleWebRequest(HttpMethod method, Uri uri, TimeSpan timeout, IReadOnlyCollection<KeyValuePair<string, string>> headers, Version httpVersion)
+        public static async Task<HttpResponseMessage> MakeSimpleWebRequest(HttpMethod method,
+                                                                           Uri uri,
+                                                                           TimeSpan timeout,
+                                                                           IReadOnlyCollection<KeyValuePair<string, string>> headers,
+                                                                           Version httpVersion)
         {
             using (var requestHandler = NewWebRequestHandler(DefaultMaxRequestContentBufferSize))
             using (var httpClient = NewHttpClient(requestHandler, timeout))
@@ -95,7 +102,16 @@ namespace Implementation.Shared
             using (var requestHandler = NewWebRequestHandler(maxRequestContentBufferSize))
             using (var httpClient = NewHttpClient(requestHandler, timeout))
             {
-                var clientRequest = NewHttpClientRequest(NewHttpRequestMessage(method: HttpMethod.Get, domain: domain, requestPathAndQueryString: requestPathAndQueryString, headers: headers, scheme: scheme, httpVersion: httpVersion), httpClient);
+                var clientRequest =
+                    NewHttpClientRequest(
+                        NewHttpRequestMessage(
+                            method: HttpMethod.Get,
+                            domain: domain,
+                            requestPathAndQueryString: requestPathAndQueryString,
+                            headers: headers,
+                            scheme: scheme,
+                            httpVersion: httpVersion),
+                        httpClient);
 
                 if (clientRequest == null)
                 {
@@ -114,7 +130,10 @@ namespace Implementation.Shared
         /// <param name="headers"></param>
         /// <param name="httpVersion">Defaults to HttpVersion.Version11 if null</param>
         /// <returns></returns>
-        public static HttpRequestMessage NewHttpRequestMessage(HttpMethod method, Uri uri, IReadOnlyCollection<KeyValuePair<string, string>> headers = null, Version httpVersion = null)
+        public static HttpRequestMessage NewHttpRequestMessage(HttpMethod method,
+                                                               Uri uri,
+                                                               IReadOnlyCollection<KeyValuePair<string, string>> headers = null,
+                                                               Version httpVersion = null)
         {
             if (httpVersion == null)
             {
@@ -167,7 +186,12 @@ namespace Implementation.Shared
                 maxRequestContentBufferSize = DefaultMaxRequestContentBufferSize;
             }
 
-            return new WebRequestHandler { AllowAutoRedirect = false, MaxRequestContentBufferSize = (long)maxRequestContentBufferSize, ServerCertificateValidationCallback = ServerCertificateValidationCallbackHandler };
+            return new WebRequestHandler
+                {
+                    AllowAutoRedirect = false,
+                    MaxRequestContentBufferSize = (long)maxRequestContentBufferSize,
+                    ServerCertificateValidationCallback = ServerCertificateValidationCallbackHandler
+                };
         }
 
         /// <summary>
@@ -188,8 +212,13 @@ namespace Implementation.Shared
                 timeout = DefaultTimeout;
             }
 
-            var httpClient = new HttpClient(requestHandler) { MaxResponseContentBufferSize = requestHandler.MaxRequestContentBufferSize, Timeout = (TimeSpan)timeout };
-            ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12 | SecurityProtocolType.Tls11 | SecurityProtocolType.Tls | SecurityProtocolType.Ssl3;
+            var httpClient = new HttpClient(requestHandler)
+                {
+                    MaxResponseContentBufferSize = requestHandler.MaxRequestContentBufferSize,
+                    Timeout = (TimeSpan)timeout
+                };
+            ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12 | SecurityProtocolType.Tls11 | SecurityProtocolType.Tls
+                                                   | SecurityProtocolType.Ssl3;
             return httpClient;
         }
 
@@ -204,11 +233,11 @@ namespace Implementation.Shared
         /// <param name="httpVersion"></param>
         /// <returns></returns>
         public static HttpRequestMessage NewHttpRequestMessage(HttpMethod method,
-                                                                string domain,
-                                                                string requestPathAndQueryString = "",
-                                                                IReadOnlyCollection<KeyValuePair<string, string>> headers = null,
-                                                                string scheme = "http",
-                                                                Version httpVersion = null)
+                                                               string domain,
+                                                               string requestPathAndQueryString = "",
+                                                               IReadOnlyCollection<KeyValuePair<string, string>> headers = null,
+                                                               string scheme = "http",
+                                                               Version httpVersion = null)
         {
             return NewHttpRequestMessage(method, new Uri($"{scheme}://{domain}{requestPathAndQueryString}"), headers, httpVersion);
         }

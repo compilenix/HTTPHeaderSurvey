@@ -1,5 +1,5 @@
-﻿using Integration.DataAccess.Repositories;
-using System;
+﻿using System;
+using Integration.DataAccess.Repositories;
 
 namespace Integration.DataAccess
 {

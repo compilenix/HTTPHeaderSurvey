@@ -30,7 +30,7 @@
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <CodeAnalysisRuleSet>..\..\..\..\Users\Compilenix.HOME\Documents\Visual Studio 2015\Projects\Collector Agent\Collector Agent\Compilenix.ruleset</CodeAnalysisRuleSet>
+    <CodeAnalysisRuleSet>..\Compilenix.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="log4net, Version=1.2.15.0, Culture=neutral, PublicKeyToken=669e0ddf0bb1aa2a, processorArchitecture=MSIL">
@@ -52,10 +52,10 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="GarbageCollectionUtils.cs" />
-    <Compile Include="GlobalSuppressions.cs" />
     <Compile Include="HashUtils.cs" />
     <Compile Include="HttpClientUtils.cs" />
     <Compile Include="Log4NetExtensions.cs" />
+    <Compile Include="MoreLinq\MoreEnumerable.Batch.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="TransactionUtils.cs" />
   </ItemGroup>

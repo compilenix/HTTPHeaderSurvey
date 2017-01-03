@@ -1,7 +1,7 @@
-﻿using Integration.DataAccess.Entitys;
-using System.ComponentModel.DataAnnotations.Schema;
+﻿using System.ComponentModel.DataAnnotations.Schema;
 using System.Data.Entity.Infrastructure.Annotations;
 using System.Data.Entity.ModelConfiguration;
+using Integration.DataAccess.Entitys;
 
 namespace Implementation.DataAccess.EntityConfigurations
 {
@@ -13,24 +13,25 @@ namespace Implementation.DataAccess.EntityConfigurations
 
             HasKey(p => p.Id);
 
-            Property(p => p.Id)?
-                .HasColumnAnnotation(IndexAnnotation.AnnotationName, new IndexAnnotation(new IndexAttribute()));
+            Property(p => p.Id)?.HasColumnAnnotation(IndexAnnotation.AnnotationName, new IndexAnnotation(new IndexAttribute()));
 
             Property(p => p.Key)?
                 .IsRequired()?
                 .HasMaxLength(64)?
-                .HasColumnAnnotation(IndexAnnotation.AnnotationName, new IndexAnnotation(new IndexAttribute(uniqueIndexKeyValue) { IsUnique = true, Order = 1}));
+                .HasColumnAnnotation(
+                    IndexAnnotation.AnnotationName,
+                    new IndexAnnotation(new IndexAttribute(uniqueIndexKeyValue) { IsUnique = true, Order = 1 }));
 
-            Property(p => p.Value)?
-                .IsRequired();
+            Property(p => p.Value)?.IsRequired();
 
             Property(p => p.ValueHash)?
                 .IsRequired()?
                 .HasMaxLength(64)?
-                .HasColumnAnnotation(IndexAnnotation.AnnotationName, new IndexAnnotation(new IndexAttribute(uniqueIndexKeyValue) { IsUnique = true, Order = 2 }));
+                .HasColumnAnnotation(
+                    IndexAnnotation.AnnotationName,
+                    new IndexAnnotation(new IndexAttribute(uniqueIndexKeyValue) { IsUnique = true, Order = 2 }));
 
-            Property(p => p.DateCreated)?
-                .IsRequired();
+            Property(p => p.DateCreated)?.IsRequired();
         }
     }
 }

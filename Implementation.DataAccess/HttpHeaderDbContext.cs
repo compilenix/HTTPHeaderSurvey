@@ -1,22 +1,21 @@
-﻿using Implementation.DataAccess.EntityConfigurations;
-using Integration.DataAccess.Entitys;
-using System.Data.Entity;
+﻿using System.Data.Entity;
 using System.Data.Entity.ModelConfiguration.Conventions;
+using Implementation.DataAccess.EntityConfigurations;
+using Integration.DataAccess.Entitys;
 
 namespace Implementation.DataAccess
 {
     public class HttpHeaderDbContext : DbContext
     {
-        public HttpHeaderDbContext()
-            : base("name=HttpHeaderDbContext")
-        {
-            Configuration.LazyLoadingEnabled = false;
-        }
-
         //TODO DbSet's goes here
         public virtual DbSet<RequestJob> RequestJobs { get; set; }
         public virtual DbSet<RequestHeader> RequestHeaders { get; set; }
         public virtual DbSet<ApplicationLog> ApplicationLogs { get; set; }
+
+        public HttpHeaderDbContext() : base("name=HttpHeaderDbContext")
+        {
+            Configuration.LazyLoadingEnabled = false;
+        }
 
         protected override void OnModelCreating(DbModelBuilder modelBuilder)
         {

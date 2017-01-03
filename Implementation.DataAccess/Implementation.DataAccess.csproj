@@ -30,7 +30,7 @@
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <CodeAnalysisRuleSet>..\..\..\..\Users\Compilenix.HOME\Documents\Visual Studio 2015\Projects\Collector Agent\Collector Agent\Compilenix.ruleset</CodeAnalysisRuleSet>
+    <CodeAnalysisRuleSet>..\Compilenix.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="EntityFramework, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
@@ -58,6 +58,10 @@
     <Compile Include="Migrations\201612280334025_Initial.Designer.cs">
       <DependentUpon>201612280334025_Initial.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201612291911452_AddRequestJobMethodIndexAndUriHashIndex.cs" />
+    <Compile Include="Migrations\201612291911452_AddRequestJobMethodIndexAndUriHashIndex.Designer.cs">
+      <DependentUpon>201612291911452_AddRequestJobMethodIndexAndUriHashIndex.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Repositories\RequestHeaderRepository.cs" />
@@ -79,10 +83,17 @@
       <Project>{e22a9b2d-cd61-49b9-b8ba-361b0cff2a0a}</Project>
       <Name>Integration.DataAccess</Name>
     </ProjectReference>
+    <ProjectReference Include="..\Integration.Domain\Integration.Domain.csproj">
+      <Project>{E9ACA8CB-41ED-4168-9742-0471AE8FF6AA}</Project>
+      <Name>Integration.Domain</Name>
+    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Migrations\201612280334025_Initial.resx">
       <DependentUpon>201612280334025_Initial.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201612291911452_AddRequestJobMethodIndexAndUriHashIndex.resx">
+      <DependentUpon>201612291911452_AddRequestJobMethodIndexAndUriHashIndex.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

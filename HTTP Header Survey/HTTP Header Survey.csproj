@@ -25,6 +25,7 @@
     <WarningLevel>4</WarningLevel>
     <CodeAnalysisRuleSet>..\Compilenix.ruleset</CodeAnalysisRuleSet>
     <RunCodeAnalysis>false</RunCodeAnalysis>
+    <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <PlatformTarget>AnyCPU</PlatformTarget>
@@ -34,7 +35,7 @@
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <CodeAnalysisRuleSet>..\..\..\..\Users\Compilenix.HOME\Documents\Visual Studio 2015\Projects\Collector Agent\Collector Agent\Compilenix.ruleset</CodeAnalysisRuleSet>
+    <CodeAnalysisRuleSet>..\Compilenix.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="EntityFramework, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
@@ -76,6 +77,10 @@
       <Project>{0971be82-e8ba-486d-a44b-9c0a8c9ff82f}</Project>
       <Name>Implementation.DataAccess</Name>
     </ProjectReference>
+    <ProjectReference Include="..\Implementation.Domain\Implementation.Domain.csproj">
+      <Project>{010fcd06-1ffc-407c-8fb0-68cc6db24512}</Project>
+      <Name>Implementation.Domain</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Implementation.Shared\Implementation.Shared.csproj">
       <Project>{8f742d4c-794d-4365-ba89-2c67bfc4477f}</Project>
       <Name>Implementation.Shared</Name>
@@ -83,6 +88,10 @@
     <ProjectReference Include="..\Integration.DataAccess\Integration.DataAccess.csproj">
       <Project>{E22A9B2D-CD61-49B9-B8BA-361B0CFF2A0A}</Project>
       <Name>Integration.DataAccess</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Integration.Domain\Integration.Domain.csproj">
+      <Project>{E9ACA8CB-41ED-4168-9742-0471AE8FF6AA}</Project>
+      <Name>Integration.Domain</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

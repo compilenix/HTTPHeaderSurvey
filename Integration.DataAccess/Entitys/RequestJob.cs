@@ -5,16 +5,13 @@ namespace Integration.DataAccess.Entitys
 {
     public class RequestJob : BaseEntity
     {
-        public RequestJob()
-        {
-            Headers = new HashSet<RequestHeader>();
-        }
-
         public int Id { get; set; }
 
         public string Method { get; set; }
 
         public string Uri { get; set; }
+
+        public string UriHash { get; set; }
 
         public string HttpVersion { get; set; }
 
@@ -25,5 +22,10 @@ namespace Integration.DataAccess.Entitys
         public DateTime? LastCompletedDateTime { get; set; }
 
         public ICollection<RequestHeader> Headers { get; set; }
+
+        public RequestJob()
+        {
+            Headers = new HashSet<RequestHeader>();
+        }
     }
 }
