@@ -680,7 +680,7 @@
 	<s:Boolean x:Key="/Default/Environment/Editor/UseCamelHumps/@EntryValue">True</s:Boolean>
 	<s:Boolean x:Key="/Default/Environment/ExcludedFiles/FilesAndFoldersThirdParty/=0971BE82_002DE8BA_002D486D_002DA44B_002D9C0A8C9FF82F_002Fd_003AMigrations/@EntryIndexedValue">True</s:Boolean>
 	<s:Boolean x:Key="/Default/Environment/ExcludedFiles/FilesAndFoldersThirdParty/=8F742D4C_002D794D_002D4365_002DBA89_002D2C67BFC4477F_002Fd_003AMoreLinq/@EntryIndexedValue">True</s:Boolean>
-	<s:String x:Key="/Default/Environment/Hierarchy/Build/SolBuilderDuo/UseMsbuildSolutionBuilder/@EntryValue">NewVersion</s:String>
+	
 	
 	<s:Int64 x:Key="/Default/Environment/Hierarchy/Build/SolutionBuilderNext/MsbuildVersion/@EntryValue">4294967295</s:Int64>
 	<s:Int64 x:Key="/Default/Environment/Hierarchy/Build/SolutionBuilderNext/ParallelProcessesCount2/@EntryValue">8</s:Int64>
