@@ -19,7 +19,7 @@ namespace Integration.DataAccess.Entitys
 
         public bool IsRunOnce { get; set; }
 
-        public DateTime? LastCompletedDateTime { get; set; }
+        public DateTime LastCompletedDateTime { get; set; }
 
         public ICollection<RequestHeader> Headers { get; set; }
 

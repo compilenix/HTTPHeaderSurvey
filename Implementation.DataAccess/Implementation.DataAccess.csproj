@@ -68,6 +68,10 @@
     <Compile Include="Migrations\201612291911452_AddRequestJobMethodIndexAndUriHashIndex.Designer.cs">
       <DependentUpon>201612291911452_AddRequestJobMethodIndexAndUriHashIndex.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201701042147030_Change_Column_RequestJob_LastCompletedDateTime_To_NonNullable.cs" />
+    <Compile Include="Migrations\201701042147030_Change_Column_RequestJob_LastCompletedDateTime_To_NonNullable.Designer.cs">
+      <DependentUpon>201701042147030_Change_Column_RequestJob_LastCompletedDateTime_To_NonNullable.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Repositories\RequestHeaderRepository.cs" />
@@ -100,6 +104,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201612291911452_AddRequestJobMethodIndexAndUriHashIndex.resx">
       <DependentUpon>201612291911452_AddRequestJobMethodIndexAndUriHashIndex.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201701042147030_Change_Column_RequestJob_LastCompletedDateTime_To_NonNullable.resx">
+      <DependentUpon>201701042147030_Change_Column_RequestJob_LastCompletedDateTime_To_NonNullable.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

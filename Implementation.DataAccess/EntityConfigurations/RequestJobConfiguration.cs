@@ -19,7 +19,7 @@ namespace Implementation.DataAccess.EntityConfigurations
 
             Property(p => p.IsRunOnce)?.IsRequired();
 
-            Property(p => p.LastCompletedDateTime)?.IsOptional();
+            Property(p => p.LastCompletedDateTime)?.IsRequired();
 
             Property(p => p.Method)?
                 .IsRequired()?.HasMaxLength(16)?.HasColumnAnnotation(IndexAnnotation.AnnotationName, new IndexAnnotation(new IndexAttribute()));
