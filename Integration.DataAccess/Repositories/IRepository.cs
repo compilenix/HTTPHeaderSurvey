@@ -15,5 +15,6 @@ namespace Integration.DataAccess.Repositories
         void Remove(TEntity entity);
         void RemoveRange(IEnumerable<TEntity> entities);
         TEntity SingleOrDefault(Expression<Func<TEntity, bool>> predicate);
+        int Count();
     }
 }

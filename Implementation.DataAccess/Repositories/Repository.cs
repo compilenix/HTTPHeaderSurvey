@@ -26,7 +26,7 @@ namespace Implementation.DataAccess.Repositories
 
         public IEnumerable<TEntity> Find(Expression<Func<TEntity, bool>> predicate)
         {
-            return Entities?.Where(predicate);
+            return Entities?.Where(predicate).ToList();
         }
 
         public TEntity SingleOrDefault(Expression<Func<TEntity, bool>> predicate)
@@ -63,6 +63,11 @@ namespace Implementation.DataAccess.Repositories
         public TEntity Get<TTarget>(TTarget id)
         {
             return Entities?.Find(id);
+        }
+
+        public int Count()
+        {
+            return Entities?.Count() ?? 0;
         }
     }
 }
