@@ -6,6 +6,7 @@ using System.Net.Http;
 using System.Net.Security;
 using System.Security.Cryptography.X509Certificates;
 using System.Threading.Tasks;
+using Integration.DataAccess.Entitys;
 
 // ReSharper disable MemberCanBePrivate.Global
 // ReSharper disable once AutoPropertyCanBeMadeGetOnly.Global
@@ -28,10 +29,6 @@ namespace Implementation.Shared
         /// <summary>
         /// Trust all certificates and ignore "errors" like; chain issues or distinguished name does not match...
         /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="certificate"></param>
-        /// <param name="chain"></param>
-        /// <param name="sslPolicyErrors"></param>
         /// <returns>true</returns>
         public static bool ServerCertificateValidationCallbackHandler(object sender,
                                                                       X509Certificate certificate,
@@ -41,30 +38,15 @@ namespace Implementation.Shared
             return true;
         }
 
-        /// <summary>
-        /// Create a simple (awaitable) http web-request
-        /// </summary>
-        /// <param name="method">Use HttpMethod</param>
-        /// <param name="uri"></param>
-        /// <returns></returns>
-        public static async Task<HttpResponseMessage> MakeSimpleWebRequest(HttpMethod method, Uri uri)
+        public static async Task<HttpResponseMessage> MakeSimpleWebRequest(string method, Uri uri)
         {
             return await MakeSimpleWebRequest(method, uri, DefaultTimeout, null, HttpVersion.Version11);
         }
 
-        /// <summary>
-        /// Create a simple (awaitable) http web-request
-        /// </summary>
-        /// <param name="method">Use HttpMethod</param>
-        /// <param name="uri"></param>
-        /// <param name="timeout">Defaults to HttpClientUtils.DefaultTimeout if null</param>
-        /// <param name="headers"></param>
-        /// <param name="httpVersion">Defaults to HttpVersion.Version11 if null</param>
-        /// <returns></returns>
-        public static async Task<HttpResponseMessage> MakeSimpleWebRequest(HttpMethod method,
+        public static async Task<HttpResponseMessage> MakeSimpleWebRequest(string method,
                                                                            Uri uri,
                                                                            TimeSpan timeout,
-                                                                           IReadOnlyCollection<KeyValuePair<string, string>> headers,
+                                                                           ICollection<RequestHeader> headers,
                                                                            Version httpVersion)
         {
             using (var requestHandler = NewWebRequestHandler(DefaultMaxRequestContentBufferSize))
@@ -80,59 +62,9 @@ namespace Implementation.Shared
             }
         }
 
-        /// <summary>
-        /// Do a simple domain http request, with nullable and optional parameters
-        /// </summary>
-        /// <param name="domain"></param>
-        /// <param name="maxRequestContentBufferSize">Defaults to HttpClientUtils.DefaultMaxRequestContentBufferSize if null</param>
-        /// <param name="timeout">Defaults to HttpClientUtils.DefaultTimeout if null</param>
-        /// <param name="scheme">Defaults to "http://" if null</param>
-        /// <param name="headers"></param>
-        /// <param name="requestPathAndQueryString">I.e.: /posts/?q=asdf</param>
-        /// <param name="httpVersion">Defaults to HttpVersion.Version11 if null</param>
-        /// <returns>Awaitable task</returns>
-        public static async Task<HttpResponseMessage> MakeSimpleWebRequest(string domain,
-                                                                           long? maxRequestContentBufferSize,
-                                                                           TimeSpan? timeout,
-                                                                           string scheme = "http",
-                                                                           IReadOnlyCollection<KeyValuePair<string, string>> headers = null,
-                                                                           string requestPathAndQueryString = null,
-                                                                           Version httpVersion = null)
-        {
-            using (var requestHandler = NewWebRequestHandler(maxRequestContentBufferSize))
-            using (var httpClient = NewHttpClient(requestHandler, timeout))
-            {
-                var clientRequest =
-                    NewHttpClientRequest(
-                        NewHttpRequestMessage(
-                            method: HttpMethod.Get,
-                            domain: domain,
-                            requestPathAndQueryString: requestPathAndQueryString,
-                            headers: headers,
-                            scheme: scheme,
-                            httpVersion: httpVersion),
-                        httpClient);
-
-                if (clientRequest == null)
-                {
-                    throw new ArgumentNullException();
-                }
-
-                return await clientRequest;
-            }
-        }
-
-        /// <summary>
-        /// Do a simple http-webrequest, with nullable and optional parameters
-        /// </summary>
-        /// <param name="method">Use HttpMethod</param>
-        /// <param name="uri"></param>
-        /// <param name="headers"></param>
-        /// <param name="httpVersion">Defaults to HttpVersion.Version11 if null</param>
-        /// <returns></returns>
-        public static HttpRequestMessage NewHttpRequestMessage(HttpMethod method,
+        public static HttpRequestMessage NewHttpRequestMessage(string method,
                                                                Uri uri,
-                                                               IReadOnlyCollection<KeyValuePair<string, string>> headers = null,
+                                                               ICollection<RequestHeader> headers = null,
                                                                Version httpVersion = null)
         {
             if (httpVersion == null)
@@ -140,7 +72,7 @@ namespace Implementation.Shared
                 httpVersion = HttpVersion.Version11;
             }
 
-            var request = new HttpRequestMessage { Method = method, Version = httpVersion, RequestUri = uri };
+            var request = new HttpRequestMessage { Method = new HttpMethod(method), Version = httpVersion, RequestUri = uri };
 
             if (headers != null && request.Headers != null && headers.Count > 0)
             {
@@ -153,12 +85,6 @@ namespace Implementation.Shared
             return request;
         }
 
-        /// <summary>
-        /// Sends a (async) http request if you already have a HttpRequestMessage and a httpclientHttpClient.
-        /// </summary>
-        /// <param name="requestMessage"></param>
-        /// <param name="httpClient"></param>
-        /// <returns>Awaitable task</returns>
         public static Task<HttpResponseMessage> NewHttpClientRequest(HttpRequestMessage requestMessage, HttpClient httpClient)
         {
             if (httpClient == null)
@@ -177,8 +103,6 @@ namespace Implementation.Shared
         /// <summary>
         /// Create a new WebRequestHandler, which will NOT allow autoredirection and ignores all server certificate validation errors.
         /// </summary>
-        /// <param name="maxRequestContentBufferSize">Defaults to HttpClientUtils.DefaultMaxRequestContentBufferSize if null</param>
-        /// <returns></returns>
         public static WebRequestHandler NewWebRequestHandler(long? maxRequestContentBufferSize = null)
         {
             if (maxRequestContentBufferSize == null)
@@ -194,12 +118,6 @@ namespace Implementation.Shared
                 };
         }
 
-        /// <summary>
-        /// Creates a new HttpClient.
-        /// </summary>
-        /// <param name="requestHandler"></param>
-        /// <param name="timeout">Defaults to HttpClientUtils.DefaultTimeout if null</param>
-        /// <returns></returns>
         public static HttpClient NewHttpClient(WebRequestHandler requestHandler, TimeSpan? timeout = null)
         {
             if (requestHandler == null)
@@ -222,20 +140,10 @@ namespace Implementation.Shared
             return httpClient;
         }
 
-        /// <summary>
-        /// Creates new HttpRequestMessage,
-        /// </summary>
-        /// <param name="method">Use HttpMethod</param>
-        /// <param name="domain"></param>
-        /// <param name="requestPathAndQueryString">I.e.: /posts/?q=asdf</param>
-        /// <param name="headers"></param>
-        /// <param name="scheme">Defaults to "http://" if null</param>
-        /// <param name="httpVersion"></param>
-        /// <returns></returns>
-        public static HttpRequestMessage NewHttpRequestMessage(HttpMethod method,
+        public static HttpRequestMessage NewHttpRequestMessage(string method,
                                                                string domain,
                                                                string requestPathAndQueryString = "",
-                                                               IReadOnlyCollection<KeyValuePair<string, string>> headers = null,
+                                                               ICollection<RequestHeader> headers = null,
                                                                string scheme = "http",
                                                                Version httpVersion = null)
         {

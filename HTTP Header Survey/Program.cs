@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Implementation.DataAccess;
 using Implementation.Domain;
@@ -11,8 +12,57 @@ namespace HTTPHeaderSurvey
 {
     internal static class Program
     {
-        // ReSharper disable once UnusedParameter.Local
         private static void Main(string[] args)
+        {
+            AddDefaultRequestHeaders();
+
+            int countOfRequestJobs;
+            using (var unit = new UnitOfWork())
+            {
+                countOfRequestJobs = unit.RequestJobs.Count();
+            }
+
+            if (countOfRequestJobs < 10)
+            {
+                ImportRequestJobsFromCsv(@"C:\Users\Compilenix\Downloads\top-1m.csv.new.csv");
+            }
+
+            IEnumerable<RequestJob> someRequestJobs = null;
+            using (var unit = new UnitOfWork())
+            {
+                someRequestJobs = unit.RequestJobs.GetRequestJobsTodoAndNotScheduled(withRequestHeaders: true, count: 1);
+            }
+
+            foreach (var job in someRequestJobs)
+            {
+                using (var requestMessage = HttpClientUtils.NewHttpRequestMessage(job.Method, new Uri(job.Uri), job.Headers, new Version(job.HttpVersion)))
+                using (
+                    var responseMessage = HttpClientUtils.NewHttpClientRequest(
+                        requestMessage,
+                        HttpClientUtils.NewHttpClient(HttpClientUtils.NewWebRequestHandler())))
+                {
+                    var result = responseMessage?.Result;
+                    if (result?.RequestMessage != null)
+                    {
+                        Console.WriteLine(result.RequestMessage.RequestUri);
+                        Console.Write(result.Headers);
+                        Console.WriteLine($"{(int)result.StatusCode} {result.StatusCode}\n");
+                    }
+                }
+            }
+        }
+
+        private static void ImportRequestJobsFromCsv(string csvFilePath)
+        {
+            typeof(Program).Log()?.Info("start parallel batch processing of converted jobs");
+            Parallel.ForEach(
+                new DataTransferObjectConverter().RequestJobsFromCsv(csvFilePath, ',').Batch(10000),
+                new ParallelOptions { MaxDegreeOfParallelism = Environment.ProcessorCount },
+                ProcessBatch);
+            typeof(Program).Log()?.Info("parallel batch processing of converted jobs done");
+        }
+
+        private static void AddDefaultRequestHeaders()
         {
             using (var unit = new UnitOfWork())
             {
@@ -24,12 +74,6 @@ namespace HTTPHeaderSurvey
                         });
                 unit.Complete();
             }
-
-            typeof(Program).Log()?.Info("start parallel batch processing of converted jobs");
-            Parallel.ForEach(
-                new DataTransferObjectConverter().RequestJobsFromCsv(@"C:\Users\Compilenix\Downloads\top-1m.csv.new.csv", ',').Batch(10000),
-                new ParallelOptions { MaxDegreeOfParallelism = Environment.ProcessorCount },
-                ProcessBatch);
         }
 
         private static void ProcessBatch(IEnumerable<RequestJob> batch)
@@ -37,7 +81,7 @@ namespace HTTPHeaderSurvey
             typeof(Program).Log()?.Debug("Start of a batch worker");
             using (var unit = new UnitOfWork())
             {
-                var header = unit.RequestHeaders.Get(1);
+                var header = unit.RequestHeaders.GetByHeader("User-Agent").First();
 
                 foreach (var requestJob in batch)
                 {
