@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using Implementation.DataAccess;
 using Implementation.Domain;
@@ -33,22 +34,22 @@ namespace HTTPHeaderSurvey
                 someRequestJobs = unit.RequestJobs.GetRequestJobsTodoAndNotScheduled(withRequestHeaders: true, count: 1);
             }
 
+            HttpClientUtils.DefaultTimeout = TimeSpan.FromSeconds(30);
             foreach (var job in someRequestJobs)
             {
-                using (var requestMessage = HttpClientUtils.NewHttpRequestMessage(job.Method, new Uri(job.Uri), job.Headers, new Version(job.HttpVersion)))
-                using (
-                    var responseMessage = HttpClientUtils.NewHttpClientRequest(
-                        requestMessage,
-                        HttpClientUtils.NewHttpClient(HttpClientUtils.NewWebRequestHandler())))
-                {
-                    var result = responseMessage?.Result;
-                    if (result?.RequestMessage != null)
+                var httpClientOptions = new HttpClientRequestOptions
                     {
-                        Console.WriteLine(result.RequestMessage.RequestUri);
-                        Console.Write(result.Headers);
-                        Console.WriteLine($"{(int)result.StatusCode} {result.StatusCode}\n");
-                    }
-                }
+                        Headers = job.Headers,
+                        HttpVersion = job.HttpVersion,
+                        Method = job.Method,
+                        Uri = new Uri(job.Uri),
+                        CancellationToken = CancellationToken.None
+                    };
+                var jobResult = HttpClientUtils.MakeSimpleWebRequest(httpClientOptions).Result;
+
+                Console.WriteLine(jobResult.RequestMessage.RequestUri);
+                Console.Write(jobResult.Headers);
+                Console.WriteLine($"{(int)jobResult.StatusCode} {jobResult.StatusCode}\n");
             }
         }
 

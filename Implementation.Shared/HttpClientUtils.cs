@@ -1,35 +1,29 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
 using System.Net;
 using System.Net.Http;
 using System.Net.Security;
 using System.Security.Cryptography.X509Certificates;
+using System.Threading;
 using System.Threading.Tasks;
 using Integration.DataAccess.Entitys;
 
-// ReSharper disable MemberCanBePrivate.Global
-// ReSharper disable once AutoPropertyCanBeMadeGetOnly.Global
-
 namespace Implementation.Shared
 {
-    [SuppressMessage("Microsoft.Naming", "CA1704:IdentifiersShouldBeSpelledCorrectly", MessageId = "Utils")]
     public static class HttpClientUtils
     {
         /// <summary>
         /// 30 Seconds
         /// </summary>
+        // ReSharper disable once MemberCanBePrivate.Global
+        // ReSharper disable once AutoPropertyCanBeMadeGetOnly.Global
         public static TimeSpan DefaultTimeout { get; set; } = TimeSpan.FromSeconds(30);
-
-        /// <summary>
-        /// About 10 MB
-        /// </summary>
-        public static long DefaultMaxRequestContentBufferSize { get; set; } = (1 << 20) * 10;
 
         /// <summary>
         /// Trust all certificates and ignore "errors" like; chain issues or distinguished name does not match...
         /// </summary>
         /// <returns>true</returns>
+        // ReSharper disable once MemberCanBePrivate.Global
         public static bool ServerCertificateValidationCallbackHandler(object sender,
                                                                       X509Certificate certificate,
                                                                       X509Chain chain,
@@ -38,21 +32,20 @@ namespace Implementation.Shared
             return true;
         }
 
-        public static async Task<HttpResponseMessage> MakeSimpleWebRequest(string method, Uri uri)
+        public static async Task<HttpResponseMessage> MakeSimpleWebRequest(HttpClientRequestOptions options)
         {
-            return await MakeSimpleWebRequest(method, uri, DefaultTimeout, null, HttpVersion.Version11);
-        }
-
-        public static async Task<HttpResponseMessage> MakeSimpleWebRequest(string method,
-                                                                           Uri uri,
-                                                                           TimeSpan timeout,
-                                                                           ICollection<RequestHeader> headers,
-                                                                           Version httpVersion)
-        {
-            using (var requestHandler = NewWebRequestHandler(DefaultMaxRequestContentBufferSize))
-            using (var httpClient = NewHttpClient(requestHandler, timeout))
+            if (options == null)
             {
-                var clientRequest = NewHttpClientRequest(NewHttpRequestMessage(method, uri, headers), httpClient);
+                throw new ArgumentNullException(nameof(options));
+            }
+
+            using (var requestHandler = NewWebRequestHandler())
+            using (var httpClient = NewHttpClient(requestHandler))
+            {
+                var clientRequest =
+                    NewHttpClientRequest(
+                        NewHttpRequestMessage(options.Method, options.Uri, options.Headers, new Version(options.HttpVersion)),
+                        httpClient, options.CancellationToken);
                 if (clientRequest == null)
                 {
                     throw new ArgumentNullException();
@@ -85,7 +78,7 @@ namespace Implementation.Shared
             return request;
         }
 
-        public static Task<HttpResponseMessage> NewHttpClientRequest(HttpRequestMessage requestMessage, HttpClient httpClient)
+        public static Task<HttpResponseMessage> NewHttpClientRequest(HttpRequestMessage requestMessage, HttpClient httpClient, CancellationToken cancellationToken)
         {
             if (httpClient == null)
             {
@@ -97,57 +90,32 @@ namespace Implementation.Shared
                 throw new ArgumentNullException(nameof(requestMessage));
             }
 
-            return httpClient.SendAsync(requestMessage);
+            return httpClient.SendAsync(requestMessage, cancellationToken);
         }
 
         /// <summary>
         /// Create a new WebRequestHandler, which will NOT allow autoredirection and ignores all server certificate validation errors.
         /// </summary>
-        public static WebRequestHandler NewWebRequestHandler(long? maxRequestContentBufferSize = null)
+        public static WebRequestHandler NewWebRequestHandler()
         {
-            if (maxRequestContentBufferSize == null)
-            {
-                maxRequestContentBufferSize = DefaultMaxRequestContentBufferSize;
-            }
-
             return new WebRequestHandler
                 {
                     AllowAutoRedirect = false,
-                    MaxRequestContentBufferSize = (long)maxRequestContentBufferSize,
                     ServerCertificateValidationCallback = ServerCertificateValidationCallbackHandler
                 };
         }
 
-        public static HttpClient NewHttpClient(WebRequestHandler requestHandler, TimeSpan? timeout = null)
+        public static HttpClient NewHttpClient(WebRequestHandler requestHandler)
         {
             if (requestHandler == null)
             {
                 throw new ArgumentNullException(nameof(requestHandler));
             }
 
-            if (timeout == null)
-            {
-                timeout = DefaultTimeout;
-            }
-
-            var httpClient = new HttpClient(requestHandler)
-                {
-                    MaxResponseContentBufferSize = requestHandler.MaxRequestContentBufferSize,
-                    Timeout = (TimeSpan)timeout
-                };
+            var httpClient = new HttpClient(requestHandler) { Timeout = DefaultTimeout };
             ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12 | SecurityProtocolType.Tls11 | SecurityProtocolType.Tls
                                                    | SecurityProtocolType.Ssl3;
             return httpClient;
-        }
-
-        public static HttpRequestMessage NewHttpRequestMessage(string method,
-                                                               string domain,
-                                                               string requestPathAndQueryString = "",
-                                                               ICollection<RequestHeader> headers = null,
-                                                               string scheme = "http",
-                                                               Version httpVersion = null)
-        {
-            return NewHttpRequestMessage(method, new Uri($"{scheme}://{domain}{requestPathAndQueryString}"), headers, httpVersion);
         }
     }
 }

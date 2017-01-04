@@ -53,6 +53,7 @@
   <ItemGroup>
     <Compile Include="GarbageCollectionUtils.cs" />
     <Compile Include="HashUtils.cs" />
+    <Compile Include="HttpClientRequestOptions.cs" />
     <Compile Include="HttpClientUtils.cs" />
     <Compile Include="Log4NetExtensions.cs" />
     <Compile Include="MoreLinq\MoreEnumerable.Batch.cs" />
