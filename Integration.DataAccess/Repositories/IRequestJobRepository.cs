@@ -15,7 +15,7 @@ namespace Integration.DataAccess.Repositories
         IEnumerable<RequestJob> GetRequestJobsCurrentlyScheduled(bool withRequestHeaders = false);
         IEnumerable<RequestJob> GetRequestJobsRunOnce(bool withRequestHeaders = false);
         IEnumerable<RequestJob> GetRequestJobsRunOnceNot(bool withRequestHeaders = false);
-        IEnumerable<RequestJob> GetRequestJobsTodoAndNotScheduled(bool withRequestHeaders = false);
+        IEnumerable<RequestJob> GetRequestJobsTodoAndNotScheduled(bool withRequestHeaders = false, int count = int.MaxValue);
         RequestJob GetWithRequestHeaders(int id);
         RequestJob SingleOrDefaultWithRequestHeaders(Expression<Func<RequestJob, bool>> predicate);
     }

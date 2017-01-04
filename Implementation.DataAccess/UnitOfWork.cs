@@ -17,7 +17,7 @@ namespace Implementation.DataAccess
         {
             Context = new DataAccessContext();
             Context.Configuration.AutoDetectChangesEnabled = false;
-            RequestJobs = new RequestJobRepository(Context);
+            RequestJobs = new RequestJobRepository(Context, scheduleDays: 10);
             RequestHeaders = new RequestHeaderRepository(Context);
         }
 

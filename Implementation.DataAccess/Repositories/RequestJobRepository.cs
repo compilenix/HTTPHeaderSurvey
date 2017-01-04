@@ -12,11 +12,12 @@ namespace Implementation.DataAccess.Repositories
     public class RequestJobRepository : Repository<RequestJob>, IRequestJobRepository
     {
         //TODO Where to store / get from, this value?
-        private readonly TimeSpan _scheduleTimeSpan;
+        private readonly int _scheduleDays;
         private DataAccessContext DataAccessContext => Context as DataAccessContext;
 
-        public RequestJobRepository(DataAccessContext context) : base(context)
+        public RequestJobRepository(DataAccessContext context, int scheduleDays) : base(context)
         {
+            _scheduleDays = scheduleDays;
         }
 
         private static IQueryable<RequestJob> RequestJobWithHeadersQueryable(IQueryable<RequestJob> query, bool doInclude)
@@ -29,13 +30,16 @@ namespace Implementation.DataAccess.Repositories
             return RequestJobWithHeadersQueryable(Entities?.Where(j => j.IsCurrentlyScheduled), withRequestHeaders)?.ToList();
         }
 
-        public IEnumerable<RequestJob> GetRequestJobsTodoAndNotScheduled(bool withRequestHeaders = false)
+        public IEnumerable<RequestJob> GetRequestJobsTodoAndNotScheduled(bool withRequestHeaders = false, int count = int.MaxValue)
         {
+            var compareToDate = DateTime.Now.Subtract(TimeSpan.FromDays(_scheduleDays));
             return
                 RequestJobWithHeadersQueryable(
-                    Entities?.Where(j => j.LastCompletedDateTime <= DateTime.Now - _scheduleTimeSpan)
+                    Entities?
+                        .Where(j => DbFunctions.DiffDays(j.LastCompletedDateTime, compareToDate) > _scheduleDays)
                         .Where(j => !j.IsRunOnce)
-                        .Where(j => !j.IsCurrentlyScheduled),
+                        .Where(j => !j.IsCurrentlyScheduled)
+                        .Take(count),
                     withRequestHeaders)?.ToList();
         }
 
@@ -61,7 +65,7 @@ namespace Implementation.DataAccess.Repositories
 
         public IEnumerable<RequestJob> FindWithRequestHeaders(Expression<Func<RequestJob, bool>> predicate)
         {
-            return predicate != null ? Entities?.Include(j => j.Headers)?.Where(predicate) : null;
+            return predicate != null ? Entities?.Include(j => j.Headers)?.Where(predicate).ToList() : null;
         }
 
         public RequestJob SingleOrDefaultWithRequestHeaders(Expression<Func<RequestJob, bool>> predicate)
@@ -78,6 +82,7 @@ namespace Implementation.DataAccess.Repositories
         public override RequestJob Add(RequestJob entity)
         {
             entity.UriHash = HashUtils.Hash(entity.Uri);
+            entity.LastCompletedDateTime = DateTime.Parse("2016-01-01");
             return base.Add(entity);
         }
 
