@@ -14,10 +14,27 @@ namespace Implementation.DataAccess.Repositories
         {
         }
 
-        public override RequestHeader Add(RequestHeader entity)
+        public override RequestHeader Add(RequestHeader header)
         {
-            entity.ValueHash = HashUtils.Hash(entity.Value);
-            return base.Add(entity);
+            header.Key = header.Key.ToLower();
+
+            switch (header.Key)
+            {
+                case "date":
+                    return null;
+            }
+
+            header.Value = header.Value.ToLower();
+            header.ValueHash = HashUtils.Hash(header.Value);
+            return base.Add(header);
+        }
+
+        public override IEnumerable<RequestHeader> AddRange(IEnumerable<RequestHeader> requestHeaders)
+        {
+            foreach (var header in requestHeaders)
+            {
+                yield return Add(header);
+            }
         }
 
         /// <summary>
