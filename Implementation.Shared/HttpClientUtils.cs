@@ -113,8 +113,6 @@ namespace Implementation.Shared
             }
 
             var httpClient = new HttpClient(requestHandler) { Timeout = DefaultTimeout };
-            ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12 | SecurityProtocolType.Tls11 | SecurityProtocolType.Tls
-                                                   | SecurityProtocolType.Ssl3;
             return httpClient;
         }
     }
