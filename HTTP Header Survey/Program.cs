@@ -17,26 +17,34 @@ namespace HTTPHeaderSurvey
         private static void Main(string[] args)
         {
             AddDefaultRequestHeaders();
+            ImportRequestJobsIfThereAreNone();
+            ProcessRequestJobs(GetSomeRequestJobs(10));
+        }
 
+        private static IEnumerable<RequestJob> GetSomeRequestJobs(int count)
+        {
+            using (var unit = new UnitOfWork())
+            {
+                return unit.RequestJobs.GetRequestJobsTodoAndNotScheduled(withRequestHeaders: true, count: count);
+            }
+        }
+
+        private static void ImportRequestJobsIfThereAreNone()
+        {
             int countOfRequestJobs;
             using (var unit = new UnitOfWork())
             {
                 countOfRequestJobs = unit.RequestJobs.Count();
             }
 
-            if (countOfRequestJobs < 10)
+            if (countOfRequestJobs < 1)
             {
                 ImportRequestJobsFromCsv(@"C:\Users\Compilenix\Downloads\top-1m.csv.new.csv");
             }
+        }
 
-            IEnumerable<RequestJob> someRequestJobs = null;
-            using (var unit = new UnitOfWork())
-            {
-                someRequestJobs = unit.RequestJobs.GetRequestJobsTodoAndNotScheduled(withRequestHeaders: true, count: 10);
-            }
-
-
-
+        private static void ProcessRequestJobs(IEnumerable<RequestJob> someRequestJobs)
+        {
             HttpClientUtils.DefaultTimeout = TimeSpan.FromSeconds(5);
             foreach (var job in someRequestJobs)
             {
@@ -71,12 +79,14 @@ namespace HTTPHeaderSurvey
                         }
                     }
 
-                    unit.ResponseMessages.Add(new ResponseMessage {
-                        RequestJob = unit.RequestJobs.Get(job.Id),
-                        ResponseHeaders = headers,
-                        ProtocolVersion = jobResult.Version.ToString(),
-                        StatusCode = (int)jobResult.StatusCode
-                    });
+                    unit.ResponseMessages.Add(
+                        new ResponseMessage
+                            {
+                                RequestJob = unit.RequestJobs.Get(job.Id),
+                                ResponseHeaders = headers,
+                                ProtocolVersion = jobResult.Version.ToString(),
+                                StatusCode = (int)jobResult.StatusCode
+                            });
 
                     unit.Complete();
                     Console.WriteLine($"completed job -> {job.Uri}");
@@ -92,7 +102,7 @@ namespace HTTPHeaderSurvey
             Parallel.ForEach(
                 new DataTransferObjectConverter().RequestJobsFromCsv(csvFilePath, ',').Batch(10000),
                 new ParallelOptions { MaxDegreeOfParallelism = Environment.ProcessorCount },
-                ProcessBatch);
+                ProcessBatchImport);
             typeof(Program).Log()?.Info("parallel batch processing of converted jobs done");
         }
 
@@ -110,7 +120,7 @@ namespace HTTPHeaderSurvey
             }
         }
 
-        private static void ProcessBatch(IEnumerable<RequestJob> batch)
+        private static void ProcessBatchImport(IEnumerable<RequestJob> batch)
         {
             typeof(Program).Log()?.Debug("Start of a batch worker");
             using (var unit = new UnitOfWork())
