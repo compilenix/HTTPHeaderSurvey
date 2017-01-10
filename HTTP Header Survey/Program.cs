@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
 using Implementation.DataAccess;
@@ -31,10 +32,12 @@ namespace HTTPHeaderSurvey
             IEnumerable<RequestJob> someRequestJobs = null;
             using (var unit = new UnitOfWork())
             {
-                someRequestJobs = unit.RequestJobs.GetRequestJobsTodoAndNotScheduled(withRequestHeaders: true, count: 1);
+                someRequestJobs = unit.RequestJobs.GetRequestJobsTodoAndNotScheduled(withRequestHeaders: true, count: 10);
             }
 
-            HttpClientUtils.DefaultTimeout = TimeSpan.FromSeconds(30);
+
+
+            HttpClientUtils.DefaultTimeout = TimeSpan.FromSeconds(5);
             foreach (var job in someRequestJobs)
             {
                 var httpClientOptions = new HttpClientRequestOptions
@@ -45,11 +48,41 @@ namespace HTTPHeaderSurvey
                         Uri = new Uri(job.Uri),
                         CancellationToken = CancellationToken.None
                     };
-                var jobResult = HttpClientUtils.MakeSimpleWebRequest(httpClientOptions).Result;
 
-                Console.WriteLine(jobResult.RequestMessage.RequestUri);
-                Console.Write(jobResult.Headers);
-                Console.WriteLine($"{(int)jobResult.StatusCode} {jobResult.StatusCode}\n");
+                HttpResponseMessage jobResult;
+                try
+                {
+                    jobResult = HttpClientUtils.MakeSimpleWebRequest(httpClientOptions).Result;
+                }
+                catch (Exception exception)
+                {
+                    continue;
+                }
+
+                using (var unit = new UnitOfWork())
+                {
+                    var headers = new List<ResponseHeader>();
+
+                    foreach (var header in jobResult.Headers)
+                    {
+                        foreach (var headerValue in header.Value)
+                        {
+                            headers.Add(unit.ResponseHeaders.AddIfNotExisting(new ResponseHeader { Key = header.Key, Value = headerValue }));
+                        }
+                    }
+
+                    unit.ResponseMessages.Add(new ResponseMessage {
+                        RequestJob = unit.RequestJobs.Get(job.Id),
+                        ResponseHeaders = headers,
+                        ProtocolVersion = jobResult.Version.ToString(),
+                        StatusCode = (int)jobResult.StatusCode
+                    });
+
+                    unit.Complete();
+                    Console.WriteLine($"completed job -> {job.Uri}");
+                }
+
+                jobResult.Dispose();
             }
         }
 

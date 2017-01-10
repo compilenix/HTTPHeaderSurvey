@@ -8,10 +8,12 @@ namespace Implementation.DataAccess
 {
     public class DataAccessContext : DbContext
     {
-        private SqlProviderServices _sqlProviderServices;
+        private readonly SqlProviderServices _sqlProviderServices;
         public DbSet<RequestJob> RequestJobs { get; set; }
         public DbSet<RequestHeader> RequestHeaders { get; set; }
         public DbSet<ApplicationLog> ApplicationLogs { get; set; }
+        public DbSet<ResponseHeader> ResponseHeaders { get; set; }
+        public DbSet<ResponseMessage> ResponseMessages { get; set; }
 
         public DataAccessContext() : base("name=DataAccessContext")
         {
@@ -24,8 +26,12 @@ namespace Implementation.DataAccess
             modelBuilder.Conventions.Remove<ManyToManyCascadeDeleteConvention>();
             modelBuilder.Conventions.Remove<OneToManyCascadeDeleteConvention>();
 
+            modelBuilder.Conventions.Add(new ForeignKeyNamingConvention());
+
             modelBuilder.Configurations.Add(new RequestJobConfiguration());
             modelBuilder.Configurations.Add(new RequestHeaderConfiguration());
+            modelBuilder.Configurations.Add(new ResponseMessageConfiguration());
+            modelBuilder.Configurations.Add(new ResponseHeaderConfiguration());
 
             base.OnModelCreating(modelBuilder);
         }

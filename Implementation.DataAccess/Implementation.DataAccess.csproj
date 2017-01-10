@@ -60,6 +60,9 @@
   <ItemGroup>
     <Compile Include="EntityConfigurations\RequestHeaderConfiguration.cs" />
     <Compile Include="DataAccessContext.cs" />
+    <Compile Include="EntityConfigurations\ResponseMessageConfiguration.cs" />
+    <Compile Include="EntityConfigurations\ResponseHeaderConfiguration.cs" />
+    <Compile Include="ForeignKeyNamingConvention.cs" />
     <Compile Include="Migrations\201612280334025_Initial.cs" />
     <Compile Include="Migrations\201612280334025_Initial.Designer.cs">
       <DependentUpon>201612280334025_Initial.cs</DependentUpon>
@@ -72,9 +75,15 @@
     <Compile Include="Migrations\201701042147030_Change_Column_RequestJob_LastCompletedDateTime_To_NonNullable.Designer.cs">
       <DependentUpon>201701042147030_Change_Column_RequestJob_LastCompletedDateTime_To_NonNullable.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201701092122433_Add_ResponseMessage.cs" />
+    <Compile Include="Migrations\201701092122433_Add_ResponseMessage.Designer.cs">
+      <DependentUpon>201701092122433_Add_ResponseMessage.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Repositories\RequestHeaderRepository.cs" />
+    <Compile Include="Repositories\ResponseMessageRepository.cs" />
+    <Compile Include="Repositories\ResponseHeaderRepository.cs" />
     <Compile Include="Repositories\RequestJobRepository.cs" />
     <Compile Include="Repositories\Repository.cs" />
     <Compile Include="EntityConfigurations\RequestJobConfiguration.cs" />
@@ -107,6 +116,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201701042147030_Change_Column_RequestJob_LastCompletedDateTime_To_NonNullable.resx">
       <DependentUpon>201701042147030_Change_Column_RequestJob_LastCompletedDateTime_To_NonNullable.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201701092122433_Add_ResponseMessage.resx">
+      <DependentUpon>201701092122433_Add_ResponseMessage.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

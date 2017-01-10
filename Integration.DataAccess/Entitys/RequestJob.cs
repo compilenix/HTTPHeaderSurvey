@@ -23,9 +23,12 @@ namespace Integration.DataAccess.Entitys
 
         public ICollection<RequestHeader> Headers { get; set; }
 
+        public ICollection<ResponseMessage> ResponseMessages { get; set; }
+
         public RequestJob()
         {
             Headers = new HashSet<RequestHeader>();
+            ResponseMessages = new HashSet<ResponseMessage>();
         }
     }
 }

@@ -57,10 +57,14 @@
     <Compile Include="Entitys\BaseEntity.cs" />
     <Compile Include="Entitys\RequestHeader.cs" />
     <Compile Include="Entitys\RequestJob.cs" />
+    <Compile Include="Entitys\ResponseHeader.cs" />
+    <Compile Include="Entitys\ResponseMessage.cs" />
     <Compile Include="IUnitOfWork.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Repositories\IRepository.cs" />
     <Compile Include="Repositories\IRequestHeaderRepository.cs" />
+    <Compile Include="Repositories\IResponseMessageRepository.cs" />
+    <Compile Include="Repositories\IResponseHeaderRepository.cs" />
     <Compile Include="Repositories\IRequestJobRepository.cs" />
   </ItemGroup>
   <ItemGroup>

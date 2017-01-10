@@ -10,15 +10,20 @@ namespace Implementation.DataAccess
     {
         internal readonly DataAccessContext Context;
 
-        public IRequestJobRepository RequestJobs { get; private set; }
-        public IRequestHeaderRepository RequestHeaders { get; private set; }
+        public IRequestJobRepository RequestJobs { get; }
+        public IRequestHeaderRepository RequestHeaders { get; }
+        public IResponseMessageRepository ResponseMessages { get; }
+        public IResponseHeaderRepository ResponseHeaders { get; }
 
         public UnitOfWork()
         {
             Context = new DataAccessContext();
             Context.Configuration.AutoDetectChangesEnabled = false;
+
             RequestJobs = new RequestJobRepository(Context, scheduleDays: 10);
             RequestHeaders = new RequestHeaderRepository(Context);
+            ResponseMessages = new ResponseMessageRepository(Context);
+            ResponseHeaders = new ResponseHeaderRepository(Context);
         }
 
         /// <summary>Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.</summary>
