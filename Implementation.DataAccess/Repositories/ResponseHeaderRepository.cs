@@ -73,7 +73,7 @@ namespace Implementation.DataAccess.Repositories
         /// </summary>
         public bool ContainsResponseHeader(string header, string headerValue)
         {
-            var headerValueHash = HashUtils.Hash(headerValue);
+            var headerValueHash = HashUtils.Hash(headerValue.ToLower());
             return Entities.Any(j => j.Key.ToLower() == header.ToLower() && j.ValueHash == headerValueHash);
         }
     }

@@ -10,7 +10,7 @@ namespace Implementation.Shared
         {
             using (var alg = SHA256.Create())
             {
-                return alg?.ComputeHash(Encoding.UTF8.GetBytes(data)).Aggregate(string.Empty, (current, b) => current + b.ToString("x2"));
+                return alg?.ComputeHash(Encoding.UTF8.GetBytes(data)).Aggregate(string.Empty, (current, b) => current + b.ToString("x2"))?.ToLower();
             }
         }
     }
