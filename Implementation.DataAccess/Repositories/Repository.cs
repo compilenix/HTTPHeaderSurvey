@@ -9,7 +9,7 @@ using Integration.DataAccess.Repositories;
 namespace Implementation.DataAccess.Repositories
 {
     public class Repository<TEntity> : IRepository<TEntity>
-        where TEntity : BaseEntity
+        where TEntity : BaseEntity<int>
     {
         protected readonly DbContext Context;
         protected DbSet<TEntity> Entities => Context?.Set<TEntity>();

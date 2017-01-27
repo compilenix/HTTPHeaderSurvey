@@ -3,10 +3,8 @@ using System.Collections.Generic;
 
 namespace Integration.DataAccess.Entitys
 {
-    public class RequestJob : BaseEntity
+    public class RequestJob : BaseEntity<int>
     {
-        public int Id { get; set; }
-
         public string Method { get; set; }
 
         public string Uri { get; set; }

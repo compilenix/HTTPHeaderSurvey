@@ -3,12 +3,12 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Integration.DataAccess.Entitys
 {
-    public class ApplicationLog : BaseEntity
+    public class ApplicationLog : BaseEntity<int>
     {
         [Key]
         [Index]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-        public int Id { get; set; }
+        public new int Id { get; set; }
 
         [Required]
         [StringLength(100)]

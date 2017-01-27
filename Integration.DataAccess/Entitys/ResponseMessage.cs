@@ -1,13 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Net.Http;
+﻿using System.Collections.Generic;
 
 namespace Integration.DataAccess.Entitys
 {
-    public class ResponseMessage : BaseEntity
+    public class ResponseMessage : BaseEntity<int>
     {
-        public int Id { get; set; }
-
         public int StatusCode { get; set; }
 
         public string ProtocolVersion { get; set; }
