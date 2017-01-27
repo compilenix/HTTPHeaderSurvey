@@ -4,10 +4,12 @@ using System.Linq;
 using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
-using Implementation.DataAccess;
 using Implementation.Domain;
 using Implementation.Shared;
+using Implementation.Shared.IoC;
+using Integration.DataAccess;
 using Integration.DataAccess.Entitys;
+using Integration.DataAccess.Repositories;
 using MoreLinq;
 
 namespace HTTPHeaderSurvey
@@ -16,6 +18,7 @@ namespace HTTPHeaderSurvey
     {
         private static void Main(string[] args)
         {
+            Bootstrapper.Initialize();
             AddDefaultRequestHeaders();
             ImportRequestJobsIfThereAreNone();
             ProcessRequestJobs(GetSomeRequestJobs(10));
@@ -23,18 +26,19 @@ namespace HTTPHeaderSurvey
 
         private static IEnumerable<RequestJob> GetSomeRequestJobs(int count)
         {
-            using (var unit = new UnitOfWork())
+            using (var unit = IoC.Resolve<IUnitOfWork>())
             {
-                return unit.RequestJobs.GetRequestJobsTodoAndNotScheduled(withRequestHeaders: true, count: count);
+                return unit.Repository<IRequestJobRepository>().GetRequestJobsTodoAndNotScheduled(withRequestHeaders: true, count: count);
             }
         }
 
         private static void ImportRequestJobsIfThereAreNone()
         {
             int countOfRequestJobs;
-            using (var unit = new UnitOfWork())
+
+            using (var unit = IoC.Resolve<IUnitOfWork>())
             {
-                countOfRequestJobs = unit.RequestJobs.Count();
+                countOfRequestJobs = unit.Repository<IRequestJobRepository>().Count();
             }
 
             if (countOfRequestJobs < 1)
@@ -67,22 +71,40 @@ namespace HTTPHeaderSurvey
                     continue;
                 }
 
-                using (var unit = new UnitOfWork())
+                using (var unit = IoC.Resolve<IUnitOfWork>())
                 {
                     var headers = new List<ResponseHeader>();
+                    var headersFromResponse = new List<ResponseHeader>();
+                    var addedHeaders = new List<ResponseHeader>();
 
                     foreach (var header in jobResult.Headers)
                     {
                         foreach (var headerValue in header.Value)
                         {
-                            headers.Add(unit.ResponseHeaders.AddIfNotExisting(new ResponseHeader { Key = header.Key, Value = headerValue }));
+                            var tmpHeader = new ResponseHeader { Key = header.Key, Value = headerValue };
+                            headersFromResponse.Add(tmpHeader);
+                            addedHeaders.Add(unit.Repository<IResponseHeaderRepository>().AddIfNotExisting(tmpHeader));
                         }
                     }
 
-                    unit.ResponseMessages.Add(
+                    addedHeaders = addedHeaders.Where(h => h != null).ToList();
+                    headersFromResponse.RemoveAll(header => addedHeaders.Contains(header));
+
+                    foreach (var responseHeader in headersFromResponse)
+                    {
+                        if (responseHeader != null)
+                        {
+                            headers.Add(unit.Repository<IResponseHeaderRepository>().GetByHeaderAndValue(responseHeader.Key, responseHeader.Value));
+                        }
+                    }
+
+                    headers.AddRange(addedHeaders);
+                    headers = addedHeaders.Where(h => h != null).ToList();
+
+                    var message = unit.Repository<IResponseMessageRepository>().Add(
                         new ResponseMessage
                             {
-                                RequestJob = unit.RequestJobs.Get(job.Id),
+                                RequestJob = unit.Repository<IRequestJobRepository>().Get(job.Id),
                                 ResponseHeaders = headers,
                                 ProtocolVersion = jobResult.Version.ToString(),
                                 StatusCode = (int)jobResult.StatusCode
@@ -108,9 +130,9 @@ namespace HTTPHeaderSurvey
 
         private static void AddDefaultRequestHeaders()
         {
-            using (var unit = new UnitOfWork())
+            using (var unit = IoC.Resolve<IUnitOfWork>())
             {
-                unit.RequestHeaders.AddIfNotExisting(
+                unit.Repository<IRequestHeaderRepository>().AddIfNotExisting(
                     new RequestHeader
                         {
                             Key = "User-Agent",
@@ -123,16 +145,17 @@ namespace HTTPHeaderSurvey
         private static void ProcessBatchImport(IEnumerable<RequestJob> batch)
         {
             typeof(Program).Log()?.Debug("Start of a batch worker");
-            using (var unit = new UnitOfWork())
+
+            using (var unit = IoC.Resolve<IUnitOfWork>())
             {
-                var header = unit.RequestHeaders.GetByHeader("User-Agent").First();
+                var header = unit.Repository<IRequestHeaderRepository>().GetByHeader("User-Agent").First();
 
                 foreach (var requestJob in batch)
                 {
                     requestJob.Headers.Add(header);
                 }
 
-                unit.RequestJobs.AddIfNotExisting(batch);
+                unit.Repository<IRequestJobRepository>().AddIfNotExisting(batch);
                 unit.Complete();
             }
 

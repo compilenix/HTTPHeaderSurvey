@@ -58,6 +58,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="DataAccessBootstrapper.cs" />
     <Compile Include="EntityConfigurations\RequestHeaderConfiguration.cs" />
     <Compile Include="DataAccessContext.cs" />
     <Compile Include="EntityConfigurations\ResponseMessageConfiguration.cs" />
@@ -82,11 +83,11 @@
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Repositories\RequestHeaderRepository.cs" />
-    <Compile Include="Repositories\ResponseMessageRepository.cs" />
     <Compile Include="Repositories\ResponseHeaderRepository.cs" />
     <Compile Include="Repositories\RequestJobRepository.cs" />
     <Compile Include="Repositories\Repository.cs" />
     <Compile Include="EntityConfigurations\RequestJobConfiguration.cs" />
+    <Compile Include="Repositories\ResponseMessageRepository.cs" />
     <Compile Include="UnitOfWork.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -105,6 +106,10 @@
     <ProjectReference Include="..\Integration.Domain\Integration.Domain.csproj">
       <Project>{E9ACA8CB-41ED-4168-9742-0471AE8FF6AA}</Project>
       <Name>Integration.Domain</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Integration.Shared\Integration.Shared.csproj">
+      <Project>{FF08798B-A665-4687-92A8-23AB2868C9F0}</Project>
+      <Name>Integration.Shared</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

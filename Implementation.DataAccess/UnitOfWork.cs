@@ -1,35 +1,33 @@
 ﻿using System;
-using Implementation.DataAccess.Repositories;
 using Implementation.Shared;
+using Implementation.Shared.IoC;
 using Integration.DataAccess;
-using Integration.DataAccess.Repositories;
+using Integration.Shared.IoC;
 
 namespace Implementation.DataAccess
 {
     public class UnitOfWork : IUnitOfWork
     {
         internal readonly DataAccessContext Context;
-
-        public IRequestJobRepository RequestJobs { get; }
-        public IRequestHeaderRepository RequestHeaders { get; }
-        public IResponseMessageRepository ResponseMessages { get; }
-        public IResponseHeaderRepository ResponseHeaders { get; }
+        private readonly IIoCScope _scope;
 
         public UnitOfWork()
         {
-            Context = new DataAccessContext();
+            _scope = IoC.CurrentContainer.BeginScope();
+            Context = _scope.Resolve<DataAccessContext>();
             Context.Configuration.AutoDetectChangesEnabled = false;
+        }
 
-            RequestJobs = new RequestJobRepository(Context, scheduleDays: 10);
-            RequestHeaders = new RequestHeaderRepository(Context);
-            ResponseMessages = new ResponseMessageRepository(Context);
-            ResponseHeaders = new ResponseHeaderRepository(Context);
+        public TRepository Repository<TRepository>() where TRepository : class
+        {
+            return _scope.Resolve<TRepository>();
         }
 
         /// <summary>Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.</summary>
         public void Dispose()
         {
             Context?.Dispose();
+            _scope?.Dispose();
         }
 
         public int Complete()

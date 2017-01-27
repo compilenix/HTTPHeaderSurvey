@@ -1,6 +1,8 @@
 using System.Data.Entity;
 using System.Data.Entity.Migrations;
 using Implementation.Shared;
+using Implementation.Shared.IoC;
+using Integration.DataAccess;
 
 namespace Implementation.DataAccess.Migrations
 {
@@ -25,16 +27,23 @@ ALTER TABLE [dbo].[RequestJobs] ADD [UriHash] [nvarchar](64) NOT NULL DEFAULT ''
 CREATE INDEX [IX_Method] ON [dbo].[RequestJobs]([Method]);
 CREATE INDEX [IX_UriHash] ON [dbo].[RequestJobs]([UriHash]);";
 
-            using (var unit = new UnitOfWork())
+            using (var unit = IoC.Resolve<UnitOfWork>())
             {
                 unit.Context.Configuration.ProxyCreationEnabled = false;
                 unit.Context.Configuration.ValidateOnSaveEnabled = false;
 
                 unit.Context.Database.ExecuteSqlCommand(sqlAddColumn);
 
-                foreach (var requestJob in unit.Context.RequestJobs.AsNoTracking())
+                var query = unit.Context.RequestJobs?.AsNoTracking();
+                if (query != null)
                 {
-                    requestJob.UriHash = HashUtils.Hash(requestJob.Uri);
+                    foreach (var requestJob in query)
+                    {
+                        if (requestJob != null)
+                        {
+                            requestJob.UriHash = HashUtils.Hash(requestJob.Uri);
+                        }
+                    }
                 }
 
                 unit.Complete();

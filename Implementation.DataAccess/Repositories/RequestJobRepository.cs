@@ -12,12 +12,12 @@ namespace Implementation.DataAccess.Repositories
     public class RequestJobRepository : Repository<RequestJob>, IRequestJobRepository
     {
         //TODO Where to store / get from, this value?
-        private readonly int _scheduleDays;
+        private TimeSpan _scheduleDays;
         private DataAccessContext DataAccessContext => Context as DataAccessContext;
 
-        public RequestJobRepository(DataAccessContext context, int scheduleDays) : base(context)
+        public RequestJobRepository(DataAccessContext context) : base(context)
         {
-            _scheduleDays = scheduleDays;
+            _scheduleDays = TimeSpan.FromDays(30);
         }
 
         private static IQueryable<RequestJob> RequestJobWithHeadersQueryable(IQueryable<RequestJob> query, bool doInclude)
@@ -32,10 +32,10 @@ namespace Implementation.DataAccess.Repositories
 
         public IEnumerable<RequestJob> GetRequestJobsTodoAndNotScheduled(bool withRequestHeaders = false, int count = int.MaxValue)
         {
-            var compareToDate = DateTime.Now.Subtract(TimeSpan.FromDays(_scheduleDays));
+            var compareToDate = DateTime.Now.Subtract(_scheduleDays);
             return
                 RequestJobWithHeadersQueryable(
-                    Entities?.Where(j => DbFunctions.DiffDays(j.LastCompletedDateTime, compareToDate) > _scheduleDays)
+                    Entities?.Where(j => DbFunctions.DiffSeconds(j.LastCompletedDateTime, compareToDate) > _scheduleDays.TotalSeconds)
                         .Where(j => !j.IsRunOnce)
                         .Where(j => !j.IsCurrentlyScheduled)
                         .Take(count),
