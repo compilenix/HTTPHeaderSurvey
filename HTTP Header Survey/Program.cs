@@ -19,8 +19,9 @@ namespace HTTPHeaderSurvey
         private static void Main(string[] args)
         {
             Bootstrapper.Initialize();
+
             AddDefaultRequestHeaders();
-            ImportRequestJobsIfThereAreNone();
+            ImportRequestJobsIfThereAreNone(@"C:\Temp\top-1m.csv");
             ProcessRequestJobs(GetSomeRequestJobs(10));
         }
 
@@ -32,7 +33,7 @@ namespace HTTPHeaderSurvey
             }
         }
 
-        private static void ImportRequestJobsIfThereAreNone()
+        private static void ImportRequestJobsIfThereAreNone(string fromCsvFile)
         {
             int countOfRequestJobs;
 
@@ -43,7 +44,7 @@ namespace HTTPHeaderSurvey
 
             if (countOfRequestJobs < 1)
             {
-                ImportRequestJobsFromCsv(@"C:\Users\Compilenix\Downloads\top-1m.csv.new.csv");
+                ImportRequestJobsFromCsv(fromCsvFile);
             }
         }
 

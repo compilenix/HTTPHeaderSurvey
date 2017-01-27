@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using Implementation.Shared;
 using Integration.DataAccess.Entitys;
@@ -35,6 +36,15 @@ namespace Implementation.DataAccess.Repositories
         public IEnumerable<ResponseHeader> GetByHeader(string header)
         {
             return Entities?.Where(h => h.Key.ToLower() == header.ToLower()).ToList();
+        }
+
+        /// <summary>
+        /// Ignores Case
+        /// </summary>
+        public ResponseHeader GetByHeaderAndValue(string header, string value)
+        {
+            var hash = HashUtils.Hash(value.ToLower());
+            return Entities?.SingleOrDefault(h => h.Key.ToLower() == header.ToLower() && h.ValueHash == hash);
         }
 
         public override IEnumerable<ResponseHeader> AddRange(IEnumerable<ResponseHeader> headers)

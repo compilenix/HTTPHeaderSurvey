@@ -9,5 +9,6 @@ namespace Integration.DataAccess.Repositories
         IEnumerable<ResponseHeader> AddIfNotExisting(IEnumerable<ResponseHeader> headers);
         bool ContainsResponseHeader(string header, string headerValue);
         IEnumerable<ResponseHeader> GetByHeader(string header);
+        ResponseHeader GetByHeaderAndValue(string header, string value);
     }
 }
