@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using AutoMapper;
 using Integration.DataAccess.Entitys;
-using Integration.Domain;
+using Integration.Domain.DataTransferObjects;
 
 namespace Implementation.Domain
 {

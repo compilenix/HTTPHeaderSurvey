@@ -1,4 +1,4 @@
-﻿namespace Integration.Domain
+﻿namespace Integration.Domain.DataTransferObjects
 {
     public class NewRequestJobDataTransferObject
     {

@@ -7,6 +7,7 @@ using System.Text;
 using Implementation.Shared;
 using Integration.DataAccess.Entitys;
 using Integration.Domain;
+using Integration.Domain.DataTransferObjects;
 
 namespace Implementation.Domain
 {
