@@ -16,7 +16,7 @@ namespace Implementation.Domain
         {
             var container = IoC.CurrentContainer;
 
-            container.RegisterType<IIoCScope, IoCScope>(InstanceLifetimeTypes.Scoped);
+            container.Register<IIoCScope, IoCScope>(InstanceLifetimeTypes.Scoped);
 
             IoC.CurrentContainer = container;
         }
