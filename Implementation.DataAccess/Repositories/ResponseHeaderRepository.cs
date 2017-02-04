@@ -35,7 +35,8 @@ namespace Implementation.DataAccess.Repositories
         /// </summary>
         public IEnumerable<ResponseHeader> GetByHeader(string header)
         {
-            return Entities?.Where(h => h.Key.ToLower() == header.ToLower()).ToList();
+            header = header.ToLower();
+            return Entities?.Where(h => h.Key == header).ToList();
         }
 
         /// <summary>
@@ -44,7 +45,8 @@ namespace Implementation.DataAccess.Repositories
         public ResponseHeader GetByHeaderAndValue(string header, string value)
         {
             var hash = HashUtils.Hash(value.ToLower());
-            return Entities?.SingleOrDefault(h => h.Key.ToLower() == header.ToLower() && h.ValueHash == hash);
+            header = header.ToLower();
+            return Entities?.SingleOrDefault(h => h.Key == header && h.ValueHash == hash);
         }
 
         public override IEnumerable<ResponseHeader> AddRange(IEnumerable<ResponseHeader> headers)
@@ -83,8 +85,13 @@ namespace Implementation.DataAccess.Repositories
         /// </summary>
         public bool ContainsResponseHeader(string header, string headerValue)
         {
-            var headerValueHash = HashUtils.Hash(headerValue.ToLower());
-            return Entities.Any(j => j.Key.ToLower() == header.ToLower() && j.ValueHash == headerValueHash);
+            header = header.ToLower();
+            headerValue = headerValue.ToLower();
+
+            var headerValueHash = HashUtils.Hash(headerValue);
+            var containsHeader = Entities.Local.Any(j => j.Key == header && j.ValueHash == headerValueHash);
+
+            return containsHeader ? containsHeader : Entities.Any(j => j.Key == header && j.ValueHash == headerValueHash);
         }
     }
 }

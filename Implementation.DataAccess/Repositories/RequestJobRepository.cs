@@ -75,7 +75,8 @@ namespace Implementation.DataAccess.Repositories
         public bool ContainsRequestJob(string method, string uri)
         {
             var hash = HashUtils.Hash(uri);
-            return Entities.Any(j => j.Method == method.ToUpper() && j.UriHash == hash);
+            method = method.ToUpper();
+            return Entities.Any(j => j.Method == method && j.UriHash == hash);
         }
 
         public override RequestJob Add(RequestJob requestJob)
@@ -83,7 +84,7 @@ namespace Implementation.DataAccess.Repositories
             requestJob.Method = requestJob.Method.ToUpper();
             requestJob.Uri = requestJob.Uri.ToLower();
             requestJob.UriHash = HashUtils.Hash(requestJob.Uri);
-            requestJob.LastCompletedDateTime = DateTime.Parse("2016-01-01");
+            requestJob.LastTimeProcessed = DateTime.Parse("2016-01-01");
             return base.Add(requestJob);
         }
 

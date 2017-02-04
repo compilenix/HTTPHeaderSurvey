@@ -42,7 +42,8 @@ namespace Implementation.DataAccess.Repositories
         /// </summary>
         public IEnumerable<RequestHeader> GetByHeader(string header)
         {
-            return Entities?.Where(h => h.Key.ToLower() == header.ToLower()).ToList();
+            header = header.ToLower();
+            return Entities?.Where(h => h.Key == header).ToList();
         }
 
         /// <summary>
@@ -50,8 +51,11 @@ namespace Implementation.DataAccess.Repositories
         /// </summary>
         public bool ContainsRequestHeader(string header, string headerValue)
         {
-            var headerValueHash = HashUtils.Hash(headerValue.ToLower());
-            return Entities.Any(j => j.Key.ToLower() == header.ToLower() && j.ValueHash == headerValueHash);
+            header = header.ToLower();
+            headerValue = headerValue.ToLower();
+
+            var headerValueHash = HashUtils.Hash(headerValue);
+            return Entities.Any(j => j.Key == header && j.ValueHash == headerValueHash);
         }
 
         /// <summary>
