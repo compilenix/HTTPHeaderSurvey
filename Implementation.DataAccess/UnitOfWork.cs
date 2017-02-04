@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading.Tasks;
 using Implementation.Shared;
 using Implementation.Shared.IoC;
 using Integration.DataAccess;
@@ -8,8 +9,8 @@ namespace Implementation.DataAccess
 {
     public class UnitOfWork : IUnitOfWork
     {
-        internal readonly DataAccessContext Context;
         private readonly IIoCScope _scope;
+        internal readonly DataAccessContext Context;
 
         public UnitOfWork()
         {
@@ -30,18 +31,15 @@ namespace Implementation.DataAccess
             _scope?.Dispose();
         }
 
+        public async Task<int> CompleteAsync()
+        {
+            Context.ChangeTracker.DetectChanges();
+            return await Context.SaveChangesAsync();
+        }
+
         public int Complete()
         {
-            try
-            {
-                Context.ChangeTracker.DetectChanges();
-                return Context.SaveChanges();
-            }
-            catch (Exception exception)
-            {
-                this.Log()?.Error("Error completing unit", exception);
-                throw;
-            }
+            return CompleteAsync().Result;
         }
     }
 }
