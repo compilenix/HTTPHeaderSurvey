@@ -12,6 +12,7 @@ namespace Implementation.DataAccess.Repositories
         where TEntity : BaseEntity<int>
     {
         protected readonly DbContext Context;
+        public IQueryable<TEntity> EntitiesAsQueryable => Entities;
         protected DbSet<TEntity> Entities => Context?.Set<TEntity>();
 
         protected Repository(DbContext context)

@@ -7,6 +7,7 @@ namespace Integration.DataAccess.Repositories
     public interface IRepository<TEntity>
         where TEntity : class
     {
+        IQueryable<TEntity> EntitiesAsQueryable { get; }
         TEntity Add(TEntity entity);
         IEnumerable<TEntity> AddRange(IEnumerable<TEntity> entities);
         IEnumerable<TEntity> Find(Expression<Func<TEntity, bool>> predicate);

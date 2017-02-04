@@ -10,7 +10,6 @@ using Implementation.Shared.IoC;
 using Integration.DataAccess;
 using Integration.DataAccess.Entitys;
 using Integration.DataAccess.Repositories;
-using MoreLinq;
 
 namespace HTTPHeaderSurvey
 {
