@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Data.Entity;
-using Integration.DataAccess.Entitys;
+﻿using Integration.DataAccess.Entitys;
 using Integration.DataAccess.Repositories;
 
 namespace Implementation.DataAccess.Repositories
