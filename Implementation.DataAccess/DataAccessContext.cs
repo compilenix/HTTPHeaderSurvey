@@ -8,7 +8,6 @@ namespace Implementation.DataAccess
 {
     public class DataAccessContext : DbContext
     {
-        private readonly SqlProviderServices _sqlProviderServices;
         public DbSet<RequestJob> RequestJobs { get; set; }
         public DbSet<RequestHeader> RequestHeaders { get; set; }
         public DbSet<ApplicationLog> ApplicationLogs { get; set; }
@@ -17,7 +16,8 @@ namespace Implementation.DataAccess
 
         public DataAccessContext() : base("name=DataAccessContext")
         {
-            _sqlProviderServices = SqlProviderServices.Instance;
+            // ReSharper disable once UnusedVariable
+            var sqlfunctions = typeof(SqlFunctions);
             Configuration.LazyLoadingEnabled = false;
         }
 
