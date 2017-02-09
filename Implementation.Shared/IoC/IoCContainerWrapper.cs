@@ -30,7 +30,7 @@ namespace Implementation.Shared.IoC
         public IIocContainer Register<TFrom, TTo>(InstanceLifetimeTypes lifetime) where TFrom : class where TTo : class, TFrom
         {
             _container.Register<TFrom, TTo>(ConvertLifetimeType(lifetime));
-            _onRegistrationsFinnished += DiagnosticWarningDisposableTransientHandler<TFrom>;
+            _onRegistrationsFinnished += () => DiagnosticWarningDisposableTransientHandler(typeof(TFrom));
             return this;
         }
 
@@ -85,7 +85,7 @@ namespace Implementation.Shared.IoC
         public IIocContainer Register<T>(InstanceLifetimeTypes lifetime) where T : class
         {
             _container.Register<T>(ConvertLifetimeType(lifetime));
-            _onRegistrationsFinnished += DiagnosticWarningDisposableTransientHandler<T>;
+            _onRegistrationsFinnished += () => DiagnosticWarningDisposableTransientHandler(typeof(T));
             return this;
         }
 
@@ -100,6 +100,7 @@ namespace Implementation.Shared.IoC
             foreach (var reg in registrations)
             {
                 _container.Register(reg.Service, reg.Implementation, ConvertLifetimeType(lifetime));
+                _onRegistrationsFinnished += () => DiagnosticWarningDisposableTransientHandler(reg.Service);
             }
         }
 
@@ -118,9 +119,9 @@ namespace Implementation.Shared.IoC
             }
         }
 
-        private void DiagnosticWarningDisposableTransientHandler<T>()
+        private void DiagnosticWarningDisposableTransientHandler(Type type)
         {
-            _container.GetRegistration(typeof(T))
+            _container.GetRegistration(type)
                 .Registration.SuppressDiagnosticWarning(DiagnosticType.DisposableTransientComponent, "Disposal is handled by application code.");
         }
 

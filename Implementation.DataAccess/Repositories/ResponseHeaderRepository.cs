@@ -49,35 +49,12 @@ namespace Implementation.DataAccess.Repositories
             return Entities?.SingleOrDefault(h => h.Key == header && h.ValueHash == hash);
         }
 
-        public override IEnumerable<ResponseHeader> AddRange(IEnumerable<ResponseHeader> headers)
-        {
-            foreach (var header in headers)
-            {
-                yield return Add(header);
-            }
-        }
-
         /// <summary>
         /// If succeded the added object else null.
         /// </summary>
         public ResponseHeader AddIfNotExisting(ResponseHeader header)
         {
             return !ContainsResponseHeader(header.Key, header.Value) ? Add(header) : null;
-        }
-
-        /// <summary>
-        /// If succeded the added object else an empty list.
-        /// </summary>
-        public IEnumerable<ResponseHeader> AddIfNotExisting(IEnumerable<ResponseHeader> headers)
-        {
-            var addedHeaders = new List<ResponseHeader>();
-
-            foreach (var requestHeader in headers)
-            {
-                addedHeaders.Add(AddIfNotExisting(requestHeader));
-            }
-
-            return addedHeaders;
         }
 
         /// <summary>

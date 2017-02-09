@@ -1,6 +1,4 @@
-﻿using System;
-using System.Threading.Tasks;
-using Implementation.Shared;
+﻿using System.Threading.Tasks;
 using Implementation.Shared.IoC;
 using Integration.DataAccess;
 using Integration.Shared.IoC;
@@ -33,8 +31,8 @@ namespace Implementation.DataAccess
 
         public async Task<int> CompleteAsync()
         {
-            Context.ChangeTracker.DetectChanges();
-            return await Context.SaveChangesAsync();
+            Context?.ChangeTracker?.DetectChanges();
+            return await Context?.SaveChangesAsync();
         }
 
         public int Complete()

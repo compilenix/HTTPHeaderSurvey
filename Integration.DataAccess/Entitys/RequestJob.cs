@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace Integration.DataAccess.Entitys
 {
-    public class RequestJob : BaseEntity<int>
+    public class RequestJob : BaseEntity
     {
         public string Method { get; set; }
 

@@ -29,26 +29,12 @@ namespace Implementation.DataAccess.Repositories
             return base.Add(header);
         }
 
-        public override IEnumerable<RequestHeader> AddRange(IEnumerable<RequestHeader> requestHeaders)
-        {
-            foreach (var header in requestHeaders)
-            {
-                yield return Add(header);
-            }
-        }
-
-        /// <summary>
-        /// Ignores Case
-        /// </summary>
         public IEnumerable<RequestHeader> GetByHeader(string header)
         {
             header = header.ToLower();
             return Entities?.Where(h => h.Key == header).ToList();
         }
 
-        /// <summary>
-        /// Ignores Case.
-        /// </summary>
         public bool ContainsRequestHeader(string header, string headerValue)
         {
             header = header.ToLower();
@@ -58,27 +44,9 @@ namespace Implementation.DataAccess.Repositories
             return Entities.Any(j => j.Key == header && j.ValueHash == headerValueHash);
         }
 
-        /// <summary>
-        /// If succeded the added object else null.
-        /// </summary>
         public RequestHeader AddIfNotExisting(RequestHeader header)
         {
             return !ContainsRequestHeader(header.Key, header.Value) ? Add(header) : null;
-        }
-
-        /// <summary>
-        /// If succeded the added object else an empty list.
-        /// </summary>
-        public IEnumerable<RequestHeader> AddIfNotExisting(IEnumerable<RequestHeader> headers)
-        {
-            var addedHeaders = new List<RequestHeader>();
-
-            foreach (var requestHeader in headers)
-            {
-                addedHeaders.Add(AddIfNotExisting(requestHeader));
-            }
-
-            return addedHeaders;
         }
     }
 }

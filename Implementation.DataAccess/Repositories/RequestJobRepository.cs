@@ -4,6 +4,8 @@ using System.Data.Entity;
 using System.Linq;
 using System.Linq.Expressions;
 using Implementation.Shared;
+using Implementation.Shared.IoC;
+using Integration.DataAccess;
 using Integration.DataAccess.Entitys;
 using Integration.DataAccess.Repositories;
 
@@ -30,16 +32,51 @@ namespace Implementation.DataAccess.Repositories
             return RequestJobWithHeadersQueryable(Entities?.Where(j => j.IsCurrentlyScheduled), withRequestHeaders)?.ToList();
         }
 
-        public IEnumerable<RequestJob> GetRequestJobsTodoAndNotScheduled(bool withRequestHeaders = false, int count = int.MaxValue)
+        public IEnumerable<RequestJob> GetRequestJobsTodoAndNotScheduled(bool withRequestHeaders = false,
+                                                                         int count = int.MaxValue,
+                                                                         bool checkout = false)
         {
-            var compareToDate = DateTime.Now.Subtract(_scheduleDays);
-            return
-                RequestJobWithHeadersQueryable(
-                    Entities?.Where(j => DbFunctions.DiffSeconds(j.LastCompletedDateTime, compareToDate) > _scheduleDays.TotalSeconds)
-                        .Where(j => !j.IsRunOnce)
-                        .Where(j => !j.IsCurrentlyScheduled)
-                        .Take(count),
-                    withRequestHeaders)?.ToList();
+            int itemsGot;
+
+            do
+            {
+                itemsGot = 0;
+                var compareToDate = DateTime.Now.Subtract(_scheduleDays);
+                var batchSize = count < 1000 ? count : 1000;
+                var someJobs =
+                    RequestJobWithHeadersQueryable(
+                        Entities?.Where(j => DbFunctions.DiffSeconds(j.LastTimeProcessed, compareToDate) > _scheduleDays.TotalSeconds)
+                            .Where(j => !j.IsRunOnce)
+                            .Where(j => !j.IsCurrentlyScheduled)
+                            .Take(batchSize),
+                        withRequestHeaders)?.ToList() ?? new List<RequestJob>();
+
+                var errorJobs = new List<RequestJob>();
+                if (checkout)
+                {
+                    errorJobs = Checkout(someJobs);
+                }
+
+                foreach (var requestJob in errorJobs)
+                {
+                    someJobs.Remove(requestJob);
+                }
+
+                if (errorJobs.Count > 0)
+                {
+                }
+
+                foreach (var job in someJobs)
+                {
+                    itemsGot++;
+                    yield return job;
+                }
+
+                GarbageCollectionUtils.CollectNow();
+
+                count -= itemsGot;
+            }
+            while (count > 0 && itemsGot > 0);
         }
 
         public IEnumerable<RequestJob> GetRequestJobsRunOnce(bool withRequestHeaders = false)
@@ -88,25 +125,43 @@ namespace Implementation.DataAccess.Repositories
             return base.Add(requestJob);
         }
 
-        public override IEnumerable<RequestJob> AddRange(IEnumerable<RequestJob> requestJobs)
-        {
-            foreach (var requestJob in requestJobs)
-            {
-                yield return Add(requestJob);
-            }
-        }
-
         public RequestJob AddIfNotExisting(RequestJob job)
         {
             return !ContainsRequestJob(job.Method, job.Uri) ? Add(job) : null;
         }
 
-        public void AddIfNotExisting(IEnumerable<RequestJob> jobs)
+        public int GetRequestJobsTodoAndNotScheduledCount()
         {
-            foreach (var requestJob in jobs)
+            var compareToDate = DateTime.Now.Subtract(_scheduleDays);
+            return
+                Entities?.Where(j => DbFunctions.DiffSeconds(j.LastTimeProcessed, compareToDate) > _scheduleDays.TotalSeconds)
+                    .Where(j => !j.IsRunOnce).Count(j => !j.IsCurrentlyScheduled) ?? 0;
+        }
+
+        private List<RequestJob> Checkout(IEnumerable<RequestJob> someJobs)
+        {
+            var errorJobs = new List<RequestJob>();
+
+            // TODO ...
+            foreach (var job in someJobs)
             {
-                AddIfNotExisting(requestJob);
+                try
+                {
+                    using (var unit = IoC.Resolve<IUnitOfWork>())
+                    {
+                        var requestJob = unit.Repository<IRequestJobRepository>().Get(job?.Id);
+                        requestJob.IsCurrentlyScheduled = true;
+                        unit.Complete();
+                    }
+                }
+                catch (Exception exception)
+                {
+                    this.Log()?.Error($"Error setting job IsCurrentlyScheduled of job {job?.Id} ({job?.Uri})", exception);
+                    errorJobs.Add(job);
+                }
             }
+
+            return errorJobs;
         }
     }
 }

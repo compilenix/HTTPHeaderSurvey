@@ -16,6 +16,13 @@ namespace Implementation.Domain
             return Mapper.Map<TTarget>(source);
         }
 
+        public static TTarget Map<TTarget>(object source, object target) where TTarget : class
+        {
+            InitializeMapper();
+
+            return Mapper.Map(source, target) as TTarget;
+        }
+
         public static IEnumerable<TTarget> MapRange<TTarget>(IEnumerable<object> sources)
         {
             InitializeMapper();
@@ -34,7 +41,11 @@ namespace Implementation.Domain
         {
             if (!IsMappingInitialized)
             {
-                Mapper.Initialize(expression => { expression.CreateMap<RequestJob, NewRequestJobDataTransferObject>().ReverseMap(); });
+                Mapper.Initialize(expression => { expression?.CreateMap<RequestJob, NewRequestJobDto>()?.ReverseMap(); });
+                Mapper.Initialize(expression => { expression?.CreateMap<RequestJob, RequestJob>()?.ReverseMap(); });
+                Mapper.Initialize(expression => { expression?.CreateMap<RequestHeader, RequestHeader>()?.ReverseMap(); });
+                Mapper.Initialize(expression => { expression?.CreateMap<ResponseMessage, ResponseMessage>()?.ReverseMap(); });
+                Mapper.Initialize(expression => { expression?.CreateMap<ResponseHeader, ResponseHeader>()?.ReverseMap(); });
             }
 
             IsMappingInitialized = true;

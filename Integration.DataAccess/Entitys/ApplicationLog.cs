@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Integration.DataAccess.Entitys
 {
-    public class ApplicationLog : BaseEntity<int>
+    public class ApplicationLog : BaseEntity
     {
         [Key]
         [Index]

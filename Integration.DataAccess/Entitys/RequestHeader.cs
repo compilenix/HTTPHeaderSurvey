@@ -2,7 +2,7 @@
 
 namespace Integration.DataAccess.Entitys
 {
-    public class RequestHeader : BaseEntity<int>
+    public class RequestHeader : BaseEntity
     {
         public string Key { get; set; }
 

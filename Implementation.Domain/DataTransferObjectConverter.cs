@@ -4,6 +4,7 @@ using System.Data;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Threading.Tasks;
 using Implementation.Shared;
 using Integration.DataAccess.Entitys;
 using Integration.Domain;
@@ -51,22 +52,24 @@ namespace Implementation.Domain
 
         public IEnumerable<RequestJob> RequestJobsFromCsv(string filePath, char seperator)
         {
-            var jobs = new List<NewRequestJobDataTransferObject>();
+            var jobs = new List<NewRequestJobDto>();
 
-            foreach (DataRow dataTableRow in ConvertCsvToDataTable(filePath, seperator).Rows)
-            {
-                if (dataTableRow.ItemArray.Length == typeof(NewRequestJobDataTransferObject).GetProperties().Length)
-                {
-                    jobs.Add(
-                        new NewRequestJobDataTransferObject
+            Parallel.ForEach(
+                ConvertCsvToDataTable(filePath, seperator).Rows.AsQueryable() as IEnumerable<DataRow>,
+                new ParallelOptions { MaxDegreeOfParallelism = Environment.ProcessorCount },
+                (row) => {
+                    if (row.ItemArray.Length == typeof(NewRequestJobDto).GetProperties().Length)
+                    {
+                        jobs.Add(
+                            new NewRequestJobDto
                             {
-                                Method = dataTableRow.ItemArray[0]?.ToString(),
-                                HttpVersion = dataTableRow.ItemArray[1]?.ToString(),
-                                IsRunOnce = bool.Parse(dataTableRow.ItemArray[2]?.ToString()),
-                                Uri = dataTableRow.ItemArray[3]?.ToString()
+                                Method = row.ItemArray[0]?.ToString(),
+                                HttpVersion = row.ItemArray[1]?.ToString(),
+                                IsRunOnce = bool.Parse(row.ItemArray[2]?.ToString()),
+                                Uri = row.ItemArray[3]?.ToString()
                             });
-                }
-            }
+                    }
+                });
 
             return MappingUtils.MapRange<RequestJob>(jobs);
         }

@@ -2,7 +2,7 @@
 
 namespace Integration.DataAccess.Entitys
 {
-    public class ResponseMessage : BaseEntity<int>
+    public class ResponseMessage : BaseEntity
     {
         public int StatusCode { get; set; }
 

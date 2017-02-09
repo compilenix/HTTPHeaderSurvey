@@ -46,16 +46,7 @@
       <Private>True</Private>
     </Reference>
     <Reference Include="System" />
-    <Reference Include="System.ComponentModel.DataAnnotations" />
     <Reference Include="System.Core" />
-    <Reference Include="System.Xml.Linq" />
-    <Reference Include="System.Data.DataSetExtensions" />
-    <Reference Include="Microsoft.CSharp" />
-    <Reference Include="System.Data">
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="System.Net.Http" />
-    <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="DataAccessBootstrapper.cs" />
@@ -106,10 +97,6 @@
     <ProjectReference Include="..\Integration.DataAccess\Integration.DataAccess.csproj">
       <Project>{e22a9b2d-cd61-49b9-b8ba-361b0cff2a0a}</Project>
       <Name>Integration.DataAccess</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\Integration.Domain\Integration.Domain.csproj">
-      <Project>{E9ACA8CB-41ED-4168-9742-0471AE8FF6AA}</Project>
-      <Name>Integration.Domain</Name>
     </ProjectReference>
     <ProjectReference Include="..\Integration.Shared\Integration.Shared.csproj">
       <Project>{FF08798B-A665-4687-92A8-23AB2868C9F0}</Project>

@@ -2,9 +2,9 @@
 
 namespace Integration.DataAccess.Entitys
 {
-    public class BaseEntity<T>
+    public class BaseEntity
     {
-        public T Id { get; set; }
+        public int Id { get; set; }
         public DateTime DateCreated { get; set; }
     }
 }

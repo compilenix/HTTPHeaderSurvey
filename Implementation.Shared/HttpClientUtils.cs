@@ -32,26 +32,20 @@ namespace Implementation.Shared
             return true;
         }
 
-        public static async Task<HttpResponseMessage> MakeSimpleWebRequest(HttpClientRequestOptions options)
+        public static async Task<HttpResponseMessage> InvokeWebRequestAsync(HttpClientRequestOptions options)
         {
             if (options == null)
             {
                 throw new ArgumentNullException(nameof(options));
             }
-
             using (var requestHandler = NewWebRequestHandler())
             using (var httpClient = NewHttpClient(requestHandler))
             {
                 var clientRequest =
-                    NewHttpClientRequest(
+                    await NewHttpClientRequest(
                         NewHttpRequestMessage(options.Method, options.Uri, options.Headers, new Version(options.HttpVersion)),
                         httpClient, options.CancellationToken);
-                if (clientRequest == null)
-                {
-                    throw new ArgumentNullException();
-                }
-
-                return await clientRequest;
+                return clientRequest;
             }
         }
 
@@ -78,7 +72,7 @@ namespace Implementation.Shared
             return request;
         }
 
-        public static Task<HttpResponseMessage> NewHttpClientRequest(HttpRequestMessage requestMessage, HttpClient httpClient, CancellationToken cancellationToken)
+        public static async Task<HttpResponseMessage> NewHttpClientRequest(HttpRequestMessage requestMessage, HttpClient httpClient, CancellationToken cancellationToken)
         {
             if (httpClient == null)
             {
@@ -89,8 +83,7 @@ namespace Implementation.Shared
             {
                 throw new ArgumentNullException(nameof(requestMessage));
             }
-
-            return httpClient.SendAsync(requestMessage, cancellationToken);
+            return await httpClient.SendAsync(requestMessage, cancellationToken).ConfigureAwait(continueOnCapturedContext: false);
         }
 
         /// <summary>

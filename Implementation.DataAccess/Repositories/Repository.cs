@@ -9,7 +9,7 @@ using Integration.DataAccess.Repositories;
 namespace Implementation.DataAccess.Repositories
 {
     public class Repository<TEntity> : IRepository<TEntity>
-        where TEntity : BaseEntity<int>
+        where TEntity : BaseEntity
     {
         protected readonly DbContext Context;
         public IQueryable<TEntity> EntitiesAsQueryable => Entities;
@@ -41,24 +41,9 @@ namespace Implementation.DataAccess.Repositories
             return Entities?.Add(entity);
         }
 
-        public virtual IEnumerable<TEntity> AddRange(IEnumerable<TEntity> entities)
-        {
-            foreach (var entity in entities)
-            {
-                entity.DateCreated = DateTime.Now;
-            }
-
-            return Entities?.AddRange(entities);
-        }
-
         public void Remove(TEntity entity)
         {
             Entities?.Remove(entity);
-        }
-
-        public void RemoveRange(IEnumerable<TEntity> entities)
-        {
-            Entities?.RemoveRange(entities);
         }
 
         public TEntity Get<TTarget>(TTarget id)
@@ -69,6 +54,13 @@ namespace Implementation.DataAccess.Repositories
         public int Count()
         {
             return Entities?.Count() ?? 0;
+        }
+
+        public TEntity Update(TEntity entity)
+        {
+            Entities.Attach(entity);
+            Context.Entry(entity).State = EntityState.Modified;
+            return entity;
         }
     }
 }
