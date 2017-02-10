@@ -1,7 +1,7 @@
-﻿using System.Data.Entity;
+﻿using System;
+using System.Data.Entity;
 using System.Data.Entity.ModelConfiguration.Conventions;
 using System.Data.Entity.SqlServer;
-using Implementation.DataAccess.EntityConfigurations;
 using Integration.DataAccess.Entitys;
 
 namespace Implementation.DataAccess
@@ -23,15 +23,21 @@ namespace Implementation.DataAccess
 
         protected override void OnModelCreating(DbModelBuilder modelBuilder)
         {
+            if (modelBuilder == null)
+            {
+                throw new ArgumentNullException(nameof(modelBuilder));
+            }
+
+            if (modelBuilder.Configurations == null || modelBuilder.Conventions == null)
+            {
+                throw new ArgumentNullException(nameof(modelBuilder));
+            }
+
             modelBuilder.Conventions.Remove<ManyToManyCascadeDeleteConvention>();
             modelBuilder.Conventions.Remove<OneToManyCascadeDeleteConvention>();
+            modelBuilder.Conventions.Add<ForeignKeyNamingConvention>();
 
-            modelBuilder.Conventions.Add(new ForeignKeyNamingConvention());
-
-            modelBuilder.Configurations.Add(new RequestJobConfiguration());
-            modelBuilder.Configurations.Add(new RequestHeaderConfiguration());
-            modelBuilder.Configurations.Add(new ResponseMessageConfiguration());
-            modelBuilder.Configurations.Add(new ResponseHeaderConfiguration());
+            modelBuilder.Configurations?.AddFromAssembly(typeof(DataAccessContext).Assembly);
 
             base.OnModelCreating(modelBuilder);
         }
