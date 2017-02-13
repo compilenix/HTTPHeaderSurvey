@@ -46,10 +46,12 @@
       <Private>True</Private>
     </Reference>
     <Reference Include="System" />
+    <Reference Include="System.ComponentModel.DataAnnotations" />
     <Reference Include="System.Core" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="DataAccessBootstrapper.cs" />
+    <Compile Include="EntityConfigurations\ApplicationLogConfiguration.cs" />
     <Compile Include="EntityConfigurations\RequestHeaderConfiguration.cs" />
     <Compile Include="DataAccessContext.cs" />
     <Compile Include="EntityConfigurations\ResponseMessageConfiguration.cs" />
