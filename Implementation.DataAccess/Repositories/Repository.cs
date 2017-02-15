@@ -1,10 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data.Entity;
-using System.Data.Entity.Migrations;
 using System.Linq;
 using System.Linq.Expressions;
-using Implementation.DataAccess.Migrations;
 using Integration.DataAccess.Entitys;
 using Integration.DataAccess.Repositories;
 
@@ -19,7 +17,6 @@ namespace Implementation.DataAccess.Repositories
 
         protected Repository(DbContext context)
         {
-            new DbMigrator(new Configuration()).Update();
             Context = context;
         }
 

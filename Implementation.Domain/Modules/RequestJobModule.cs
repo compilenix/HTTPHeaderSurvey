@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
+using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Threading.Tasks.Dataflow;
@@ -16,10 +17,11 @@ namespace Implementation.Domain.Modules
 {
     public class RequestJobModule : BaseModule<IRequestJobRepository, RequestJob>, IRequestJobModule
     {
-        private TransformBlock<RequestJob, RequestJob> _processJobBlock;
+        private BufferBlock<RequestJob> _inputBufferBlock;
+        private int _itemsGot;
         private ActionBlock<RequestJob> _jobCompletedBlock;
         private IEnumerable<RequestJob> _jobs;
-        private int _itemsGot;
+        private List<TransformBlock<RequestJob, RequestJob>> _processJobBlocks;
 
         public RequestJobModule(IUnitOfWork unitOfWork) : base(unitOfWork)
         {
@@ -50,9 +52,9 @@ namespace Implementation.Domain.Modules
             await importBlock.Completion;
         }
 
-        public async Task ProcessPendingJobs(int countOfJobsToProcess, int maxDegreeOfParallelism)
+        public async Task ProcessPendingJobs(int countOfJobsToProcess)
         {
-            // TODO cleanup and creating multiple dataflow blocks which get's fed by a bufferblock
+            // TODO Remove temporary task
             var task = new Task(
                 () =>
                     {
@@ -60,7 +62,22 @@ namespace Implementation.Domain.Modules
                         {
                             try
                             {
-                                Console.WriteLine($"_processJobBlock.InputCount: {_processJobBlock?.InputCount}");
+                                var processJobBlocksInputCount = string.Empty;
+                                try
+                                {
+                                    var stringBuilder = new StringBuilder();
+                                    foreach (var jobBlock in _processJobBlocks)
+                                    {
+                                        stringBuilder.Append(jobBlock.InputCount + ", ");
+                                    }
+                                    processJobBlocksInputCount = stringBuilder.ToString(0, stringBuilder.Length - 2);
+                                }
+                                catch (Exception exception)
+                                {
+                                    // ignored
+                                }
+
+                                Console.WriteLine($"_processJobBlocks.InputCount: {processJobBlocksInputCount}");
                                 Console.WriteLine($"_jobCompletedBlock.InputCount: {_jobCompletedBlock?.InputCount}");
                                 Console.WriteLine($"_jobs.Count remaining: {1000 - _itemsGot}");
                             }
@@ -68,32 +85,43 @@ namespace Implementation.Domain.Modules
                             {
                                 // ignored
                             }
-                            Thread.Sleep(100);
+                            Thread.Sleep(1000);
                         }
                     });
-            var blockOptions = new ExecutionDataflowBlockOptions
-                {
-                    MaxDegreeOfParallelism = maxDegreeOfParallelism,
-                    BoundedCapacity = maxDegreeOfParallelism * 2
-            };
+
+            var parallelism = Environment.ProcessorCount * 2;
+            var blockOptions = new ExecutionDataflowBlockOptions { MaxDegreeOfParallelism = parallelism, BoundedCapacity = parallelism };
+
+            _inputBufferBlock = new BufferBlock<RequestJob>(new DataflowBlockOptions { BoundedCapacity = (parallelism * parallelism) << 2 });
+            _processJobBlocks = new List<TransformBlock<RequestJob, RequestJob>>();
+            for (var i = 0; i < Environment.ProcessorCount; i++)
+            {
+                _processJobBlocks.Add(new TransformBlock<RequestJob, RequestJob>(job => ProcessRequestJob(job), blockOptions));
+            }
             _jobCompletedBlock = new ActionBlock<RequestJob>(CompleteRequestJob, blockOptions);
-            _processJobBlock = new TransformBlock<RequestJob, RequestJob>(job => ProcessRequestJob(job), blockOptions);
-//            var getJobBlock = new BufferBlock<RequestJob>(new DataflowBlockOptions { BoundedCapacity = maxDegreeOfParallelism });
 
-//            getJobBlock.LinkTo(processJobBlock);
-            _processJobBlock.LinkTo(_jobCompletedBlock);
+            foreach (var jobBlock in _processJobBlocks)
+            {
+                _inputBufferBlock.LinkTo(jobBlock);
+                jobBlock.LinkTo(_jobCompletedBlock);
 
-//            getJobBlock.Completion.ContinueWith(t => { processJobBlock.Complete(); });
-            _processJobBlock.Completion.ContinueWith(t => { _jobCompletedBlock.Complete(); });
+                _inputBufferBlock.Completion.ContinueWith(t => { jobBlock.Complete(); });
+                jobBlock.Completion.ContinueWith(t => { _jobCompletedBlock.Complete(); });
+            }
 
+            // TODO Remove temporary task
             task.Start();
 
-            await FillConsumer(countOfJobsToProcess, _processJobBlock);
+            await FillConsumer(countOfJobsToProcess, _inputBufferBlock);
 
-//            await getJobBlock.Completion;
-            await _processJobBlock.Completion;
+            await _inputBufferBlock.Completion;
+            foreach (var jobBlock in _processJobBlocks)
+            {
+                await jobBlock.Completion;
+            }
             await _jobCompletedBlock.Completion;
 
+            // TODO Remove temporary task
             task.Dispose();
         }
 
@@ -129,35 +157,35 @@ namespace Implementation.Domain.Modules
             }
         }
 
-        private async Task FillConsumer(int countOfJobsToProcess, ITargetBlock<RequestJob> processJobBlock)
+        private async Task FillConsumer(int countOfJobsToProcess, ITargetBlock<RequestJob> targetBlock)
         {
-            using (var unit = IoC.Resolve<IUnitOfWork>())
+            do
             {
-                var repo = unit.Repository<IRequestJobRepository>();
-
-                do
+                using (var unit = IoC.Resolve<IUnitOfWork>())
                 {
+                    var repo = unit.Repository<IRequestJobRepository>();
+
                     _itemsGot = 0;
                     var batchSize = countOfJobsToProcess < 1000 ? countOfJobsToProcess : 1000;
                     _jobs = repo.GetRequestJobsTodoAndNotScheduled(withRequestHeaders: true, count: batchSize, checkout: true);
 
                     foreach (var job in _jobs)
                     {
-                        if ((processJobBlock.Completion?.IsCanceled ?? true) || processJobBlock.Completion.IsFaulted)
+                        if ((targetBlock.Completion?.IsCanceled ?? true) || targetBlock.Completion.IsFaulted)
                         {
                             break;
                         }
 
                         _itemsGot++;
-                        await processJobBlock.SendAsync(job);
+                        await targetBlock.SendAsync(job);
                     }
 
                     countOfJobsToProcess -= _itemsGot;
                 }
-                while (countOfJobsToProcess > 0 && _itemsGot > 0);
             }
+            while (countOfJobsToProcess > 0 && _itemsGot > 0);
 
-            processJobBlock.Complete();
+            targetBlock.Complete();
         }
 
         private IEnumerable<RequestHeader> GetDefaultRequestHeaders()
@@ -256,12 +284,12 @@ namespace Implementation.Domain.Modules
 
                     try
                     {
+                        // TODO Read header as stream
                         jobResult = await HttpClientUtils.InvokeWebRequestAsync(httpClientOptions);
                     }
                     catch (Exception exception)
                     {
                         if (exception.GetAllMessages().Any(m => m.Contains("The remote name could not be resolved"))
-                            || exception.GetAllMessages().Any(m => m.Contains("A task was canceled"))
                             || exception.GetAllMessages()
                                 .Any(
                                     m =>
@@ -273,7 +301,7 @@ namespace Implementation.Domain.Modules
                             || exception.GetAllMessages().Any(m => m.Contains("The connection was closed unexpectedly"))
                             || exception.GetAllMessages().Any(m => m.Contains("Unable to read data from the transport connection")))
                         {
-                            this.Log()?.Error($"Error on: {requestJob.Uri}");
+                            this.Log()?.Error($"Error on: {requestJob.Uri}", exception);
                             return requestJob;
                         }
 

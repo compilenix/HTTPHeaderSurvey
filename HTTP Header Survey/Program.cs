@@ -17,15 +17,14 @@ namespace HTTPHeaderSurvey
             AddDefaultRequestHeaders();
             ImportRequestJobsIfThereAreNone(@"C:\Temp\top-1m.csv").Wait();
             HttpClientUtils.DefaultTimeout = TimeSpan.FromSeconds(30);
-            var maxDegreeOfParallelism = 100;
-            ProcessSomeJobs(int.MaxValue, maxDegreeOfParallelism).Wait();
+            ProcessSomeJobs(int.MaxValue).Wait();
         }
 
-        private static async Task ProcessSomeJobs(int count, int maxDegreeOfParallelism)
+        private static async Task ProcessSomeJobs(int count)
         {
             using (var requestJobModule = IoC.Resolve<IRequestJobModule>())
             {
-                await requestJobModule.ProcessPendingJobs(count, maxDegreeOfParallelism);
+                await requestJobModule.ProcessPendingJobs(count);
             }
         }
 
