@@ -10,6 +10,7 @@ namespace Implementation.Domain
         public static void Initialize()
         {
             DataAccessBootstrapper.Initialize();
+            MappingUtils.InitializeMapper();
             RegisterDependencies();
         }
 
