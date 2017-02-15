@@ -43,6 +43,7 @@ namespace Implementation.DataAccess.Repositories
                 itemsGot = 0;
                 var compareToDate = DateTime.Now.Subtract(_scheduleDays);
                 var batchSize = count < 1000 ? count : 1000;
+                // TODO include runonce and not processed jet
                 var someJobs =
                     RequestJobWithHeadersQueryable(
                         Entities?.Where(j => DbFunctions.DiffSeconds(j.LastTimeProcessed, compareToDate) > _scheduleDays.TotalSeconds)
