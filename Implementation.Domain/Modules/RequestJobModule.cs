@@ -34,22 +34,14 @@ namespace Implementation.Domain.Modules
 
         public async Task ImportFromCsv(string filePath, IEnumerable<RequestHeader> requestHeaders, char delimiter = ',')
         {
-            var importBlock = new ActionBlock<RequestJob>(
-                job => ProcessBatchImport(job, requestHeaders),
-                new ExecutionDataflowBlockOptions
-                    {
-                        BoundedCapacity = Environment.ProcessorCount * 2,
-                        MaxDegreeOfParallelism = Environment.ProcessorCount
-                    });
-            var jobsFromCsv = new DataTransferObjectConverter().RequestJobsFromCsv(filePath, delimiter);
+            var jobsFromCsv = await new DataTransferObjectConverter().RequestJobsFromCsv(filePath, delimiter);
 
-            foreach (var job in jobsFromCsv)
-            {
-                await importBlock.SendAsync(job);
-            }
+            Parallel.ForEach(
+                jobsFromCsv,
+                new ParallelOptions { MaxDegreeOfParallelism = Environment.ProcessorCount * 2 },
+                async job => { await ProcessBatchImport(job, requestHeaders); });
 
-            importBlock.Complete();
-            await importBlock.Completion;
+            GarbageCollectionUtils.CollectNow();
         }
 
         public async Task ProcessPendingJobs(int countOfJobsToProcess)
@@ -115,10 +107,8 @@ namespace Implementation.Domain.Modules
             await FillConsumer(countOfJobsToProcess, _inputBufferBlock);
 
             await _inputBufferBlock.Completion;
-            foreach (var jobBlock in _processJobBlocks)
-            {
-                await jobBlock.Completion;
-            }
+            var processJobBlockTasks = _processJobBlocks.Select(x => x.Completion);
+            Task.WaitAll(processJobBlockTasks.ToArray());
             await _jobCompletedBlock.Completion;
 
             // TODO Remove temporary task
@@ -289,21 +279,22 @@ namespace Implementation.Domain.Modules
                     }
                     catch (Exception exception)
                     {
-                        if (exception.GetAllMessages().Any(m => m.Contains("The remote name could not be resolved"))
-                            || exception.GetAllMessages()
-                                .Any(
-                                    m =>
-                                        m.Contains(
-                                            "A connection attempt failed because the connected party did not properly respond after a period of time"))
-                            || exception.GetAllMessages()
-                                .Any(m => m.Contains("No connection could be made because the target machine actively refused"))
-                            || exception.GetAllMessages().Any(m => m.Contains("was forcibly closed by the remote host"))
-                            || exception.GetAllMessages().Any(m => m.Contains("The connection was closed unexpectedly"))
-                            || exception.GetAllMessages().Any(m => m.Contains("Unable to read data from the transport connection")))
-                        {
-                            this.Log()?.Error($"Error on: {requestJob.Uri}", exception);
-                            return requestJob;
-                        }
+                        // TODO extend response message to include reference of exception
+                        //if (exception.GetAllMessages().Any(m => m.Contains("The remote name could not be resolved"))
+                        //    || exception.GetAllMessages()
+                        //        .Any(
+                        //            m =>
+                        //                m.Contains(
+                        //                    "A connection attempt failed because the connected party did not properly respond after a period of time"))
+                        //    || exception.GetAllMessages()
+                        //        .Any(m => m.Contains("No connection could be made because the target machine actively refused"))
+                        //    || exception.GetAllMessages().Any(m => m.Contains("was forcibly closed by the remote host"))
+                        //    || exception.GetAllMessages().Any(m => m.Contains("The connection was closed unexpectedly"))
+                        //    || exception.GetAllMessages().Any(m => m.Contains("Unable to read data from the transport connection")))
+                        //{
+                        //    this.Log()?.Error($"Error on: {requestJob.Uri}", exception);
+                        //    return requestJob;
+                        //}
 
                         this.Log()?.Error($"Error on: {requestJob.Uri}", exception);
                         return requestJob;
