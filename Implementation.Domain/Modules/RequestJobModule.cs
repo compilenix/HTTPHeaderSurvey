@@ -269,8 +269,10 @@ namespace Implementation.Domain.Modules
                             HttpVersion = requestJob.HttpVersion,
                             Method = requestJob.Method,
                             Uri = new Uri(requestJob.Uri),
-                            CancellationToken = new CancellationTokenSource(TimeSpan.FromSeconds(30)).Token
+                            HeadersOnly = true,
+                            CancellationToken = new CancellationTokenSource(TimeSpan.FromSeconds(60)).Token
                         };
+                    HttpClientUtils.DefaultTimeout = TimeSpan.FromSeconds(60);
 
                     try
                     {
