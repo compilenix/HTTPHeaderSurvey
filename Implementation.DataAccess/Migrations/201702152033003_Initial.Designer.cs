@@ -7,13 +7,13 @@ namespace Implementation.DataAccess.Migrations
     using System.Resources;
     
     [GeneratedCode("EntityFramework.Migrations", "6.1.3-40302")]
-    public sealed partial class Add_ResponseMessage : IMigrationMetadata
+    public sealed partial class Initial : IMigrationMetadata
     {
-        private readonly ResourceManager Resources = new ResourceManager(typeof(Add_ResponseMessage));
+        private readonly ResourceManager Resources = new ResourceManager(typeof(Initial));
         
         string IMigrationMetadata.Id
         {
-            get { return "201701092122433_Add_ResponseMessage"; }
+            get { return "201702152033003_Initial"; }
         }
         
         string IMigrationMetadata.Source

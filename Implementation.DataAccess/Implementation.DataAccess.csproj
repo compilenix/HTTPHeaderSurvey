@@ -57,25 +57,9 @@
     <Compile Include="EntityConfigurations\ResponseMessageConfiguration.cs" />
     <Compile Include="EntityConfigurations\ResponseHeaderConfiguration.cs" />
     <Compile Include="ForeignKeyNamingConvention.cs" />
-    <Compile Include="Migrations\201612280334025_Initial.cs" />
-    <Compile Include="Migrations\201612280334025_Initial.Designer.cs">
-      <DependentUpon>201612280334025_Initial.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201612291911452_AddRequestJobMethodIndexAndUriHashIndex.cs" />
-    <Compile Include="Migrations\201612291911452_AddRequestJobMethodIndexAndUriHashIndex.Designer.cs">
-      <DependentUpon>201612291911452_AddRequestJobMethodIndexAndUriHashIndex.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201701042147030_Change_Column_RequestJob_LastCompletedDateTime_To_NonNullable.cs" />
-    <Compile Include="Migrations\201701042147030_Change_Column_RequestJob_LastCompletedDateTime_To_NonNullable.Designer.cs">
-      <DependentUpon>201701042147030_Change_Column_RequestJob_LastCompletedDateTime_To_NonNullable.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201701092122433_Add_ResponseMessage.cs" />
-    <Compile Include="Migrations\201701092122433_Add_ResponseMessage.Designer.cs">
-      <DependentUpon>201701092122433_Add_ResponseMessage.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201702031926008_Rename_RequestJobCompletedDate.cs" />
-    <Compile Include="Migrations\201702031926008_Rename_RequestJobCompletedDate.Designer.cs">
-      <DependentUpon>201702031926008_Rename_RequestJobCompletedDate.cs</DependentUpon>
+    <Compile Include="Migrations\201702152033003_Initial.cs" />
+    <Compile Include="Migrations\201702152033003_Initial.Designer.cs">
+      <DependentUpon>201702152033003_Initial.cs</DependentUpon>
     </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -106,20 +90,8 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Migrations\201612280334025_Initial.resx">
-      <DependentUpon>201612280334025_Initial.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201612291911452_AddRequestJobMethodIndexAndUriHashIndex.resx">
-      <DependentUpon>201612291911452_AddRequestJobMethodIndexAndUriHashIndex.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201701042147030_Change_Column_RequestJob_LastCompletedDateTime_To_NonNullable.resx">
-      <DependentUpon>201701042147030_Change_Column_RequestJob_LastCompletedDateTime_To_NonNullable.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201701092122433_Add_ResponseMessage.resx">
-      <DependentUpon>201701092122433_Add_ResponseMessage.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201702031926008_Rename_RequestJobCompletedDate.resx">
-      <DependentUpon>201702031926008_Rename_RequestJobCompletedDate.cs</DependentUpon>
+    <EmbeddedResource Include="Migrations\201702152033003_Initial.resx">
+      <DependentUpon>201702152033003_Initial.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
