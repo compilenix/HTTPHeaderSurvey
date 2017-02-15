@@ -63,6 +63,7 @@
     <Compile Include="IoC\IoCScope.cs" />
     <Compile Include="Log4NetExtensions.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="ThreadSaveUtils.cs" />
     <Compile Include="TransactionUtils.cs" />
   </ItemGroup>
   <ItemGroup>
