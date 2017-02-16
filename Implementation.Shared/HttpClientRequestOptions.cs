@@ -12,5 +12,6 @@ namespace Implementation.Shared
         public string HttpVersion { get; set; }
         public ICollection<RequestHeader> Headers { get; set; }
         public CancellationToken CancellationToken { get; set; }
+        public bool HeadersOnly = false;
     }
 }

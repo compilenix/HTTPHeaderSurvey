@@ -42,7 +42,7 @@ namespace Implementation.Shared
             using (var httpClient = NewHttpClient(requestHandler))
             {
                 var clientRequest =
-                    await NewHttpClientRequest(
+                    await InvokeHttpClientRequestAsync(
                         NewHttpRequestMessage(options.Method, options.Uri, options.Headers, new Version(options.HttpVersion)),
                         httpClient, options.CancellationToken);
                 return clientRequest;
@@ -72,7 +72,7 @@ namespace Implementation.Shared
             return request;
         }
 
-        public static async Task<HttpResponseMessage> NewHttpClientRequest(HttpRequestMessage requestMessage, HttpClient httpClient, CancellationToken cancellationToken)
+        public static async Task<HttpResponseMessage> InvokeHttpClientRequestAsync(HttpRequestMessage requestMessage, HttpClient httpClient, CancellationToken cancellationToken, bool headersOnly = false)
         {
             if (httpClient == null)
             {
@@ -83,6 +83,12 @@ namespace Implementation.Shared
             {
                 throw new ArgumentNullException(nameof(requestMessage));
             }
+
+            if (headersOnly)
+            {
+                return await httpClient.SendAsync(requestMessage, HttpCompletionOption.ResponseHeadersRead, cancellationToken).ConfigureAwait(continueOnCapturedContext: false);
+            }
+
             return await httpClient.SendAsync(requestMessage, cancellationToken).ConfigureAwait(continueOnCapturedContext: false);
         }
 
