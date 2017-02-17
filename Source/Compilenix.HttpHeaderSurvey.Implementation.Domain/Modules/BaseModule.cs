@@ -60,7 +60,7 @@ namespace Compilenix.HttpHeaderSurvey.Implementation.Domain.Modules
         /// <summary>Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.</summary>
         public void Dispose()
         {
-            SaveUnitOfWork(UnitOfWork).Wait();
+            Save(UnitOfWork).Wait();
             UnitOfWork?.Dispose();
         }
 
@@ -74,7 +74,7 @@ namespace Compilenix.HttpHeaderSurvey.Implementation.Domain.Modules
             return UnitOfWork.Repository<TRepository>().Update(item);
         }
 
-        protected async Task SaveUnitOfWork(IUnitOfWork unit)
+        protected async Task Save(IUnitOfWork unit)
         {
             if (SaveChanges)
             {

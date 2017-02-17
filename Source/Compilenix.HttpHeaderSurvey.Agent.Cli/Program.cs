@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using Compilenix.HttpHeaderSurvey.Implementation.Shared;
 using Compilenix.HttpHeaderSurvey.Implementation.Shared.IoC;
 using Compilenix.HttpHeaderSurvey.Integration.DataAccess.Entitys;
+using Compilenix.HttpHeaderSurvey.Integration.Domain;
 using Compilenix.HttpHeaderSurvey.Integration.Domain.Modules;
 
 namespace Compilenix.HttpHeaderSurvey.Agent.Cli
@@ -22,9 +23,10 @@ namespace Compilenix.HttpHeaderSurvey.Agent.Cli
 
         private static async Task ProcessSomeJobs(int count)
         {
-            using (var requestJobModule = IoC.Resolve<IRequestJobModule>())
+            using (var requestJobWorker = IoC.Resolve<IRequestJobWorker>())
             {
-                await requestJobModule.ProcessPendingJobs(count);
+                requestJobWorker.Start(count);
+                await requestJobWorker.Completion;
             }
         }
 

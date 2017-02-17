@@ -9,6 +9,5 @@ namespace Compilenix.HttpHeaderSurvey.Integration.Domain.Modules
     {
         Task ImportFromCsv(string filePath, char delimiter = ',');
         Task ImportFromCsv(string filePath, IEnumerable<RequestHeader> requestHeaders, char delimiter = ',');
-        Task ProcessPendingJobs(int countOfJobsToProcess);
     }
 }

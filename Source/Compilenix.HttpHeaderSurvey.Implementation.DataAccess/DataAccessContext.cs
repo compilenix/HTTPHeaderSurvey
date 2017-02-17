@@ -9,14 +9,14 @@ namespace Compilenix.HttpHeaderSurvey.Implementation.DataAccess
 {
     public class DataAccessContext : DbContext
     {
-        [UsedImplicitly]
-        private static Type ByteChecksum => typeof(SqlFunctions);
-
         public DbSet<RequestJob> RequestJobs { get; set; }
         public DbSet<RequestHeader> RequestHeaders { get; set; }
         public DbSet<ApplicationLog> ApplicationLogs { get; set; }
         public DbSet<ResponseHeader> ResponseHeaders { get; set; }
         public DbSet<ResponseMessage> ResponseMessages { get; set; }
+
+        [UsedImplicitly]
+        private static Type ByteChecksum => typeof(SqlFunctions);
 
         public DataAccessContext() : base("name=DataAccessContext")
         {
