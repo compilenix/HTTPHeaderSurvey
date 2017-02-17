@@ -48,7 +48,7 @@ namespace Compilenix.HttpHeaderSurvey.Agent.Cli
                         new RequestHeader
                             {
                                 Key = "user-agent",
-                                Value = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/56.0.2924.76 Safari/537.36"
+                                Value = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/56.0.2924.87 Safari/537.36"
                             },
                         new RequestHeader { Key = "accept-encoding", Value = "gzip, deflate, br" },
                         new RequestHeader { Key = "accept-language", Value = "en-US,en;q=0.8,de;q=0.6" },
