@@ -47,10 +47,11 @@ namespace Compilenix.HttpHeaderSurvey.Implementation.Domain.Modules
         public async Task ProcessPendingJobs(int countOfJobsToProcess)
         {
             // TODO Remove temporary task
+            var keepTaskRunning = true;
             var task = new Task(
                 () =>
                     {
-                        while (true)
+                        while (keepTaskRunning)
                         {
                             try
                             {
@@ -98,7 +99,6 @@ namespace Compilenix.HttpHeaderSurvey.Implementation.Domain.Modules
                 jobBlock.LinkTo(_jobCompletedBlock);
 
                 _inputBufferBlock.Completion.ContinueWith(t => { jobBlock.Complete(); });
-                jobBlock.Completion.ContinueWith(t => { _jobCompletedBlock.Complete(); });
             }
 
             // TODO Remove temporary task
@@ -109,9 +109,12 @@ namespace Compilenix.HttpHeaderSurvey.Implementation.Domain.Modules
             await _inputBufferBlock.Completion;
             var processJobBlockTasks = _processJobBlocks.Select(x => x.Completion);
             Task.WaitAll(processJobBlockTasks.ToArray());
+            _jobCompletedBlock.Complete();
             await _jobCompletedBlock.Completion;
 
             // TODO Remove temporary task
+            keepTaskRunning = false;
+            task.Wait();
             task.Dispose();
         }
 
