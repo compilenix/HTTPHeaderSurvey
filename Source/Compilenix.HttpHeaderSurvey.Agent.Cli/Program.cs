@@ -1,7 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Threading.Tasks;
-using Compilenix.HttpHeaderSurvey.Implementation.Shared;
 using Compilenix.HttpHeaderSurvey.Implementation.Shared.IoC;
 using Compilenix.HttpHeaderSurvey.Integration.DataAccess.Entitys;
 using Compilenix.HttpHeaderSurvey.Integration.Domain;
@@ -17,7 +15,6 @@ namespace Compilenix.HttpHeaderSurvey.Agent.Cli
 
             AddDefaultRequestHeaders();
             ImportRequestJobsIfThereAreNone(@"C:\Temp\top-1m.csv").Wait();
-            HttpClientUtils.DefaultTimeout = TimeSpan.FromSeconds(30);
             ProcessSomeJobs(int.MaxValue).Wait();
         }
 

@@ -12,7 +12,6 @@ using Compilenix.HttpHeaderSurvey.Integration.DataAccess.Entitys;
 using Compilenix.HttpHeaderSurvey.Integration.DataAccess.Repositories;
 using Compilenix.HttpHeaderSurvey.Integration.Domain;
 using Compilenix.HttpHeaderSurvey.Integration.Domain.Modules;
-using Compilenix.HttpHeaderSurvey.Integration.Shared;
 
 namespace Compilenix.HttpHeaderSurvey.Implementation.Domain
 {
@@ -27,6 +26,7 @@ namespace Compilenix.HttpHeaderSurvey.Implementation.Domain
         public RequestJobWorker()
         {
             _httpClientTimeout = TimeSpan.FromSeconds(int.Parse(IoC.Resolve<IApplicationConfigurationCollection>().Get("HttpClientTimeoutSeconds")));
+            HttpClientUtils.DefaultTimeout = _httpClientTimeout;
         }
 
         public Task Completion => _jobCompletedBlock?.Completion;
@@ -174,7 +174,6 @@ namespace Compilenix.HttpHeaderSurvey.Implementation.Domain
                             HeadersOnly = true,
                             CancellationToken = new CancellationTokenSource(_httpClientTimeout).Token
                         };
-                    HttpClientUtils.DefaultTimeout = _httpClientTimeout;
 
                     try
                     {
