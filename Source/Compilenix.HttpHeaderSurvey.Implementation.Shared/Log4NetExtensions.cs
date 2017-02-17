@@ -1,0 +1,27 @@
+﻿using System;
+using log4net;
+using log4net.Config;
+
+namespace Compilenix.HttpHeaderSurvey.Implementation.Shared
+{
+    public static class Log4NetExtensions
+    {
+        private static bool _isLoggerInitialized;
+
+        public static ILog Log(this Type obj)
+        {
+            if (!_isLoggerInitialized)
+            {
+                _isLoggerInitialized = true;
+                XmlConfigurator.Configure();
+            }
+
+            return LogManager.GetLogger(obj);
+        }
+
+        public static ILog Log(this object obj)
+        {
+            return obj.GetType().Log();
+        }
+    }
+}

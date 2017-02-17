@@ -1,0 +1,102 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="14.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{0971BE82-E8BA-486D-A44B-9C0A8C9FF82F}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>Compilenix.HttpHeaderSurvey.Implementation.DataAccess</RootNamespace>
+    <AssemblyName>Compilenix.HttpHeaderSurvey.Implementation.DataAccess</AssemblyName>
+    <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <CodeAnalysisRuleSet>..\..\Compilenix.ruleset</CodeAnalysisRuleSet>
+    <RunCodeAnalysis>false</RunCodeAnalysis>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG</DefineConstants>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>none</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="EntityFramework, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\EntityFramework.6.1.3\lib\net45\EntityFramework.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="EntityFramework.SqlServer, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\EntityFramework.6.1.3\lib\net45\EntityFramework.SqlServer.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="log4net, Version=2.0.7.0, Culture=neutral, PublicKeyToken=669e0ddf0bb1aa2a, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\log4net.2.0.7\lib\net45-full\log4net.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.ComponentModel.DataAnnotations" />
+    <Reference Include="System.Core" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="DataAccessBootstrapper.cs" />
+    <Compile Include="EntityConfigurations\ApplicationLogConfiguration.cs" />
+    <Compile Include="EntityConfigurations\RequestHeaderConfiguration.cs" />
+    <Compile Include="DataAccessContext.cs" />
+    <Compile Include="EntityConfigurations\ResponseMessageConfiguration.cs" />
+    <Compile Include="EntityConfigurations\ResponseHeaderConfiguration.cs" />
+    <Compile Include="ForeignKeyNamingConvention.cs" />
+    <Compile Include="Migrations\201702152033003_Initial.cs" />
+    <Compile Include="Migrations\201702152033003_Initial.Designer.cs">
+      <DependentUpon>201702152033003_Initial.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\Configuration.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Repositories\RequestHeaderRepository.cs" />
+    <Compile Include="Repositories\ResponseHeaderRepository.cs" />
+    <Compile Include="Repositories\RequestJobRepository.cs" />
+    <Compile Include="Repositories\Repository.cs" />
+    <Compile Include="EntityConfigurations\RequestJobConfiguration.cs" />
+    <Compile Include="Repositories\ResponseMessageRepository.cs" />
+    <Compile Include="UnitOfWork.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="App.config" />
+    <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Migrations\201702152033003_Initial.resx">
+      <DependentUpon>201702152033003_Initial.cs</DependentUpon>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Compilenix.HttpHeaderSurvey.Implementation.Shared\Compilenix.HttpHeaderSurvey.Implementation.Shared.csproj">
+      <Project>{8F742D4C-794D-4365-BA89-2C67BFC4477F}</Project>
+      <Name>Compilenix.HttpHeaderSurvey.Implementation.Shared</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Compilenix.HttpHeaderSurvey.Integration.DataAccess\Compilenix.HttpHeaderSurvey.Integration.DataAccess.csproj">
+      <Project>{E22A9B2D-CD61-49B9-B8BA-361B0CFF2A0A}</Project>
+      <Name>Compilenix.HttpHeaderSurvey.Integration.DataAccess</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Compilenix.HttpHeaderSurvey.Integration.Shared\Compilenix.HttpHeaderSurvey.Integration.Shared.csproj">
+      <Project>{FF08798B-A665-4687-92A8-23AB2868C9F0}</Project>
+      <Name>Compilenix.HttpHeaderSurvey.Integration.Shared</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

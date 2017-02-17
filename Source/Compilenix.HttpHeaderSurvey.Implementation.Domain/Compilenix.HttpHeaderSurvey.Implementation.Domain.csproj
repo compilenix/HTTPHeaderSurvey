@@ -1,0 +1,94 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="14.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{010FCD06-1FFC-407C-8FB0-68CC6DB24512}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>Compilenix.HttpHeaderSurvey.Implementation.Domain</RootNamespace>
+    <AssemblyName>Compilenix.HttpHeaderSurvey.Implementation.Domain</AssemblyName>
+    <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <CodeAnalysisRuleSet>..\..\Compilenix.ruleset</CodeAnalysisRuleSet>
+    <RunCodeAnalysis>false</RunCodeAnalysis>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG</DefineConstants>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>none</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="AutoMapper, Version=5.2.0.0, Culture=neutral, PublicKeyToken=be96cd2c38ef1005, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\AutoMapper.5.2.0\lib\net45\AutoMapper.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="log4net, Version=2.0.7.0, Culture=neutral, PublicKeyToken=669e0ddf0bb1aa2a, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\log4net.2.0.7\lib\net45-full\log4net.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Threading.Tasks.Dataflow, Version=4.5.24.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\Microsoft.Tpl.Dataflow.4.5.24\lib\portable-net45+win8+wpa81\System.Threading.Tasks.Dataflow.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Net.Http" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="DataTransferObjectConverter.cs" />
+    <Compile Include="DomainBootstrapper.cs" />
+    <Compile Include="MappingUtils.cs" />
+    <Compile Include="Modules\BaseModule.cs" />
+    <Compile Include="Modules\RequestHeaderModule.cs" />
+    <Compile Include="Modules\RequestJobModule.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Compilenix.HttpHeaderSurvey.Implementation.DataAccess\Compilenix.HttpHeaderSurvey.Implementation.DataAccess.csproj">
+      <Project>{0971BE82-E8BA-486D-A44B-9C0A8C9FF82F}</Project>
+      <Name>Compilenix.HttpHeaderSurvey.Implementation.DataAccess</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Compilenix.HttpHeaderSurvey.Implementation.Shared\Compilenix.HttpHeaderSurvey.Implementation.Shared.csproj">
+      <Project>{8F742D4C-794D-4365-BA89-2C67BFC4477F}</Project>
+      <Name>Compilenix.HttpHeaderSurvey.Implementation.Shared</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Compilenix.HttpHeaderSurvey.Integration.DataAccess\Compilenix.HttpHeaderSurvey.Integration.DataAccess.csproj">
+      <Project>{E22A9B2D-CD61-49B9-B8BA-361B0CFF2A0A}</Project>
+      <Name>Compilenix.HttpHeaderSurvey.Integration.DataAccess</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Compilenix.HttpHeaderSurvey.Integration.Domain\Compilenix.HttpHeaderSurvey.Integration.Domain.csproj">
+      <Project>{E9ACA8CB-41ED-4168-9742-0471AE8FF6AA}</Project>
+      <Name>Compilenix.HttpHeaderSurvey.Integration.Domain</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Compilenix.HttpHeaderSurvey.Integration.Shared\Compilenix.HttpHeaderSurvey.Integration.Shared.csproj">
+      <Project>{FF08798B-A665-4687-92A8-23AB2868C9F0}</Project>
+      <Name>Compilenix.HttpHeaderSurvey.Integration.Shared</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

@@ -1,0 +1,13 @@
+﻿namespace Compilenix.HttpHeaderSurvey.Integration.Domain.DataTransferObjects
+{
+    public class NewRequestJobDto
+    {
+        public string Method { get; set; }
+
+        public string Uri { get; set; }
+
+        public string HttpVersion { get; set; }
+
+        public bool IsRunOnce { get; set; }
+    }
+}
