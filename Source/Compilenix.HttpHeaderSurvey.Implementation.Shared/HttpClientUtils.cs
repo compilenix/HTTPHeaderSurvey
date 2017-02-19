@@ -45,7 +45,8 @@ namespace Compilenix.HttpHeaderSurvey.Implementation.Shared
                     await InvokeHttpClientRequestAsync(
                         NewHttpRequestMessage(options.Method, options.Uri, options.Headers, new Version(options.HttpVersion)),
                         httpClient,
-                        options.CancellationToken);
+                        options.CancellationToken,
+                        options.HeadersOnly);
                 return clientRequest;
             }
         }

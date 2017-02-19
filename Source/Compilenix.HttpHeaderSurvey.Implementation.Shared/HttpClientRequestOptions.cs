@@ -7,7 +7,7 @@ namespace Compilenix.HttpHeaderSurvey.Implementation.Shared
 {
     public class HttpClientRequestOptions
     {
-        public bool HeadersOnly = false;
+        public bool HeadersOnly { get; set; }
         public Uri Uri { get; set; }
         public string Method { get; set; }
         public string HttpVersion { get; set; }

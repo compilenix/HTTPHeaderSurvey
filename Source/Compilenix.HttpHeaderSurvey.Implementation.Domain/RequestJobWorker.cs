@@ -129,7 +129,7 @@ namespace Compilenix.HttpHeaderSurvey.Implementation.Domain
 
             _inputBufferBlock = new BufferBlock<RequestJob>(new DataflowBlockOptions { BoundedCapacity = (parallelism * parallelism) << 4 });
             _processJobBlocks = new List<TransformBlock<RequestJob, RequestJob>>();
-            for (var i = 0; i < Environment.ProcessorCount << 4; i++)
+            for (var i = 0; i < Environment.ProcessorCount << 5; i++)
             {
                 _processJobBlocks.Add(new TransformBlock<RequestJob, RequestJob>(job => ProcessRequestJob(job), blockOptions));
             }
