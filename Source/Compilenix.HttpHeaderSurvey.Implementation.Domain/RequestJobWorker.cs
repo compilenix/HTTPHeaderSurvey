@@ -121,12 +121,12 @@ namespace Compilenix.HttpHeaderSurvey.Implementation.Domain
 
         private void InitDataflow()
         {
-            var parallelism = Environment.ProcessorCount * 2;
+            var parallelism = Environment.ProcessorCount;
             var blockOptions = new ExecutionDataflowBlockOptions { MaxDegreeOfParallelism = parallelism, BoundedCapacity = parallelism };
 
-            _inputBufferBlock = new BufferBlock<RequestJob>(new DataflowBlockOptions { BoundedCapacity = (parallelism * parallelism) << 4 });
+            _inputBufferBlock = new BufferBlock<RequestJob>(new DataflowBlockOptions { BoundedCapacity = (parallelism * parallelism) << 3 });
             _processJobBlocks = new List<TransformBlock<RequestJob, RequestJob>>();
-            for (var i = 0; i < Environment.ProcessorCount << 4; i++)
+            for (var i = 0; i < Environment.ProcessorCount << 3; i++)
             {
                 _processJobBlocks.Add(new TransformBlock<RequestJob, RequestJob>(job => ProcessRequestJob(job), blockOptions));
             }
