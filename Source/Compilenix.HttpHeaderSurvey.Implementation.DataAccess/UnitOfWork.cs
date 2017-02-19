@@ -34,10 +34,5 @@ namespace Compilenix.HttpHeaderSurvey.Implementation.DataAccess
             Context?.ChangeTracker?.DetectChanges();
             return await Context?.SaveChangesAsync();
         }
-
-        public int Complete()
-        {
-            return CompleteAsync().Result;
-        }
     }
 }

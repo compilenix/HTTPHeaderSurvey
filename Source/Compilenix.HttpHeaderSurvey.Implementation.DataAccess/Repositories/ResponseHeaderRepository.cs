@@ -1,5 +1,7 @@
 ﻿using System.Collections.Generic;
+using System.Data.Entity;
 using System.Linq;
+using System.Threading.Tasks;
 using Compilenix.HttpHeaderSurvey.Implementation.Shared;
 using Compilenix.HttpHeaderSurvey.Integration.DataAccess.Entitys;
 using Compilenix.HttpHeaderSurvey.Integration.DataAccess.Repositories;
@@ -8,8 +10,6 @@ namespace Compilenix.HttpHeaderSurvey.Implementation.DataAccess.Repositories
 {
     public class ResponseHeaderRepository : Repository<ResponseHeader>, IResponseHeaderRepository
     {
-        private DataAccessContext DataAccessContext => Context as DataAccessContext;
-
         public ResponseHeaderRepository(DataAccessContext context) : base(context)
         {
         }
@@ -32,34 +32,34 @@ namespace Compilenix.HttpHeaderSurvey.Implementation.DataAccess.Repositories
         /// <summary>
         /// Ignores Case
         /// </summary>
-        public IEnumerable<ResponseHeader> GetByHeader(string header)
+        public async Task<IEnumerable<ResponseHeader>> GetByHeaderAsync(string header)
         {
             header = header.ToLower();
-            return Entities?.Where(h => h.Key == header).ToList();
+            return await Entities?.Where(h => h.Key == header).ToListAsync();
         }
 
         /// <summary>
         /// Ignores Case
         /// </summary>
-        public ResponseHeader GetByHeaderAndValue(string header, string value)
+        public async Task<ResponseHeader> GetByHeaderAndValueAsync(string header, string value)
         {
             var hash = HashUtils.Hash(value.ToLower());
             header = header.ToLower();
-            return Entities?.SingleOrDefault(h => h.Key == header && h.ValueHash == hash);
+            return await Entities?.SingleOrDefaultAsync(h => h.Key == header && h.ValueHash == hash);
         }
 
         /// <summary>
         /// If succeded the added object else null.
         /// </summary>
-        public ResponseHeader AddIfNotExisting(ResponseHeader header)
+        public async Task<ResponseHeader> AddIfNotExistingAsync(ResponseHeader header)
         {
-            return !ContainsResponseHeader(header.Key, header.Value) ? Add(header) : null;
+            return !await ContainsResponseHeaderAsync(header.Key, header.Value) ? Add(header) : null;
         }
 
         /// <summary>
         /// Ignores Case.
         /// </summary>
-        public bool ContainsResponseHeader(string header, string headerValue)
+        public async Task<bool> ContainsResponseHeaderAsync(string header, string headerValue)
         {
             header = header.ToLower();
             headerValue = headerValue.ToLower();
@@ -67,7 +67,7 @@ namespace Compilenix.HttpHeaderSurvey.Implementation.DataAccess.Repositories
             var headerValueHash = HashUtils.Hash(headerValue);
             var containsHeader = Entities.Local.Any(j => j.Key == header && j.ValueHash == headerValueHash);
 
-            return containsHeader ? containsHeader : Entities.Any(j => j.Key == header && j.ValueHash == headerValueHash);
+            return containsHeader ? containsHeader : await Entities.AnyAsync(j => j.Key == header && j.ValueHash == headerValueHash);
         }
     }
 }

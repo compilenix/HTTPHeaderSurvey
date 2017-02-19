@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Data.Entity;
 using System.Linq;
-using System.Linq.Expressions;
+using System.Threading.Tasks;
 using Compilenix.HttpHeaderSurvey.Implementation.Shared;
 using Compilenix.HttpHeaderSurvey.Implementation.Shared.IoC;
 using Compilenix.HttpHeaderSurvey.Integration.DataAccess;
@@ -15,7 +15,6 @@ namespace Compilenix.HttpHeaderSurvey.Implementation.DataAccess.Repositories
     {
         //TODO Where to store / get from, this value?
         private TimeSpan _scheduleDays;
-        private DataAccessContext DataAccessContext => Context as DataAccessContext;
 
         public RequestJobRepository(DataAccessContext context) : base(context)
         {
@@ -25,11 +24,6 @@ namespace Compilenix.HttpHeaderSurvey.Implementation.DataAccess.Repositories
         private static IQueryable<RequestJob> RequestJobWithHeadersQueryable(IQueryable<RequestJob> query, bool doInclude)
         {
             return doInclude ? query.Include(h => h.Headers) : query;
-        }
-
-        public IEnumerable<RequestJob> GetRequestJobsCurrentlyScheduled(bool withRequestHeaders = false)
-        {
-            return RequestJobWithHeadersQueryable(Entities?.Where(j => j.IsCurrentlyScheduled), withRequestHeaders)?.ToList();
         }
 
         public IEnumerable<RequestJob> GetRequestJobsTodoAndNotScheduled(bool withRequestHeaders = false,
@@ -55,7 +49,7 @@ namespace Compilenix.HttpHeaderSurvey.Implementation.DataAccess.Repositories
                 var errorJobs = new List<RequestJob>();
                 if (checkout)
                 {
-                    errorJobs = Checkout(someJobs);
+                    errorJobs = CheckoutAsync(someJobs).Result;
                 }
 
                 foreach (var requestJob in errorJobs)
@@ -73,48 +67,21 @@ namespace Compilenix.HttpHeaderSurvey.Implementation.DataAccess.Repositories
                     yield return job;
                 }
 
-                GarbageCollectionUtils.CollectNow();
-
                 count -= itemsGot;
             }
             while (count > 0 && itemsGot > 0);
         }
 
-        public IEnumerable<RequestJob> GetRequestJobsRunOnce(bool withRequestHeaders = false)
+        public async Task<RequestJob> GetWithRequestHeadersAsync(int id)
         {
-            return RequestJobWithHeadersQueryable(Entities?.Where(j => j.IsRunOnce), withRequestHeaders)?.ToList();
+            return await Entities.Include(j => j.Headers)?.SingleOrDefaultAsync(j => j.Id == id);
         }
 
-        public IEnumerable<RequestJob> GetRequestJobsRunOnceNot(bool withRequestHeaders = false)
-        {
-            return RequestJobWithHeadersQueryable(Entities?.Where(j => !j.IsRunOnce), withRequestHeaders)?.ToList();
-        }
-
-        public RequestJob GetWithRequestHeaders(int id)
-        {
-            return Entities.Include(j => j.Headers)?.SingleOrDefault(j => j.Id == id);
-        }
-
-        public IEnumerable<RequestJob> GetAll(bool withRequestHeaders = false)
-        {
-            return Entities.Include(j => j.Headers)?.ToList() ?? new List<RequestJob>();
-        }
-
-        public IEnumerable<RequestJob> FindWithRequestHeaders(Expression<Func<RequestJob, bool>> predicate)
-        {
-            return predicate != null ? Entities?.Include(j => j.Headers)?.Where(predicate).ToList() : null;
-        }
-
-        public RequestJob SingleOrDefaultWithRequestHeaders(Expression<Func<RequestJob, bool>> predicate)
-        {
-            return predicate != null ? Entities?.Include(j => j.Headers)?.SingleOrDefault(predicate) : null;
-        }
-
-        public bool ContainsRequestJob(string method, string uri)
+        public async Task<bool> ContainsRequestJobAsync(string method, string uri)
         {
             var hash = HashUtils.Hash(uri);
             method = method.ToUpper();
-            return Entities.Any(j => j.Method == method && j.UriHash == hash);
+            return await Entities.AnyAsync(j => j.Method == method && j.UriHash == hash);
         }
 
         public override RequestJob Add(RequestJob requestJob)
@@ -126,21 +93,12 @@ namespace Compilenix.HttpHeaderSurvey.Implementation.DataAccess.Repositories
             return base.Add(requestJob);
         }
 
-        public RequestJob AddIfNotExisting(RequestJob job)
+        public async Task<RequestJob> AddIfNotExistingAsync(RequestJob job)
         {
-            return !ContainsRequestJob(job.Method, job.Uri) ? Add(job) : null;
+            return !await ContainsRequestJobAsync(job.Method, job.Uri) ? Add(job) : null;
         }
 
-        public int GetRequestJobsTodoAndNotScheduledCount()
-        {
-            var compareToDate = DateTime.Now.Subtract(_scheduleDays);
-            return
-                Entities?.Where(j => DbFunctions.DiffSeconds(j.LastTimeProcessed, compareToDate) > _scheduleDays.TotalSeconds)
-                    .Where(j => !j.IsRunOnce)
-                    .Count(j => !j.IsCurrentlyScheduled) ?? 0;
-        }
-
-        private List<RequestJob> Checkout(IEnumerable<RequestJob> someJobs)
+        private async Task<List<RequestJob>> CheckoutAsync(IEnumerable<RequestJob> someJobs)
         {
             var errorJobs = new List<RequestJob>();
 
@@ -151,9 +109,9 @@ namespace Compilenix.HttpHeaderSurvey.Implementation.DataAccess.Repositories
                 {
                     using (var unit = IoC.Resolve<IUnitOfWork>())
                     {
-                        var requestJob = unit.Repository<IRequestJobRepository>().Get(job?.Id);
+                        var requestJob = await unit.Repository<IRequestJobRepository>().GetAsync(job?.Id);
                         requestJob.IsCurrentlyScheduled = true;
-                        unit.Complete();
+                        await unit.CompleteAsync();
                     }
                 }
                 catch (Exception exception)

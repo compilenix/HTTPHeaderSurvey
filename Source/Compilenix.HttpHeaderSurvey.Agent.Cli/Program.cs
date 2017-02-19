@@ -13,7 +13,7 @@ namespace Compilenix.HttpHeaderSurvey.Agent.Cli
         {
             Bootstrapper.Initialize();
 
-            AddDefaultRequestHeaders();
+            AddDefaultRequestHeadersAsync().Wait();
             ImportRequestJobsIfThereAreNone(@"C:\Temp\top-1m.csv").Wait();
             ProcessSomeJobs(int.MaxValue).Wait();
         }
@@ -22,7 +22,7 @@ namespace Compilenix.HttpHeaderSurvey.Agent.Cli
         {
             using (var requestJobWorker = IoC.Resolve<IRequestJobWorker>())
             {
-                requestJobWorker.Start(count);
+                await requestJobWorker.StartAsync(count);
                 await requestJobWorker.Completion;
             }
         }
@@ -33,12 +33,12 @@ namespace Compilenix.HttpHeaderSurvey.Agent.Cli
             {
                 if (requestJobModule.Count < 1)
                 {
-                    await requestJobModule.ImportFromCsv(fromCsvFile);
+                    await requestJobModule.ImportFromCsvAsync(fromCsvFile);
                 }
             }
         }
 
-        private static void AddDefaultRequestHeaders()
+        private static async Task AddDefaultRequestHeadersAsync()
         {
             using (var requestHeaderModule = IoC.Resolve<IRequestHeaderModule>())
             {
@@ -55,7 +55,7 @@ namespace Compilenix.HttpHeaderSurvey.Agent.Cli
                     };
                 foreach (var header in list)
                 {
-                    requestHeaderModule.AddOrUpdate(header);
+                    await requestHeaderModule.AddOrUpdateAsync(header);
                 }
             }
         }

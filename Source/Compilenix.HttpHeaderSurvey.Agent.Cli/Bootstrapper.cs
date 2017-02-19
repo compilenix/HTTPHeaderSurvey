@@ -15,7 +15,7 @@ namespace Compilenix.HttpHeaderSurvey.Agent.Cli
             DomainBootstrapper.Initialize();
             var container = IoC.CurrentContainer;
 
-            //builder.Register<ISomeModule, SomeModule>(InstanceLifetimeTypes.SingleInstance);
+            //builder.Register<ISomeModule, SomeModule>(InstanceLifetimeType.SingleInstance);
 
             container.Build();
         }

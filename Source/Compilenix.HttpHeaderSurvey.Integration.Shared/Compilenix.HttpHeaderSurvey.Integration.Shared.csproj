@@ -43,7 +43,7 @@
     <Compile Include="IoC\IContainer.cs" />
     <Compile Include="IoC\IIocContainer.cs" />
     <Compile Include="IoC\IIoCScope.cs" />
-    <Compile Include="IoC\InstanceLifetimeTypes.cs" />
+    <Compile Include="IoC\InstanceLifetimeType.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

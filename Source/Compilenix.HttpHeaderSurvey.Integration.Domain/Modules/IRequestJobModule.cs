@@ -7,7 +7,7 @@ namespace Compilenix.HttpHeaderSurvey.Integration.Domain.Modules
 {
     public interface IRequestJobModule : IBaseModule<IRequestJobRepository, RequestJob>
     {
-        Task ImportFromCsv(string filePath, char delimiter = ',');
-        Task ImportFromCsv(string filePath, IEnumerable<RequestHeader> requestHeaders, char delimiter = ',');
+        Task ImportFromCsvAsync(string filePath, char delimiter = ',');
+        Task ImportFromCsvAsync(string filePath, IEnumerable<RequestHeader> requestHeaders, char delimiter = ',');
     }
 }

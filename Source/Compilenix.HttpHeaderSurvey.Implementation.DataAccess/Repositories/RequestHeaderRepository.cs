@@ -1,5 +1,7 @@
 ﻿using System.Collections.Generic;
+using System.Data.Entity;
 using System.Linq;
+using System.Threading.Tasks;
 using Compilenix.HttpHeaderSurvey.Implementation.Shared;
 using Compilenix.HttpHeaderSurvey.Integration.DataAccess.Entitys;
 using Compilenix.HttpHeaderSurvey.Integration.DataAccess.Repositories;
@@ -8,8 +10,6 @@ namespace Compilenix.HttpHeaderSurvey.Implementation.DataAccess.Repositories
 {
     public class RequestHeaderRepository : Repository<RequestHeader>, IRequestHeaderRepository
     {
-        private DataAccessContext DataAccessContext => Context as DataAccessContext;
-
         public RequestHeaderRepository(DataAccessContext context) : base(context)
         {
         }
@@ -29,24 +29,24 @@ namespace Compilenix.HttpHeaderSurvey.Implementation.DataAccess.Repositories
             return base.Add(header);
         }
 
-        public IEnumerable<RequestHeader> GetByHeader(string header)
+        public async Task<IEnumerable<RequestHeader>> GetByHeaderAsync(string header)
         {
             header = header.ToLower();
-            return Entities?.Where(h => h.Key == header).ToList();
+            return await Entities?.Where(h => h.Key == header).ToListAsync();
         }
 
-        public bool ContainsRequestHeader(string header, string headerValue)
+        public async Task<bool> ContainsRequestHeaderAsync(string header, string headerValue)
         {
             header = header.ToLower();
             headerValue = headerValue.ToLower();
 
             var headerValueHash = HashUtils.Hash(headerValue);
-            return Entities.Any(j => j.Key == header && j.ValueHash == headerValueHash);
+            return await Entities.AnyAsync(j => j.Key == header && j.ValueHash == headerValueHash);
         }
 
-        public RequestHeader AddIfNotExisting(RequestHeader header)
+        public async Task<RequestHeader> AddIfNotExistingAsync(RequestHeader header)
         {
-            return !ContainsRequestHeader(header.Key, header.Value) ? Add(header) : null;
+            return !await ContainsRequestHeaderAsync(header.Key, header.Value) ? Add(header) : null;
         }
     }
 }

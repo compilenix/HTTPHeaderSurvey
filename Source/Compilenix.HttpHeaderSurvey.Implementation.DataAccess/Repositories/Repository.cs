@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Data.Entity;
 using System.Linq;
 using System.Linq.Expressions;
+using System.Threading.Tasks;
 using Compilenix.HttpHeaderSurvey.Integration.DataAccess.Entitys;
 using Compilenix.HttpHeaderSurvey.Integration.DataAccess.Repositories;
 
@@ -11,28 +12,28 @@ namespace Compilenix.HttpHeaderSurvey.Implementation.DataAccess.Repositories
     public class Repository<TEntity> : IRepository<TEntity>
         where TEntity : BaseEntity
     {
-        protected readonly DbContext Context;
+        protected readonly DataAccessContext Context;
         public IQueryable<TEntity> EntitiesAsQueryable => Entities;
         protected DbSet<TEntity> Entities => Context?.Set<TEntity>();
 
-        protected Repository(DbContext context)
+        protected Repository(DataAccessContext context)
         {
             Context = context;
         }
 
-        public IEnumerable<TEntity> GetAll()
+        public async Task<IEnumerable<TEntity>> GetAllAsync()
         {
-            return Entities?.ToList() ?? new List<TEntity>();
+            return await Entities?.ToListAsync() ?? new List<TEntity>();
         }
 
-        public IEnumerable<TEntity> Find(Expression<Func<TEntity, bool>> predicate)
+        public async Task<IEnumerable<TEntity>> FindAsync(Expression<Func<TEntity, bool>> predicate)
         {
-            return Entities?.Where(predicate).ToList();
+            return await Entities?.Where(predicate).ToListAsync();
         }
 
-        public TEntity SingleOrDefault(Expression<Func<TEntity, bool>> predicate)
+        public Task<TEntity> SingleOrDefaultAsync(Expression<Func<TEntity, bool>> predicate)
         {
-            return Entities?.SingleOrDefault(predicate);
+            return Entities?.SingleOrDefaultAsync(predicate);
         }
 
         public virtual TEntity Add(TEntity entity)
@@ -46,14 +47,14 @@ namespace Compilenix.HttpHeaderSurvey.Implementation.DataAccess.Repositories
             Entities?.Remove(entity);
         }
 
-        public TEntity Get<TTarget>(TTarget id)
+        public async Task<TEntity> GetAsync<TTarget>(TTarget id)
         {
-            return Entities?.Find(id);
+            return await Entities?.FindAsync(id);
         }
 
-        public int Count()
+        public async Task<int> CountAsync()
         {
-            return Entities?.Count() ?? 0;
+            return await Entities?.CountAsync();
         }
 
         public TEntity Update(TEntity entity)

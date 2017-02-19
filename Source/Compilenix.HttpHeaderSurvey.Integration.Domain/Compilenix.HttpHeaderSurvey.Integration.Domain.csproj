@@ -39,6 +39,7 @@
     <Compile Include="IDataTransferObjectConverter.cs" />
     <Compile Include="IRequestJobWorker.cs" />
     <Compile Include="Modules\IBaseModule.cs" />
+    <Compile Include="Modules\IResponseHeaderModule.cs" />
     <Compile Include="Modules\IRequestHeaderModule.cs" />
     <Compile Include="Modules\IRequestJobModule.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

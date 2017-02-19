@@ -12,21 +12,21 @@ namespace Compilenix.HttpHeaderSurvey.Implementation.Domain.Modules
     public class BaseModule<TRepository, TItem> : IBaseModule<TRepository, TItem>
         where TItem : BaseEntity where TRepository : class, IRepository<TItem>
     {
+        protected IRepository<TItem> BaseEntityRepository;
         public bool SaveChanges { get; set; }
-
-        public virtual int Count => UnitOfWork.Repository<TRepository>().Count();
-
+        public virtual int Count => BaseEntityRepository.CountAsync().Result;
         protected IUnitOfWork UnitOfWork { get; }
 
         public BaseModule(IUnitOfWork unitOfWork)
         {
             UnitOfWork = unitOfWork;
+            BaseEntityRepository = UnitOfWork.Repository<TRepository>();
             SaveChanges = true;
         }
 
-        public virtual TItem AddOrUpdate(TItem item)
+        public virtual async Task<TItem> AddOrUpdateAsync(TItem item)
         {
-            var existingItem = UnitOfWork.Repository<TRepository>().Get(item.Id);
+            var existingItem = await BaseEntityRepository.GetAsync(item.Id);
 
             if (existingItem != null)
             {
@@ -36,45 +36,45 @@ namespace Compilenix.HttpHeaderSurvey.Implementation.Domain.Modules
             return Add(item);
         }
 
-        public virtual IEnumerable<TItem> Find(Expression<Func<TItem, bool>> predicate)
+        public virtual async Task<IEnumerable<TItem>> FindAsync(Expression<Func<TItem, bool>> predicate)
         {
-            return UnitOfWork.Repository<TRepository>().Find(predicate);
+            return await BaseEntityRepository.FindAsync(predicate);
         }
 
-        public virtual TItem Get<TId>(TId id)
+        public virtual async Task<TItem> GetAsync<TId>(TId id)
         {
-            return UnitOfWork.Repository<TRepository>().Get(id);
+            return await BaseEntityRepository.GetAsync(id);
         }
 
-        public virtual IEnumerable<TItem> GetAll()
+        public virtual async Task<IEnumerable<TItem>> GetAllAsync()
         {
-            return UnitOfWork.Repository<TRepository>().GetAll();
+            return await BaseEntityRepository.GetAllAsync();
         }
 
         public virtual void Remove(TItem item)
         {
-            UnitOfWork.Repository<TRepository>().Remove(item);
+            BaseEntityRepository.Remove(item);
         }
 
         // TODO mybe move UnitOfWork.Complete() into function
         /// <summary>Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.</summary>
         public void Dispose()
         {
-            Save(UnitOfWork).Wait();
+            SaveAsync(UnitOfWork).Wait();
             UnitOfWork?.Dispose();
         }
 
         public virtual TItem Add(TItem item)
         {
-            return UnitOfWork.Repository<TRepository>().Add(item);
+            return BaseEntityRepository.Add(item);
         }
 
         public TItem Update(TItem item)
         {
-            return UnitOfWork.Repository<TRepository>().Update(item);
+            return BaseEntityRepository.Update(item);
         }
 
-        protected async Task Save(IUnitOfWork unit)
+        protected async Task SaveAsync(IUnitOfWork unit)
         {
             if (SaveChanges)
             {

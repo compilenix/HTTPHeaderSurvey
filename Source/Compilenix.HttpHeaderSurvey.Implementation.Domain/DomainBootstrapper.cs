@@ -19,12 +19,12 @@ namespace Compilenix.HttpHeaderSurvey.Implementation.Domain
         {
             var container = IoC.CurrentContainer;
 
-            container.Register<IIoCScope, IoCScope>(InstanceLifetimeTypes.Scoped);
+            container.Register<IIoCScope, IoCScope>(InstanceLifetimeType.Scoped);
 
             var domain = Assembly.GetExecutingAssembly();
-            container.Register(domain, type => type.Name.EndsWith("Module"), InstanceLifetimeTypes.Transient);
-            container.Register<IApplicationConfigurationCollection, ApplicationConfigurationCollection>(InstanceLifetimeTypes.SingleInstance);
-            container.Register<IRequestJobWorker, RequestJobWorker>(InstanceLifetimeTypes.SingleInstance);
+            container.Register(domain, type => type.Name.EndsWith("Module"), InstanceLifetimeType.Transient);
+            container.Register<IApplicationConfigurationCollection, ApplicationConfigurationCollection>(InstanceLifetimeType.SingleInstance);
+            container.Register<IRequestJobWorker, RequestJobWorker>(InstanceLifetimeType.SingleInstance);
 
             IoC.CurrentContainer = container;
         }

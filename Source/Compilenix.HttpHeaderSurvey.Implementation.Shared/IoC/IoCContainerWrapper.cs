@@ -24,10 +24,10 @@ namespace Compilenix.HttpHeaderSurvey.Implementation.Shared.IoC
 
         public IIocContainer Register<TFrom, TTo>() where TFrom : class where TTo : class, TFrom
         {
-            return Register<TFrom, TTo>(InstanceLifetimeTypes.Transient);
+            return Register<TFrom, TTo>(InstanceLifetimeType.Transient);
         }
 
-        public IIocContainer Register<TFrom, TTo>(InstanceLifetimeTypes lifetime) where TFrom : class where TTo : class, TFrom
+        public IIocContainer Register<TFrom, TTo>(InstanceLifetimeType lifetime) where TFrom : class where TTo : class, TFrom
         {
             _container.Register<TFrom, TTo>(ConvertLifetimeType(lifetime));
             _onRegistrationsFinnished += () => DiagnosticWarningDisposableTransientHandler(typeof(TFrom));
@@ -36,10 +36,10 @@ namespace Compilenix.HttpHeaderSurvey.Implementation.Shared.IoC
 
         public IIocContainer Register(Type from, Type to)
         {
-            return Register(from, to, InstanceLifetimeTypes.Transient);
+            return Register(from, to, InstanceLifetimeType.Transient);
         }
 
-        public IIocContainer Register(Type from, Type to, InstanceLifetimeTypes lifetime)
+        public IIocContainer Register(Type from, Type to, InstanceLifetimeType lifetime)
         {
             _container.Register(from, to, ConvertLifetimeType(lifetime));
             return this;
@@ -47,10 +47,10 @@ namespace Compilenix.HttpHeaderSurvey.Implementation.Shared.IoC
 
         public IIocContainer Register<TInterface>(TInterface instance) where TInterface : class
         {
-            return Register(instance, InstanceLifetimeTypes.SingleInstance);
+            return Register(instance, InstanceLifetimeType.SingleInstance);
         }
 
-        public IIocContainer Register<TInterface>(TInterface instance, InstanceLifetimeTypes lifetime) where TInterface : class
+        public IIocContainer Register<TInterface>(TInterface instance, InstanceLifetimeType lifetime) where TInterface : class
         {
             _container.Register(() => instance);
             return this;
@@ -69,7 +69,7 @@ namespace Compilenix.HttpHeaderSurvey.Implementation.Shared.IoC
 
         public void Register(Assembly assembly, Func<Type, bool> whereFunc)
         {
-            Register(assembly, whereFunc, InstanceLifetimeTypes.Transient);
+            Register(assembly, whereFunc, InstanceLifetimeType.Transient);
         }
 
         public T Resolve<T>() where T : class
@@ -79,17 +79,17 @@ namespace Compilenix.HttpHeaderSurvey.Implementation.Shared.IoC
 
         public IIocContainer Register<T>() where T : class
         {
-            return Register<T>(InstanceLifetimeTypes.Transient);
+            return Register<T>(InstanceLifetimeType.Transient);
         }
 
-        public IIocContainer Register<T>(InstanceLifetimeTypes lifetime) where T : class
+        public IIocContainer Register<T>(InstanceLifetimeType lifetime) where T : class
         {
             _container.Register<T>(ConvertLifetimeType(lifetime));
             _onRegistrationsFinnished += () => DiagnosticWarningDisposableTransientHandler(typeof(T));
             return this;
         }
 
-        public void Register(Assembly assembly, Func<Type, bool> whereFunc, InstanceLifetimeTypes lifetime)
+        public void Register(Assembly assembly, Func<Type, bool> whereFunc, InstanceLifetimeType lifetime)
         {
             var registrations =
                 assembly.GetExportedTypes()
@@ -104,15 +104,15 @@ namespace Compilenix.HttpHeaderSurvey.Implementation.Shared.IoC
             }
         }
 
-        private Lifestyle ConvertLifetimeType(InstanceLifetimeTypes lifetime)
+        private Lifestyle ConvertLifetimeType(InstanceLifetimeType lifetime)
         {
             switch (lifetime)
             {
-                case InstanceLifetimeTypes.Scoped:
+                case InstanceLifetimeType.Scoped:
                     return Lifestyle.Scoped;
-                case InstanceLifetimeTypes.SingleInstance:
+                case InstanceLifetimeType.SingleInstance:
                     return Lifestyle.Singleton;
-                case InstanceLifetimeTypes.Transient:
+                case InstanceLifetimeType.Transient:
                     return Lifestyle.Transient;
                 default:
                     throw new NotSupportedException("LifetimeScope not found: " + lifetime);

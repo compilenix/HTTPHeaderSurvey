@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Threading.Tasks;
 using Compilenix.HttpHeaderSurvey.Integration.DataAccess.Entitys;
 
 namespace Compilenix.HttpHeaderSurvey.Integration.DataAccess.Repositories
@@ -8,16 +9,16 @@ namespace Compilenix.HttpHeaderSurvey.Integration.DataAccess.Repositories
         /// <summary>
         /// If succeded returns the added object else null.
         /// </summary>
-        RequestHeader AddIfNotExisting(RequestHeader header);
+        Task<RequestHeader> AddIfNotExistingAsync(RequestHeader header);
 
         /// <summary>
         /// Ignores Case
         /// </summary>
-        bool ContainsRequestHeader(string header, string headerValue);
+        Task<bool> ContainsRequestHeaderAsync(string header, string headerValue);
 
         /// <summary>
         /// Ignores Case
         /// </summary>
-        IEnumerable<RequestHeader> GetByHeader(string header);
+        Task<IEnumerable<RequestHeader>> GetByHeaderAsync(string header);
     }
 }

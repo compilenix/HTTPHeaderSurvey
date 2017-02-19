@@ -16,11 +16,11 @@ namespace Compilenix.HttpHeaderSurvey.Implementation.DataAccess
         {
             var container = IoC.CurrentContainer;
 
-            container.Register<DataAccessContext>(InstanceLifetimeTypes.Scoped);
-            container.Register<IUnitOfWork, UnitOfWork>(InstanceLifetimeTypes.Transient);
+            container.Register<DataAccessContext>(InstanceLifetimeType.Scoped);
+            container.Register<IUnitOfWork, UnitOfWork>(InstanceLifetimeType.Transient);
 
             var dataAccess = Assembly.GetExecutingAssembly();
-            container.Register(dataAccess, type => type.Name.EndsWith("Repository"), InstanceLifetimeTypes.Scoped);
+            container.Register(dataAccess, type => type.Name.EndsWith("Repository"), InstanceLifetimeType.Scoped);
 
             IoC.CurrentContainer = container;
         }

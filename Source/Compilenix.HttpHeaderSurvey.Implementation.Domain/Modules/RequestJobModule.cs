@@ -13,16 +13,22 @@ namespace Compilenix.HttpHeaderSurvey.Implementation.Domain.Modules
 {
     public class RequestJobModule : BaseModule<IRequestJobRepository, RequestJob>, IRequestJobModule
     {
+        private IRequestJobRepository _repository;
+
         public RequestJobModule(IUnitOfWork unitOfWork) : base(unitOfWork)
         {
+            _repository = unitOfWork.Repository<IRequestJobRepository>();
         }
 
-        public async Task ImportFromCsv(string filePath, char delimiter = ',')
+        public async Task ImportFromCsvAsync(string filePath, char delimiter = ',')
         {
-            await ImportFromCsv(filePath, IoC.Resolve<IRequestHeaderModule>().GetDefaultRequestHeaders(), delimiter);
+            using (var module = IoC.Resolve<IRequestHeaderModule>())
+            {
+                await ImportFromCsvAsync(filePath, await module.GetDefaultRequestHeadersAsync(), delimiter);
+            }
         }
 
-        public async Task ImportFromCsv(string filePath, IEnumerable<RequestHeader> requestHeaders, char delimiter = ',')
+        public async Task ImportFromCsvAsync(string filePath, IEnumerable<RequestHeader> requestHeaders, char delimiter = ',')
         {
             var jobsFromCsv = await new DataTransferObjectConverter().RequestJobsFromCsv(filePath, delimiter);
 
@@ -43,14 +49,14 @@ namespace Compilenix.HttpHeaderSurvey.Implementation.Domain.Modules
                 var headersToAdd = new List<RequestHeader>();
                 foreach (var header in headers)
                 {
-                    headersToAdd.Add(headerRepository.AddIfNotExisting(header));
+                    headersToAdd.Add(await headerRepository.AddIfNotExistingAsync(header));
                 }
                 headersToAdd = headersToAdd.Where(x => x != null).ToList();
 
                 requestJob.Headers = headersToAdd;
-                unit.Repository<IRequestJobRepository>().AddIfNotExisting(requestJob);
+                await _repository.AddIfNotExistingAsync(requestJob);
 
-                await Save(unit);
+                await SaveAsync(unit);
             }
         }
     }

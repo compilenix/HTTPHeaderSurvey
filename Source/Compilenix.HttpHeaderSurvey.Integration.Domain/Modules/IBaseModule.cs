@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq.Expressions;
+using System.Threading.Tasks;
 using Compilenix.HttpHeaderSurvey.Integration.DataAccess.Entitys;
 using Compilenix.HttpHeaderSurvey.Integration.DataAccess.Repositories;
 
@@ -21,16 +22,16 @@ namespace Compilenix.HttpHeaderSurvey.Integration.Domain.Modules
         /// <summary>
         /// Add item or update existing
         /// </summary>
-        TItem AddOrUpdate(TItem item);
+        Task<TItem> AddOrUpdateAsync(TItem item);
 
-        IEnumerable<TItem> Find(Expression<Func<TItem, bool>> predicate);
-
-        TItem Get<TId>(TId id);
+        Task<IEnumerable<TItem>> FindAsync(Expression<Func<TItem, bool>> predicate);
 
         /// <summary>
         /// Keep in mind that the result may be huge
         /// </summary>
-        IEnumerable<TItem> GetAll();
+        Task<IEnumerable<TItem>> GetAllAsync();
+
+        Task<TItem> GetAsync<TId>(TId id);
 
         void Remove(TItem item);
 

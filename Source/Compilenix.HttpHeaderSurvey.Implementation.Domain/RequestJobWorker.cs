@@ -17,11 +17,13 @@ namespace Compilenix.HttpHeaderSurvey.Implementation.Domain
 {
     public class RequestJobWorker : IRequestJobWorker
     {
+        private readonly TimeSpan _httpClientTimeout;
         private CancellationTokenSource _cancellationTokenSource;
         private BufferBlock<RequestJob> _inputBufferBlock;
         private ActionBlock<RequestJob> _jobCompletedBlock;
         private List<TransformBlock<RequestJob, RequestJob>> _processJobBlocks;
-        private readonly TimeSpan _httpClientTimeout;
+
+        public Task Completion => _jobCompletedBlock?.Completion;
 
         public RequestJobWorker()
         {
@@ -29,68 +31,7 @@ namespace Compilenix.HttpHeaderSurvey.Implementation.Domain
             HttpClientUtils.DefaultTimeout = _httpClientTimeout;
         }
 
-        public Task Completion => _jobCompletedBlock?.Completion;
-
-        public void Stop()
-        {
-            _cancellationTokenSource?.Cancel();
-            _jobCompletedBlock?.Completion?.Wait();
-        }
-
-        public IRequestJobWorker Start(int countOfJobsToProcess = int.MaxValue)
-        {
-            if (_cancellationTokenSource == null || _cancellationTokenSource.IsCancellationRequested)
-            {
-                _cancellationTokenSource = new CancellationTokenSource();
-                InitDataflow();
-                // TODO Test and review
-                ProcessPendingJobs(countOfJobsToProcess, _cancellationTokenSource.Token);
-            }
-
-            return this;
-        }
-
-        /// <summary>Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.</summary>
-        public void Dispose()
-        {
-            Stop();
-            _cancellationTokenSource?.Dispose();
-        }
-
-        private async Task CompleteRequestJob(RequestJob job)
-        {
-            if (job == null)
-            {
-                return;
-            }
-
-            try
-            {
-                using (var unit = IoC.Resolve<IUnitOfWork>())
-                {
-                    job = unit.Repository<IRequestJobRepository>().Get(job.Id);
-
-                    if (job == null)
-                    {
-                        return;
-                    }
-
-                    job.IsCurrentlyScheduled = false;
-                    job.LastTimeProcessed = DateTime.Now;
-
-                    await unit.CompleteAsync();
-
-                    // TODO remove
-                    Console.WriteLine($"completed job -> {job.Uri}");
-                }
-            }
-            catch (Exception exception)
-            {
-                this.Log()?.Error(string.Empty, exception);
-            }
-        }
-
-        private async Task FillConsumer(int countOfJobsToProcess, ITargetBlock<RequestJob> targetBlock, CancellationToken token)
+        private static async Task FillConsumer(int countOfJobsToProcess, ITargetBlock<RequestJob> targetBlock, CancellationToken token)
         {
             int itemsGot;
             do
@@ -122,6 +63,62 @@ namespace Compilenix.HttpHeaderSurvey.Implementation.Domain
             targetBlock.Complete();
         }
 
+        public async Task StopAsync()
+        {
+            _cancellationTokenSource?.Cancel();
+            await _jobCompletedBlock?.Completion;
+        }
+
+        public async Task StartAsync(int countOfJobsToProcess)
+        {
+            if (_cancellationTokenSource == null || _cancellationTokenSource.IsCancellationRequested)
+            {
+                _cancellationTokenSource = new CancellationTokenSource();
+                InitDataflow();
+                await ProcessPendingJobs(countOfJobsToProcess, _cancellationTokenSource.Token);
+            }
+        }
+
+        /// <summary>Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.</summary>
+        public void Dispose()
+        {
+            StopAsync().Wait();
+            _cancellationTokenSource?.Dispose();
+        }
+
+        private async Task CompleteRequestJob(RequestJob job)
+        {
+            if (job == null)
+            {
+                return;
+            }
+
+            try
+            {
+                using (var unit = IoC.Resolve<IUnitOfWork>())
+                {
+                    job = await unit.Repository<IRequestJobRepository>().GetAsync(job.Id);
+
+                    if (job == null)
+                    {
+                        return;
+                    }
+
+                    job.IsCurrentlyScheduled = false;
+                    job.LastTimeProcessed = DateTime.Now;
+
+                    await unit.CompleteAsync();
+
+                    // TODO remove
+                    Console.WriteLine($"completed job -> {job.Uri}");
+                }
+            }
+            catch (Exception exception)
+            {
+                this.Log()?.Error(string.Empty, exception);
+            }
+        }
+
         private void InitDataflow()
         {
             var parallelism = Environment.ProcessorCount * 2;
@@ -129,7 +126,7 @@ namespace Compilenix.HttpHeaderSurvey.Implementation.Domain
 
             _inputBufferBlock = new BufferBlock<RequestJob>(new DataflowBlockOptions { BoundedCapacity = (parallelism * parallelism) << 4 });
             _processJobBlocks = new List<TransformBlock<RequestJob, RequestJob>>();
-            for (var i = 0; i < Environment.ProcessorCount << 5; i++)
+            for (var i = 0; i < Environment.ProcessorCount << 4; i++)
             {
                 _processJobBlocks.Add(new TransformBlock<RequestJob, RequestJob>(job => ProcessRequestJob(job), blockOptions));
             }
@@ -163,7 +160,7 @@ namespace Compilenix.HttpHeaderSurvey.Implementation.Domain
             {
                 using (var unit = IoC.Resolve<IUnitOfWork>())
                 {
-                    requestJob = unit.Repository<IRequestJobRepository>().GetWithRequestHeaders(requestJob.Id);
+                    requestJob = await unit.Repository<IRequestJobRepository>().GetWithRequestHeadersAsync(requestJob.Id);
 
                     var httpClientOptions = new HttpClientRequestOptions
                         {
@@ -203,8 +200,12 @@ namespace Compilenix.HttpHeaderSurvey.Implementation.Domain
                         return requestJob;
                     }
 
-                    var headers = IoC.Resolve<IRequestHeaderModule>().GetResponseHeadersFromList(jobResult.Headers, unit);
-                    headers.AddRange(IoC.Resolve<IRequestHeaderModule>().GetResponseHeadersFromList(jobResult.Content.Headers, unit));
+                    List<ResponseHeader> headers;
+                    using (var module = IoC.Resolve<IResponseHeaderModule>())
+                    {
+                        headers = await module.GetResponseHeadersFromListAsync(jobResult.Headers, unit);
+                        headers.AddRange(await module.GetResponseHeadersFromListAsync(jobResult.Content.Headers, unit));
+                    }
 
                     unit.Repository<IResponseMessageRepository>()
                         .Add(

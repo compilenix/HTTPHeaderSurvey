@@ -1,13 +1,14 @@
 ﻿using System.Collections.Generic;
+using System.Threading.Tasks;
 using Compilenix.HttpHeaderSurvey.Integration.DataAccess.Entitys;
 
 namespace Compilenix.HttpHeaderSurvey.Integration.DataAccess.Repositories
 {
     public interface IResponseHeaderRepository : IRepository<ResponseHeader>
     {
-        ResponseHeader AddIfNotExisting(ResponseHeader header);
-        bool ContainsResponseHeader(string header, string headerValue);
-        IEnumerable<ResponseHeader> GetByHeader(string header);
-        ResponseHeader GetByHeaderAndValue(string header, string value);
+        Task<ResponseHeader> AddIfNotExistingAsync(ResponseHeader header);
+        Task<bool> ContainsResponseHeaderAsync(string header, string headerValue);
+        Task<ResponseHeader> GetByHeaderAndValueAsync(string header, string value);
+        Task<IEnumerable<ResponseHeader>> GetByHeaderAsync(string header);
     }
 }
