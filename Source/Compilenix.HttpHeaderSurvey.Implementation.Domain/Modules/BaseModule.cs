@@ -30,7 +30,7 @@ namespace Compilenix.HttpHeaderSurvey.Implementation.Domain.Modules
 
             if (existingItem != null)
             {
-                return Update(MappingUtils.Map<TItem>(existingItem, item));
+                return UpdateExisting(MappingUtils.Map<TItem>(existingItem, item));
             }
 
             return Add(item);
@@ -69,9 +69,9 @@ namespace Compilenix.HttpHeaderSurvey.Implementation.Domain.Modules
             return BaseEntityRepository.Add(item);
         }
 
-        public TItem Update(TItem item)
+        public TItem UpdateExisting(TItem item)
         {
-            return BaseEntityRepository.Update(item);
+            return BaseEntityRepository.UpdateExisting(item);
         }
 
         protected async Task SaveAsync(IUnitOfWork unit)

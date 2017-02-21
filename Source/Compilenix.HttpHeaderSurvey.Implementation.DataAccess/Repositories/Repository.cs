@@ -57,7 +57,7 @@ namespace Compilenix.HttpHeaderSurvey.Implementation.DataAccess.Repositories
             return await Entities?.CountAsync();
         }
 
-        public TEntity Update(TEntity entity)
+        public TEntity UpdateExisting(TEntity entity)
         {
             Entities.Attach(entity);
             Context.Entry(entity).State = EntityState.Modified;

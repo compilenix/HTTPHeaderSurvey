@@ -18,6 +18,6 @@ namespace Compilenix.HttpHeaderSurvey.Integration.DataAccess.Repositories
         Task<TEntity> GetAsync<TTarget>(TTarget id);
         void Remove(TEntity entity);
         Task<TEntity> SingleOrDefaultAsync(Expression<Func<TEntity, bool>> predicate);
-        TEntity Update(TEntity entity);
+        TEntity UpdateExisting(TEntity entity);
     }
 }

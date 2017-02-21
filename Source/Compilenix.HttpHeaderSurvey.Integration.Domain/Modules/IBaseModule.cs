@@ -35,6 +35,6 @@ namespace Compilenix.HttpHeaderSurvey.Integration.Domain.Modules
 
         void Remove(TItem item);
 
-        TItem Update(TItem item);
+        TItem UpdateExisting(TItem item);
     }
 }
