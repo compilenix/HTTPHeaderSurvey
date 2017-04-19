@@ -5,9 +5,9 @@ using JetBrains.Annotations;
 namespace Compilenix.HttpHeaderSurvey.Implementation.DataAccess.Repositories
 {
     [UsedImplicitly]
-    public class ResponseMessageRepository : Repository<ResponseMessage>, IResponseMessageRepository
+    public class ResponseErrorRepository : Repository<ResponseError>, IResponseErrorRepository
     {
-        public ResponseMessageRepository([NotNull] DataAccessContext context) : base(context)
+        public ResponseErrorRepository([NotNull] DataAccessContext context) : base(context)
         {
         }
     }

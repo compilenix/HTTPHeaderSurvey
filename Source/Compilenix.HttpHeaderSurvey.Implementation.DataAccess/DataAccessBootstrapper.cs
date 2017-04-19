@@ -20,7 +20,7 @@ namespace Compilenix.HttpHeaderSurvey.Implementation.DataAccess
             container.Register<IUnitOfWork, UnitOfWork>(InstanceLifetimeType.Transient);
 
             var dataAccess = Assembly.GetExecutingAssembly();
-            container.Register(dataAccess, type => type.Name.EndsWith("Repository"), InstanceLifetimeType.Scoped);
+            container.Register(dataAccess, type => type?.Name.EndsWith("Repository") ?? false, InstanceLifetimeType.Scoped);
 
             IoC.CurrentContainer = container;
         }
