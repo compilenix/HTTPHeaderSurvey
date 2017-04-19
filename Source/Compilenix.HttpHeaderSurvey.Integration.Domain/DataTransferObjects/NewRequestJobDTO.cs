@@ -1,5 +1,8 @@
-﻿namespace Compilenix.HttpHeaderSurvey.Integration.Domain.DataTransferObjects
+﻿using System.Diagnostics.CodeAnalysis;
+
+namespace Compilenix.HttpHeaderSurvey.Integration.Domain.DataTransferObjects
 {
+    [SuppressMessage("ReSharper", "UnusedAutoPropertyAccessor.Global")]
     public class NewRequestJobDto
     {
         public string Method { get; set; }

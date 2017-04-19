@@ -41,6 +41,7 @@
     <Compile Include="DataTransferObjects\NewRequestJobDTO.cs" />
     <Compile Include="IApplicationConfigurationCollection.cs" />
     <Compile Include="IDataTransferObjectConverter.cs" />
+    <Compile Include="IRequestJobImporter.cs" />
     <Compile Include="IRequestJobWorker.cs" />
     <Compile Include="Modules\IBaseModule.cs" />
     <Compile Include="Modules\IResponseErrorModule.cs" />

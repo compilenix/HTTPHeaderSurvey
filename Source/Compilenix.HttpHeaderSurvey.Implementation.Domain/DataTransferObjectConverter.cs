@@ -10,25 +10,24 @@ using Compilenix.HttpHeaderSurvey.Implementation.Shared;
 using Compilenix.HttpHeaderSurvey.Integration.DataAccess.Entitys;
 using Compilenix.HttpHeaderSurvey.Integration.Domain;
 using Compilenix.HttpHeaderSurvey.Integration.Domain.DataTransferObjects;
+using JetBrains.Annotations;
 
 namespace Compilenix.HttpHeaderSurvey.Implementation.Domain
 {
     public class DataTransferObjectConverter : IDataTransferObjectConverter
     {
-        private static async Task<DataTable> ConvertCsvToDataTable(string filePath, char seperator)
+        [ItemNotNull]
+        [NotNull]
+        private static async Task<DataTable> ConvertCsvToDataTable([NotNull] string filePath, char seperator)
         {
             var dataTable = new DataTable();
 
             using (var streamReader = new StreamReader(filePath, Encoding.UTF8))
             {
-                typeof(DataTransferObjectConverter).Log()?.Debug("Loading csv file");
+                typeof(DataTransferObjectConverter).Log().Debug("Loading csv file");
                 dataTable.Columns.AddRange(GetDataColumnsFromCsvHeader(seperator, streamReader));
 
-                var blockOptions = new ExecutionDataflowBlockOptions
-                    {
-                        BoundedCapacity = Environment.ProcessorCount * 2,
-                        MaxDegreeOfParallelism = Environment.ProcessorCount * 2
-                    };
+                var blockOptions = new ExecutionDataflowBlockOptions { BoundedCapacity = Environment.ProcessorCount * 2, MaxDegreeOfParallelism = Environment.ProcessorCount * 2 };
 
                 var coloumCount = dataTable.Columns.Count;
 
@@ -36,92 +35,117 @@ namespace Compilenix.HttpHeaderSurvey.Implementation.Domain
                 var processLineBock = new TransformBlock<string, DataRow>(
                     line =>
                         {
+                            var row = default(DataRow);
+
                             try
                             {
-                                var row = default(DataRow);
                                 dataTable.ThreadSafeAction(() => { row = dataTable.NewRow(); });
+
+                                if (line == null)
+                                {
+                                    return row;
+                                }
+
                                 var columnValues = line.Split(seperator);
                                 if (columnValues.Length == coloumCount)
                                 {
+                                    // ReSharper disable once CoVariantArrayConversion
                                     row.ItemArray = columnValues;
                                 }
                                 return row;
                             }
-                            catch (Exception e)
+                            catch
                             {
-                                Console.WriteLine(e);
-                                throw;
+                                // ignored
                             }
-                        },
-                    blockOptions);
+
+                            return row;
+                        }, blockOptions);
                 var completeBlock = new ActionBlock<DataRow>(
                     row =>
                         {
                             if (row == null)
                             {
-                                typeof(DataTransferObjectConverter).Log()?.Debug("Got null row");
+                                typeof(DataTransferObjectConverter).Log().Debug("Got null row");
                                 return;
                             }
 
-                            dataTable.ThreadSafeAction(() => dataTable.Rows.Add(row));
-                        },
-                    blockOptions);
+                            dataTable.ThreadSafeAction(() => dataTable.Rows?.Add(row));
+                        }, blockOptions);
 
                 bufferBlock.LinkTo(processLineBock);
                 processLineBock.LinkTo(completeBlock);
 
+#pragma warning disable 4014
                 bufferBlock.Completion?.ContinueWith(t => processLineBock.Complete());
                 processLineBock.Completion?.ContinueWith(t => completeBlock.Complete());
+#pragma warning restore 4014
 
                 while (!streamReader.EndOfStream)
                 {
-                    await bufferBlock.SendAsync(await streamReader.ReadLineAsync());
+                    var readLineAsync = streamReader.ReadLineAsync();
+                    if (readLineAsync == null)
+                    {
+                        continue;
+                    }
+
+                    var sendAsync = bufferBlock.SendAsync(await readLineAsync);
+                    if (sendAsync != null)
+                    {
+                        await sendAsync;
+                    }
                 }
                 bufferBlock.Complete();
 
+                // ReSharper disable once PossibleNullReferenceException
                 await bufferBlock.Completion;
+                // ReSharper disable once PossibleNullReferenceException
                 await processLineBock.Completion;
+                // ReSharper disable once PossibleNullReferenceException
                 await completeBlock.Completion;
             }
 
-            typeof(DataTransferObjectConverter).Log()?.Debug("Csv file loaded");
+            typeof(DataTransferObjectConverter).Log().Debug("Csv file loaded");
             return dataTable;
         }
 
-        private static DataColumn[] GetDataColumnsFromCsvHeader(char seperator, TextReader streamReader)
+        private static DataColumn[] GetDataColumnsFromCsvHeader(char seperator, [NotNull] TextReader streamReader)
         {
-            return streamReader.ReadLine().Split(seperator).Select(column => new DataColumn(column)).ToArray();
+            return streamReader.ReadLine()?.Split(seperator).Select(column => new DataColumn(column)).ToArray();
         }
 
         public async Task<IEnumerable<RequestJob>> RequestJobsFromCsv(string filePath, char seperator)
         {
             var jobs = new List<NewRequestJobDto>();
             var dataTable = await ConvertCsvToDataTable(filePath, seperator);
+
+            if (dataTable.Rows == null)
+            {
+                return new List<RequestJob>();
+            }
+
             var rows = new DataRow[dataTable.Rows.Count];
             dataTable.Rows.CopyTo(rows, 0);
             dataTable.Dispose();
-            GarbageCollectionUtils.CollectNow();
 
             Parallel.ForEach(
-                rows,
-                new ParallelOptions { MaxDegreeOfParallelism = Environment.ProcessorCount * 2 },
-                row =>
+                rows, new ParallelOptions { MaxDegreeOfParallelism = Environment.ProcessorCount }, row =>
                     {
-                        if (row.ItemArray.Length == typeof(NewRequestJobDto).GetProperties().Length)
+                        if (row != null && row.ItemArray.Length == typeof(NewRequestJobDto).GetProperties().Length)
                         {
                             jobs.ThreadSafeAction(
-                                () =>
-                                    jobs.Add(
-                                        new NewRequestJobDto
-                                            {
-                                                Method = row.ItemArray[0]?.ToString(),
-                                                HttpVersion = row.ItemArray[1]?.ToString(),
-                                                IsRunOnce = bool.Parse(row.ItemArray[2]?.ToString()),
-                                                Uri = row.ItemArray[3]?.ToString()
-                                            }));
+                                () => jobs.Add(
+                                    new NewRequestJobDto
+                                        {
+                                            Method = row.ItemArray[0]?.ToString(),
+                                            HttpVersion = row.ItemArray[1]?.ToString(),
+                                            IsRunOnce = bool.Parse(row.ItemArray[2]?.ToString() ?? "true"),
+                                            Uri = row.ItemArray[3]?.ToString()
+                                        }));
                         }
                     });
 
+            // ReSharper disable once AssignNullToNotNullAttribute
             return MappingUtils.MapRange<RequestJob>(jobs);
         }
     }
