@@ -1,5 +1,11 @@
+using System.Diagnostics.CodeAnalysis;
+using JetBrains.Annotations;
+
 namespace Compilenix.HttpHeaderSurvey.Integration.DataAccess.Entitys
 {
+    [UsedImplicitly]
+    [SuppressMessage("ReSharper", "UnusedAutoPropertyAccessor.Global")]
+    [SuppressMessage("ReSharper", "UnusedMember.Global")]
     public class ApplicationLog : BaseEntity
     {
         public new int Id { get; set; }

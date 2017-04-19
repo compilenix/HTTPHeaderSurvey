@@ -1,8 +1,17 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
+using JetBrains.Annotations;
 
 namespace Compilenix.HttpHeaderSurvey.Integration.DataAccess.Entitys
 {
+    [DebuggerStepThrough]
+    [SuppressMessage("ReSharper", "ClassWithVirtualMembersNeverInherited.Global")]
+    [UsedImplicitly]
+    [SuppressMessage("ReSharper", "MemberCanBeProtected.Global")]
+    [SuppressMessage("ReSharper", "UnusedAutoPropertyAccessor.Global")]
+    [SuppressMessage("ReSharper", "VirtualMemberCallInConstructor")]
     public class RequestJob : BaseEntity
     {
         public string Method { get; set; }
@@ -19,9 +28,9 @@ namespace Compilenix.HttpHeaderSurvey.Integration.DataAccess.Entitys
 
         public DateTime LastTimeProcessed { get; set; }
 
-        public ICollection<RequestHeader> Headers { get; set; }
+        public virtual ICollection<RequestHeader> Headers { get; set; }
 
-        public ICollection<ResponseMessage> ResponseMessages { get; set; }
+        public virtual ICollection<ResponseMessage> ResponseMessages { get; set; }
 
         public RequestJob()
         {

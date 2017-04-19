@@ -31,6 +31,9 @@
     <DefineConstants>TRACE</DefineConstants>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="JetBrains.Annotations, Version=10.4.0.0, Culture=neutral, PublicKeyToken=1010a0d8d6380325, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\JetBrains.Annotations.10.4.0\lib\net\JetBrains.Annotations.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.ComponentModel.DataAnnotations" />
     <Reference Include="System.Core" />
@@ -38,13 +41,17 @@
   <ItemGroup>
     <Compile Include="Entitys\ApplicationLog.cs" />
     <Compile Include="Entitys\BaseEntity.cs" />
+    <Compile Include="Entitys\ErrorCode.cs" />
     <Compile Include="Entitys\RequestHeader.cs" />
     <Compile Include="Entitys\RequestJob.cs" />
+    <Compile Include="Entitys\ResponseError.cs" />
     <Compile Include="Entitys\ResponseHeader.cs" />
     <Compile Include="Entitys\ResponseMessage.cs" />
     <Compile Include="IUnitOfWork.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Repositories\IRepository.cs" />
+    <Compile Include="Repositories\IErrorCodeRepository.cs" />
+    <Compile Include="Repositories\IResponseErrorRepository.cs" />
     <Compile Include="Repositories\IRequestHeaderRepository.cs" />
     <Compile Include="Repositories\IResponseMessageRepository.cs" />
     <Compile Include="Repositories\IResponseHeaderRepository.cs" />
@@ -52,6 +59,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
+    <None Include="packages.config" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

@@ -2,9 +2,11 @@
 using System.Data.Entity.Infrastructure.Annotations;
 using System.Data.Entity.ModelConfiguration;
 using Compilenix.HttpHeaderSurvey.Integration.DataAccess.Entitys;
+using JetBrains.Annotations;
 
 namespace Compilenix.HttpHeaderSurvey.Implementation.DataAccess.EntityConfigurations
 {
+    [UsedImplicitly]
     public class RequestHeaderConfiguration : EntityTypeConfiguration<RequestHeader>
     {
         public RequestHeaderConfiguration()
@@ -15,21 +17,11 @@ namespace Compilenix.HttpHeaderSurvey.Implementation.DataAccess.EntityConfigurat
 
             Property(p => p.Id)?.HasColumnAnnotation(IndexAnnotation.AnnotationName, new IndexAnnotation(new IndexAttribute()));
 
-            Property(p => p.Key)?
-                .IsRequired()?
-                .HasMaxLength(64)?
-                .HasColumnAnnotation(
-                    IndexAnnotation.AnnotationName,
-                    new IndexAnnotation(new IndexAttribute(uniqueIndexKeyValue) { IsUnique = true, Order = 1 }));
+            Property(p => p.Key)?.IsRequired()?.HasMaxLength(64)?.HasColumnAnnotation(IndexAnnotation.AnnotationName, new IndexAnnotation(new IndexAttribute(uniqueIndexKeyValue) { IsUnique = true, Order = 1 }));
 
             Property(p => p.Value)?.IsRequired();
 
-            Property(p => p.ValueHash)?
-                .IsRequired()?
-                .HasMaxLength(64)?
-                .HasColumnAnnotation(
-                    IndexAnnotation.AnnotationName,
-                    new IndexAnnotation(new IndexAttribute(uniqueIndexKeyValue) { IsUnique = true, Order = 2 }));
+            Property(p => p.ValueHash)?.IsRequired()?.HasMaxLength(64)?.HasColumnAnnotation(IndexAnnotation.AnnotationName, new IndexAnnotation(new IndexAttribute(uniqueIndexKeyValue) { IsUnique = true, Order = 2 }));
 
             Property(p => p.DateCreated)?.IsRequired();
         }

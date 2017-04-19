@@ -9,19 +9,17 @@ namespace Compilenix.HttpHeaderSurvey.Integration.DataAccess.Entitys
     [SuppressMessage("ReSharper", "AutoPropertyCanBeMadeGetOnly.Global")]
     [SuppressMessage("ReSharper", "MemberCanBeProtected.Global")]
     [SuppressMessage("ReSharper", "VirtualMemberCallInConstructor")]
-    public class RequestHeader : BaseEntity
+    public class ErrorCode : BaseEntity
     {
-        public string Key { get; set; }
+        public int Code { get; set; }
 
-        public string Value { get; set; }
+        public string Message { get; set; }
 
-        public string ValueHash { get; set; }
+        public virtual ICollection<ResponseError> ResponseErrors { get; set; }
 
-        public virtual ICollection<RequestJob> RequestJobs { get; set; }
-
-        public RequestHeader()
+        public ErrorCode()
         {
-            RequestJobs = new HashSet<RequestJob>();
+            ResponseErrors = new HashSet<ResponseError>();
         }
     }
 }
