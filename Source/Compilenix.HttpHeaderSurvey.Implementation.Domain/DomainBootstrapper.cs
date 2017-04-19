@@ -22,9 +22,10 @@ namespace Compilenix.HttpHeaderSurvey.Implementation.Domain
             container.Register<IIoCScope, IoCScope>(InstanceLifetimeType.Scoped);
 
             var domain = Assembly.GetExecutingAssembly();
-            container.Register(domain, type => type.Name.EndsWith("Module"), InstanceLifetimeType.Transient);
+            container.Register(domain, type => type?.Name.EndsWith("Module") ?? false, InstanceLifetimeType.Scoped);
             container.Register<IApplicationConfigurationCollection, ApplicationConfigurationCollection>(InstanceLifetimeType.SingleInstance);
-            container.Register<IRequestJobWorker, RequestJobWorker>(InstanceLifetimeType.SingleInstance);
+            container.Register<IRequestJobWorker, RequestJobWorker>(InstanceLifetimeType.Transient);
+            container.Register<IRequestJobImporter, RequestJobImporter>(InstanceLifetimeType.Transient);
 
             IoC.CurrentContainer = container;
         }

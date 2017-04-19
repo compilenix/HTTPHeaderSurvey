@@ -31,6 +31,9 @@
     <DefineConstants>TRACE</DefineConstants>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="JetBrains.Annotations, Version=10.4.0.0, Culture=neutral, PublicKeyToken=1010a0d8d6380325, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\JetBrains.Annotations.10.4.0\lib\net\JetBrains.Annotations.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
   </ItemGroup>
@@ -40,6 +43,7 @@
     <Compile Include="IDataTransferObjectConverter.cs" />
     <Compile Include="IRequestJobWorker.cs" />
     <Compile Include="Modules\IBaseModule.cs" />
+    <Compile Include="Modules\IResponseErrorModule.cs" />
     <Compile Include="Modules\IResponseHeaderModule.cs" />
     <Compile Include="Modules\IRequestHeaderModule.cs" />
     <Compile Include="Modules\IRequestJobModule.cs" />
@@ -50,6 +54,9 @@
       <Project>{E22A9B2D-CD61-49B9-B8BA-361B0CFF2A0A}</Project>
       <Name>Compilenix.HttpHeaderSurvey.Integration.DataAccess</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

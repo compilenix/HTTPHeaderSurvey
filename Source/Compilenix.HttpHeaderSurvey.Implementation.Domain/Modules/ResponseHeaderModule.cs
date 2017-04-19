@@ -5,27 +5,30 @@ using Compilenix.HttpHeaderSurvey.Integration.DataAccess;
 using Compilenix.HttpHeaderSurvey.Integration.DataAccess.Entitys;
 using Compilenix.HttpHeaderSurvey.Integration.DataAccess.Repositories;
 using Compilenix.HttpHeaderSurvey.Integration.Domain.Modules;
+using JetBrains.Annotations;
 
 namespace Compilenix.HttpHeaderSurvey.Implementation.Domain.Modules
 {
+    [UsedImplicitly]
     public class ResponseHeaderModule : BaseModule<IResponseHeaderRepository, ResponseHeader>, IResponseHeaderModule
     {
-        private IResponseHeaderRepository _repository;
-
-        public ResponseHeaderModule(IUnitOfWork unitOfWork) : base(unitOfWork)
+        public ResponseHeaderModule([NotNull] IResponseHeaderRepository repository) : base(repository)
         {
-            _repository = unitOfWork.Repository<IResponseHeaderRepository>();
         }
 
-        public async Task<List<ResponseHeader>> GetResponseHeadersFromListAsync(IEnumerable<KeyValuePair<string, IEnumerable<string>>> headerList,
-                                                                                IUnitOfWork unit)
+        public async Task<List<ResponseHeader>> GetResponseHeadersFromListAsync(IEnumerable<KeyValuePair<string, IEnumerable<string>>> headerList, IUnitOfWork unit)
         {
-            var headersFromResponse = new List<ResponseHeader>();
-            var addedHeaders = new List<ResponseHeader>();
-            var headers = new List<ResponseHeader>();
+            var existingHeaders = new List<ResponseHeader>();
+            var newHeaders = new List<ResponseHeader>();
+            var responseHeaderRepository = unit.Resolve<IResponseHeaderRepository>();
 
             foreach (var header in headerList)
             {
+                if (header.Key == null || header.Value == null)
+                {
+                    continue;
+                }
+
                 // "fixing" bug in .net httpclient lib, where server values get split into multiple strings by whitespaces.
                 var headerValues = new List<string>();
                 if (header.Key.ToLower() == "server")
@@ -40,25 +43,32 @@ namespace Compilenix.HttpHeaderSurvey.Implementation.Domain.Modules
                 foreach (var headerValue in headerValues)
                 {
                     var tmpHeader = new ResponseHeader { Key = header.Key, Value = headerValue };
-                    headersFromResponse.Add(tmpHeader);
-                    addedHeaders.Add(await _repository.AddIfNotExistingAsync(tmpHeader));
+                    var newAddedHeader = await responseHeaderRepository.AddIfNotExistingAsync(tmpHeader);
+
+                    if (newAddedHeader == null)
+                    {
+                        existingHeaders.Add(tmpHeader);
+                    }
+                    else
+                    {
+                        newHeaders.Add(newAddedHeader);
+                    }
                 }
             }
 
-            addedHeaders = addedHeaders.Where(h => h != null).ToList();
-            headersFromResponse.RemoveAll(header => addedHeaders.Contains(header));
-
-            foreach (var responseHeader in headersFromResponse)
+            var headers = new List<ResponseHeader>();
+            foreach (var existingHeader in existingHeaders)
             {
-                if (responseHeader != null)
+                if (existingHeader.Key == null || existingHeader.Value == null)
                 {
-                    headers.Add(await _repository.GetByHeaderAndValueAsync(responseHeader.Key, responseHeader.Value));
+                    continue;
                 }
+
+                headers.Add(await responseHeaderRepository.GetByHeaderAndValueAsync(existingHeader.Key, existingHeader.Value));
             }
 
-            headers.AddRange(addedHeaders);
-            headers = headers.Where(h => h != null).Distinct().ToList();
-            return headers;
+            headers.AddRange(newHeaders);
+            return headers.Distinct().Where(h => h != null).ToList();
         }
     }
 }

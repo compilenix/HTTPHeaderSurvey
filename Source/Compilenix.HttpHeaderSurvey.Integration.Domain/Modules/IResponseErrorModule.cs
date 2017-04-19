@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+﻿using System;
 using System.Threading.Tasks;
 using Compilenix.HttpHeaderSurvey.Integration.DataAccess;
 using Compilenix.HttpHeaderSurvey.Integration.DataAccess.Entitys;
@@ -7,10 +7,12 @@ using JetBrains.Annotations;
 
 namespace Compilenix.HttpHeaderSurvey.Integration.Domain.Modules
 {
-    public interface IResponseHeaderModule : IBaseModule<IResponseHeaderRepository, ResponseHeader>
+    public interface IResponseErrorModule : IBaseModule<IResponseErrorRepository, ResponseError>
     {
-        [ItemNotNull]
+        /// <summary>
+        /// Returns true if this was a known error.
+        /// </summary>
         [NotNull]
-        Task<List<ResponseHeader>> GetResponseHeadersFromListAsync([NotNull] IEnumerable<KeyValuePair<string, IEnumerable<string>>> headerList, [NotNull] IUnitOfWork unit);
+        Task<bool> AddAsync([NotNull] ResponseMessage messageWithError, [NotNull] Exception error, [NotNull] IUnitOfWork unit);
     }
 }

@@ -2,34 +2,34 @@
 using System.Collections.Generic;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
-using Compilenix.HttpHeaderSurvey.Integration.DataAccess;
 using Compilenix.HttpHeaderSurvey.Integration.DataAccess.Entitys;
 using Compilenix.HttpHeaderSurvey.Integration.DataAccess.Repositories;
 using Compilenix.HttpHeaderSurvey.Integration.Domain.Modules;
+using JetBrains.Annotations;
 
 namespace Compilenix.HttpHeaderSurvey.Implementation.Domain.Modules
 {
     public class BaseModule<TRepository, TItem> : IBaseModule<TRepository, TItem>
         where TItem : BaseEntity where TRepository : class, IRepository<TItem>
     {
-        protected IRepository<TItem> BaseEntityRepository;
-        public bool SaveChanges { get; set; }
-        public virtual int Count => BaseEntityRepository.CountAsync().Result;
-        protected IUnitOfWork UnitOfWork { get; }
+        // ReSharper disable once MemberCanBePrivate.Global
+        [NotNull]
+        protected readonly IRepository<TItem> Repository;
 
-        public BaseModule(IUnitOfWork unitOfWork)
+        public virtual int Count => Repository.CountAsync().Result;
+
+        protected BaseModule([NotNull] TRepository repository)
         {
-            UnitOfWork = unitOfWork;
-            BaseEntityRepository = UnitOfWork.Repository<TRepository>();
-            SaveChanges = true;
+            Repository = repository;
         }
 
         public virtual async Task<TItem> AddOrUpdateAsync(TItem item)
         {
-            var existingItem = await BaseEntityRepository.GetAsync(item.Id);
+            var existingItem = await Repository.GetAsync(item.Id);
 
             if (existingItem != null)
             {
+                // ReSharper disable once AssignNullToNotNullAttribute
                 return UpdateExisting(MappingUtils.Map<TItem>(existingItem, item));
             }
 
@@ -38,48 +38,33 @@ namespace Compilenix.HttpHeaderSurvey.Implementation.Domain.Modules
 
         public virtual async Task<IEnumerable<TItem>> FindAsync(Expression<Func<TItem, bool>> predicate)
         {
-            return await BaseEntityRepository.FindAsync(predicate);
+            // ReSharper disable once AssignNullToNotNullAttribute
+            return await Repository.FindAsync(predicate);
         }
 
         public virtual async Task<TItem> GetAsync<TId>(TId id)
         {
-            return await BaseEntityRepository.GetAsync(id);
+            return await Repository.GetAsync(id);
         }
 
         public virtual async Task<IEnumerable<TItem>> GetAllAsync()
         {
-            return await BaseEntityRepository.GetAllAsync();
+            return await Repository.GetAllAsync();
         }
 
         public virtual void Remove(TItem item)
         {
-            BaseEntityRepository.Remove(item);
-        }
-
-        // TODO mybe move UnitOfWork.Complete() into function
-        /// <summary>Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.</summary>
-        public void Dispose()
-        {
-            SaveAsync(UnitOfWork).Wait();
-            UnitOfWork?.Dispose();
+            Repository.Remove(item);
         }
 
         public virtual TItem Add(TItem item)
         {
-            return BaseEntityRepository.Add(item);
+            return Repository.Add(item);
         }
 
         public TItem UpdateExisting(TItem item)
         {
-            return BaseEntityRepository.UpdateExisting(item);
-        }
-
-        protected async Task SaveAsync(IUnitOfWork unit)
-        {
-            if (SaveChanges)
-            {
-                await unit?.CompleteAsync();
-            }
+            return Repository.UpdateExisting(item);
         }
     }
 }
