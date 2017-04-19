@@ -19,20 +19,55 @@ namespace Compilenix.HttpHeaderSurvey.Implementation.Domain
     [UsedImplicitly]
     public class RequestJobWorker : IRequestJobWorker
     {
+        private readonly CancellationTokenSource _cancellationTokenSource;
         private readonly TimeSpan _httpClientTimeout;
-        private CancellationTokenSource _cancellationTokenSource;
         private BufferBlock<RequestJob> _inputBufferBlock;
+        private bool _isThrottling;
         private ActionBlock<Tuple<RequestJob, bool>> _jobCompletedBlock;
         private List<TransformBlock<RequestJob, Tuple<RequestJob, bool>>> _processJobBlocks;
 
         // ReSharper disable once AssignNullToNotNullAttribute
         public Task Completion => _jobCompletedBlock?.Completion;
 
-        // TODO add IUnitOfWork
+        public bool IsThrottling
+        {
+            get => _isThrottling;
+            set
+            {
+                _isThrottling = value;
+
+                // ReSharper disable once InvertIf
+                if (value)
+                {
+                    InitThrottlingTask(IoC.Resolve<IApplicationConfigurationCollection>());
+
+                    if (!IsThrottlingTaskStarted)
+                    {
+                        IsThrottlingTaskStarted = true;
+                        ThrottlingTask?.Start();
+                    }
+                }
+            }
+        }
+
+        public uint ThrottlingItemsPerSecond { get; set; }
+
+        public uint CurrentItemsPerSecond { get; private set; }
+
+        private Task ThrottlingTask { get; set; }
+
+        private bool IsThrottlingTaskStarted { get; set; }
+
         public RequestJobWorker()
         {
-            _httpClientTimeout = TimeSpan.FromSeconds(int.Parse(IoC.Resolve<IApplicationConfigurationCollection>().Get("HttpClientTimeoutSeconds") ?? "60"));
+            _cancellationTokenSource = new CancellationTokenSource();
+            IsThrottlingTaskStarted = false;
+
+            var config = IoC.Resolve<IApplicationConfigurationCollection>();
+            _httpClientTimeout = TimeSpan.FromSeconds(int.Parse(config.Get("HttpClientTimeoutSeconds") ?? "60"));
             HttpClientUtils.DefaultTimeout = _httpClientTimeout;
+
+            IsThrottling = bool.Parse(config.Get("RequestJobWorkerThrottlingEnabled") ?? "False");
         }
 
         private static async Task FillConsumerAsync(int countOfJobsToProcess, [NotNull] ITargetBlock<RequestJob> targetBlock, CancellationToken token)
@@ -76,17 +111,22 @@ namespace Compilenix.HttpHeaderSurvey.Implementation.Domain
         public async Task StopAsync()
         {
             _cancellationTokenSource?.Cancel();
+
             if (_jobCompletedBlock?.Completion != null)
             {
                 await _jobCompletedBlock?.Completion;
+            }
+
+            if (IsThrottling && ThrottlingTask != null)
+            {
+                await ThrottlingTask;
             }
         }
 
         public async Task StartAsync(int countOfJobsToProcess)
         {
-            if (_cancellationTokenSource == null || _cancellationTokenSource.IsCancellationRequested)
+            if (!_cancellationTokenSource?.IsCancellationRequested ?? false)
             {
-                _cancellationTokenSource = new CancellationTokenSource();
                 InitDataflow();
 
                 // ReSharper disable once PossibleNullReferenceException
@@ -151,11 +191,12 @@ namespace Compilenix.HttpHeaderSurvey.Implementation.Domain
         {
             var blockOptions = new ExecutionDataflowBlockOptions
                 {
-                    MaxDegreeOfParallelism = DataflowBlockOptions.Unbounded,
-                    BoundedCapacity = 3
+                    MaxDegreeOfParallelism = Environment.ProcessorCount,
+                    BoundedCapacity = 1,
+                    TaskScheduler = new ConcurrentExclusiveSchedulerPair().ConcurrentScheduler
                 };
 
-            _inputBufferBlock = new BufferBlock<RequestJob>(new DataflowBlockOptions { BoundedCapacity = (Environment.ProcessorCount * Environment.ProcessorCount) << 3 });
+            _inputBufferBlock = new BufferBlock<RequestJob>(new DataflowBlockOptions { BoundedCapacity = 500 });
             _processJobBlocks = new List<TransformBlock<RequestJob, Tuple<RequestJob, bool>>>();
             for (var i = 0; i < Environment.ProcessorCount << 3; i++)
             {
@@ -171,6 +212,48 @@ namespace Compilenix.HttpHeaderSurvey.Implementation.Domain
 
                 // ReSharper disable once MethodSupportsCancellation
                 _inputBufferBlock.Completion?.ContinueWith(t => { jobBlock.Complete(); });
+            }
+        }
+
+        private void InitThrottlingTask([NotNull] IApplicationConfigurationCollection config)
+        {
+            ThrottlingItemsPerSecond = uint.Parse(config.Get("RequestJobWorkerThrottlingItemsPerSecond") ?? "10");
+
+            if (ThrottlingItemsPerSecond == 0)
+            {
+                ThrottlingItemsPerSecond = 10;
+            }
+
+            CurrentItemsPerSecond = 0;
+
+            void DecreaseItemsPerSecond()
+            {
+                if (CurrentItemsPerSecond != 0)
+                {
+                    if (CurrentItemsPerSecond < ThrottlingItemsPerSecond)
+                    {
+                        CurrentItemsPerSecond = 0;
+                    }
+                    else
+                    {
+                        CurrentItemsPerSecond -= ThrottlingItemsPerSecond;
+                    }
+                }
+
+                Thread.Sleep(1_000);
+            }
+
+            void ItemsPerSecondAction()
+            {
+                while (!(_cancellationTokenSource?.IsCancellationRequested ?? true))
+                {
+                    CurrentItemsPerSecond.ThreadSafeAction(DecreaseItemsPerSecond);
+                }
+            }
+
+            if (ThrottlingTask == null)
+            {
+                ThrottlingTask = new Task(ItemsPerSecondAction);
             }
         }
 
@@ -201,6 +284,16 @@ namespace Compilenix.HttpHeaderSurvey.Implementation.Domain
 
         private async Task<Tuple<RequestJob, bool>> ProcessRequestJob([NotNull] RequestJob requestJob)
         {
+            if (IsThrottling)
+            {
+                while (CurrentItemsPerSecond >= ThrottlingItemsPerSecond)
+                {
+                    Thread.Sleep(50);
+                }
+
+                CurrentItemsPerSecond.ThreadSafeAction(() => CurrentItemsPerSecond++);
+            }
+
             HttpResponseMessage jobResult = null;
             var saveCompleted = true;
             try

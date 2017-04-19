@@ -11,6 +11,12 @@ namespace Compilenix.HttpHeaderSurvey.Integration.Domain
         [NotNull]
         Task Completion { get; }
 
+        bool IsThrottling { get; set; }
+
+        uint ThrottlingItemsPerSecond { get; set; }
+
+        uint CurrentItemsPerSecond { get; }
+
         [NotNull]
         Task StartAsync(int countOfJobsToProcess);
 
