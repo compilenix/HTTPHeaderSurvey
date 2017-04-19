@@ -1,25 +1,43 @@
 ﻿using System;
+using System.Diagnostics;
 using System.Linq;
 using System.Reflection;
 using Compilenix.HttpHeaderSurvey.Integration.Shared.IoC;
+using JetBrains.Annotations;
 using SimpleInjector;
 using SimpleInjector.Diagnostics;
 using SimpleInjector.Extensions.LifetimeScoping;
 
 namespace Compilenix.HttpHeaderSurvey.Implementation.Shared.IoC
 {
+    [DebuggerStepThrough]
     public class IoCContainerWrapper : IIocContainer
     {
+        [NotNull]
         private readonly Container _container;
+
         private bool _containerFinnishedRegistrations;
         private Action _onRegistrationsFinnished;
 
         public IoCContainerWrapper()
         {
             _containerFinnishedRegistrations = false;
-            _container = new Container();
-            _container.Options.DefaultScopedLifestyle = new LifetimeScopeLifestyle();
-            _container.Options.DefaultLifestyle = Lifestyle.Transient;
+            _container = new Container { Options = { DefaultScopedLifestyle = new LifetimeScopeLifestyle(), DefaultLifestyle = Lifestyle.Transient } };
+        }
+
+        private static Lifestyle ConvertLifetimeType(InstanceLifetimeType lifetime)
+        {
+            switch (lifetime)
+            {
+                case InstanceLifetimeType.Scoped:
+                    return Lifestyle.Scoped;
+                case InstanceLifetimeType.SingleInstance:
+                    return Lifestyle.Singleton;
+                case InstanceLifetimeType.Transient:
+                    return Lifestyle.Transient;
+                default:
+                    throw new NotSupportedException("LifetimeScope not found: " + lifetime);
+            }
         }
 
         public IIocContainer Register<TFrom, TTo>() where TFrom : class where TTo : class, TFrom
@@ -74,6 +92,7 @@ namespace Compilenix.HttpHeaderSurvey.Implementation.Shared.IoC
 
         public T Resolve<T>() where T : class
         {
+            // ReSharper disable once AssignNullToNotNullAttribute
             return _container.GetInstance<T>();
         }
 
@@ -91,11 +110,7 @@ namespace Compilenix.HttpHeaderSurvey.Implementation.Shared.IoC
 
         public void Register(Assembly assembly, Func<Type, bool> whereFunc, InstanceLifetimeType lifetime)
         {
-            var registrations =
-                assembly.GetExportedTypes()
-                    .Where(type => type.GetInterfaces().Any())
-                    .Where(whereFunc)
-                    .Select(type => new { Service = type.GetInterfaces().Last(), Implementation = type });
+            var registrations = assembly.GetExportedTypes().Where(type => type?.GetInterfaces().Any() ?? false).Where(whereFunc).Select(type => new { Service = type?.GetInterfaces().Last(), Implementation = type });
 
             foreach (var reg in registrations)
             {
@@ -104,25 +119,9 @@ namespace Compilenix.HttpHeaderSurvey.Implementation.Shared.IoC
             }
         }
 
-        private Lifestyle ConvertLifetimeType(InstanceLifetimeType lifetime)
-        {
-            switch (lifetime)
-            {
-                case InstanceLifetimeType.Scoped:
-                    return Lifestyle.Scoped;
-                case InstanceLifetimeType.SingleInstance:
-                    return Lifestyle.Singleton;
-                case InstanceLifetimeType.Transient:
-                    return Lifestyle.Transient;
-                default:
-                    throw new NotSupportedException("LifetimeScope not found: " + lifetime);
-            }
-        }
-
         private void DiagnosticWarningDisposableTransientHandler(Type type)
         {
-            _container.GetRegistration(type)
-                .Registration.SuppressDiagnosticWarning(DiagnosticType.DisposableTransientComponent, "Disposal is handled by application code.");
+            _container.GetRegistration(type)?.Registration?.SuppressDiagnosticWarning(DiagnosticType.DisposableTransientComponent, "Disposal is handled by application code.");
         }
 
         private void InvokeOnRegistrationsFinnished()

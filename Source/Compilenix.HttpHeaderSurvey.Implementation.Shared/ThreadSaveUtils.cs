@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Threading;
 
@@ -6,6 +7,8 @@ using System.Threading;
 
 namespace Compilenix.HttpHeaderSurvey.Implementation.Shared
 {
+    [DebuggerStepThrough]
+    [SuppressMessage("ReSharper", "UnusedMember.Global")]
     public static class ThreadSaveUtils
     {
         /// <summary>
@@ -36,12 +39,7 @@ namespace Compilenix.HttpHeaderSurvey.Implementation.Shared
         /// <param name="throwOnException">If a occuring exception should be thrown or not (ignored)</param>
         [SuppressMessage("Microsoft.Design", "CA1026:DefaultParametersShouldNotBeUsed")]
         //public static T ThreadSafeAction<T>(this T obj, Action action, object[] objectsToLock = null, bool performOperationOnlyIfLockIsPossible = true, bool waitForLock = true, TimeSpan timeout = default(TimeSpan), bool throwOnException = true)
-        public static void ThreadSafeAction<T>(this T obj,
-                                               Action action,
-                                               bool performOperationOnlyIfLockIsPossible = false,
-                                               bool waitForLock = true,
-                                               TimeSpan timeout = default(TimeSpan),
-                                               bool throwOnException = true)
+        public static void ThreadSafeAction<T>(this T obj, Action action, bool performOperationOnlyIfLockIsPossible = false, bool waitForLock = true, TimeSpan timeout = default(TimeSpan), bool throwOnException = true)
         {
             var isObjectLocked = false;
 
