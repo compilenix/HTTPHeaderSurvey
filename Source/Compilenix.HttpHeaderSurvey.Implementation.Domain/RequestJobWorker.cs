@@ -234,6 +234,7 @@ namespace Compilenix.HttpHeaderSurvey.Implementation.Domain
                         if (await unit.Resolve<IResponseErrorModule>().AddAsync(responseMessage, exception, unit))
                         {
                             unit.Resolve<IResponseMessageRepository>().Add(responseMessage);
+                            // TODO remove
                             this.Log().Debug($"Known Error on: {requestJob.Uri}");
                             return new Tuple<RequestJob, bool>(requestJob, true);
                         }

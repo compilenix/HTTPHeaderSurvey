@@ -43,47 +43,61 @@ namespace Compilenix.HttpHeaderSurvey.Implementation.Domain.Modules
 
             if (messages.Any(m => m.Contains("The remote name could not be resolved")))
             {
-                await HandleErrorDefault(message: "The remote server name could not be resolved, this may be a temporary error", errorCode: 0, messages: messages, messageWithError: messageWithError, error: error, errorCodes: errorCodes);
+                await HandleErrorDefaultAsync(message: "The remote server name could not be resolved, this may be a temporary error", errorCode: 0, messages: messages, messageWithError: messageWithError, error: error, errorCodes: errorCodes);
                 return true;
             }
 
             if (messages.Any(m => m.Contains("A connection attempt failed because the connected party did not properly respond after a period of time")))
             {
-                await HandleErrorDefault(message: "A connection attempt failed because the remote server did not properly respond after a period of time, this may be a temporary error", errorCode: 1, messages: messages, messageWithError: messageWithError, error: error, errorCodes: errorCodes);
+                await HandleErrorDefaultAsync(message: "A connection attempt failed because the remote server did not properly respond after a period of time, this may be a temporary error", errorCode: 1, messages: messages, messageWithError: messageWithError, error: error, errorCodes: errorCodes);
                 return true;
             }
 
             if (messages.Any(m => m.Contains("No connection could be made because the target machine actively refused")))
             {
-                await HandleErrorDefault(message: "No connection could be made because the remote server actively refused it, this may be a permanent error", errorCode: 2, messages: messages, messageWithError: messageWithError, error: error, errorCodes: errorCodes);
+                await HandleErrorDefaultAsync(message: "No connection could be made because the remote server actively refused it, this may be a permanent error", errorCode: 2, messages: messages, messageWithError: messageWithError, error: error, errorCodes: errorCodes);
                 return true;
             }
 
             if (messages.Any(m => m.Contains("was forcibly closed by the remote host")))
             {
-                await HandleErrorDefault(message: "The connection was forcibly closed by the remote server, this may be a permanent error", errorCode: 3, messages: messages, messageWithError: messageWithError, error: error, errorCodes: errorCodes);
+                await HandleErrorDefaultAsync(message: "The connection was forcibly closed by the remote server, this may be a permanent error", errorCode: 3, messages: messages, messageWithError: messageWithError, error: error, errorCodes: errorCodes);
                 return true;
             }
 
             if (messages.Any(m => m.Contains("The connection was closed unexpectedly")))
             {
-                await HandleErrorDefault(message: "The connection was closed unexpectedly, this may be a temporary error", errorCode: 4, messages: messages, messageWithError: messageWithError, error: error, errorCodes: errorCodes);
+                await HandleErrorDefaultAsync(message: "The connection was closed unexpectedly, this may be a temporary error", errorCode: 4, messages: messages, messageWithError: messageWithError, error: error, errorCodes: errorCodes);
                 return true;
             }
 
             if (messages.Any(m => m.Contains("Unable to read data from the transport connection")))
             {
-                await HandleErrorDefault(message: "Unable to read data from the transport connection, this may be a temporary error", errorCode: 5, messages: messages, messageWithError: messageWithError, error: error, errorCodes: errorCodes);
+                await HandleErrorDefaultAsync(message: "Unable to read data from the transport connection, this may be a temporary error", errorCode: 5, messages: messages, messageWithError: messageWithError, error: error, errorCodes: errorCodes);
                 return true;
             }
 
             return false;
         }
 
-        private async Task HandleErrorDefault([NotNull] string message, int errorCode, [ItemNotNull] [NotNull] IEnumerable<string> messages, [NotNull] ResponseMessage messageWithError, [NotNull] Exception error, [NotNull] IErrorCodeRepository errorCodes)
+        private async Task HandleErrorDefaultAsync([NotNull] string message, int errorCode, [ItemNotNull] [NotNull] IEnumerable<string> messages, [NotNull] ResponseMessage messageWithError, [NotNull] Exception error, [NotNull] IErrorCodeRepository errorCodes)
         {
-            var addIfNotExistingAsync = errorCodes.AddIfNotExistingAsync(new ErrorCode { Code = errorCode, Message = message });
-            _repository.Add(new ResponseError { ErrorCode = await addIfNotExistingAsync, Message = message, OriginalMessage = messages.FirstOrDefault(x => x.Contains(message)), ResponseMessage = messageWithError, StackTrace = error.StackTrace });
+            var code = await errorCodes.AddIfNotExistingAsync(
+                           new ErrorCode
+                               {
+                                   Code = errorCode,
+                                   Message = message
+                               });
+
+            _repository.Add(
+                new ResponseError
+                    {
+                        ErrorCode = code,
+                        Message = message,
+                        OriginalMessage = messages.FirstOrDefault(x => x.Contains(message)),
+                        ResponseMessage = messageWithError,
+                        StackTrace = error.StackTrace
+                    });
         }
     }
 }
