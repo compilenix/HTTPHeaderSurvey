@@ -7,12 +7,12 @@ namespace Compilenix.HttpHeaderSurvey.Agent.Cli
     {
         public static void Initialize()
         {
+            DomainBootstrapper.Initialize();
             RegisterDependencies();
         }
 
         private static void RegisterDependencies()
         {
-            DomainBootstrapper.Initialize();
             var container = IoC.CurrentContainer;
 
             //builder.Register<ISomeModule, SomeModule>(InstanceLifetimeType.SingleInstance);
