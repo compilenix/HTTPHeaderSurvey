@@ -1,10 +1,13 @@
 ﻿using System;
 using System.Collections;
+using System.Collections.Specialized;
 using System.Configuration;
 using Compilenix.HttpHeaderSurvey.Integration.Domain;
+using JetBrains.Annotations;
 
 namespace Compilenix.HttpHeaderSurvey.Implementation.Domain
 {
+    [UsedImplicitly]
     public class ApplicationConfigurationCollection : IApplicationConfigurationCollection
     {
         /// <summary>
@@ -12,15 +15,26 @@ namespace Compilenix.HttpHeaderSurvey.Implementation.Domain
         /// </summary>
         /// <param name="key"></param>
         /// <returns>the current value (after the process)</returns>
-        public string this[string key]
+        [UsedImplicitly]
+        public string this[[NotNull] string key]
         {
             get { return Get(key); }
-            set { SetOrAdd(key, value); }
+            set
+            {
+                if (value != null)
+                {
+                    SetOrAdd(key, value);
+                }
+                else
+                {
+                    throw new ArgumentNullException(nameof(value));
+                }
+            }
         }
 
         /// <summary>Gets the number of elements contained in the <see cref="T:System.Collections.ICollection" />.</summary>
         /// <returns>The number of elements contained in the <see cref="T:System.Collections.ICollection" />.</returns>
-        public int Count => ConfigurationManager.AppSettings.Count;
+        public int Count => AppSettings.Count;
 
         /// <summary>Gets an object that can be used to synchronize access to the <see cref="T:System.Collections.ICollection" />.</summary>
         /// <returns>An object that can be used to synchronize access to the <see cref="T:System.Collections.ICollection" />.</returns>
@@ -30,12 +44,28 @@ namespace Compilenix.HttpHeaderSurvey.Implementation.Domain
         /// <returns>true if access to the <see cref="T:System.Collections.ICollection" /> is synchronized (thread safe); otherwise, false.</returns>
         public bool IsSynchronized => false;
 
+        [NotNull]
+        private static Configuration Configuration => ConfigurationManager.OpenExeConfiguration(ConfigurationUserLevel.None);
+
+        [NotNull]
+        // ReSharper disable once AssignNullToNotNullAttribute
+        private static string AppSettingsSectionName => Configuration.AppSettings?.SectionInformation.Name;
+
+        [NotNull]
+        // ReSharper disable once AssignNullToNotNullAttribute
+        private static NameValueCollection AppSettings => ConfigurationManager.AppSettings;
+
+        private static void RefreshConfigurationSection()
+        {
+            ConfigurationManager.RefreshSection(AppSettingsSectionName);
+        }
+
         /// <summary>Returns an enumerator that iterates through a collection.</summary>
         /// <returns>An <see cref="T:System.Collections.IEnumerator" /> object that can be used to iterate through the collection.</returns>
         /// <filterpriority>2</filterpriority>
         public IEnumerator GetEnumerator()
         {
-            yield return ConfigurationManager.AppSettings;
+            yield return AppSettings;
         }
 
         /// <summary>Copies the elements of the <see cref="T:System.Collections.ICollection" /> to an <see cref="T:System.Array" />, starting at a particular <see cref="T:System.Array" /> index.</summary>
@@ -49,7 +79,7 @@ namespace Compilenix.HttpHeaderSurvey.Implementation.Domain
         /// <paramref name="array" /> is multidimensional.-or- The number of elements in the source <see cref="T:System.Collections.ICollection" /> is greater than the available space from <paramref name="index" /> to the end of the destination <paramref name="array" />.-or-The type of the source <see cref="T:System.Collections.ICollection" /> cannot be cast automatically to the type of the destination <paramref name="array" />.</exception>
         public void CopyTo(Array array, int index)
         {
-            ConfigurationManager.AppSettings.CopyTo(array, index);
+            AppSettings.CopyTo(array, index);
         }
 
         /// <summary>
@@ -59,15 +89,7 @@ namespace Compilenix.HttpHeaderSurvey.Implementation.Domain
         /// <returns></returns>
         public bool Exists(string key)
         {
-            try
-            {
-                if (!string.IsNullOrEmpty(Get(key))) return true;
-            }
-            catch
-            {
-                // ignored
-            }
-            return false;
+            return !string.IsNullOrWhiteSpace(Get(key));
         }
 
         /// <summary>
@@ -78,33 +100,20 @@ namespace Compilenix.HttpHeaderSurvey.Implementation.Domain
         /// <returns>value</returns>
         public string Get(string key)
         {
-            return ConfigurationManager.AppSettings[key];
+            return AppSettings[key];
         }
 
         /// <summary>
         /// Removes a given key and it's value permanently from the configuration.
         /// </summary>
         /// <param name="key"></param>
-        /// <returns>if the operation succeded, the key and the current value (before the process)</returns>
         public Tuple<bool, string, string> Remove(string key)
         {
-            var configFile = ConfigurationManager.OpenExeConfiguration(ConfigurationUserLevel.None);
-            var settings = configFile.AppSettings.Settings;
-            var value = string.Empty;
-            var removed = false;
-            try
-            {
-                value = Get(key);
-                settings.Remove(key);
-                configFile.Save(ConfigurationSaveMode.Modified);
-                ConfigurationManager.RefreshSection(configFile.AppSettings.SectionInformation.Name);
-                removed = true;
-            }
-            catch
-            {
-                // ignored
-            }
-            return new Tuple<bool, string, string>(removed, key, value);
+            var value = Get(key);
+            AppSettings.Remove(key);
+            Configuration.Save(ConfigurationSaveMode.Modified);
+            RefreshConfigurationSection();
+            return new Tuple<bool, string, string>(true, key, value);
         }
 
         /// <summary>
@@ -115,18 +124,16 @@ namespace Compilenix.HttpHeaderSurvey.Implementation.Domain
         /// <returns>the key and the current value (before the process)</returns>
         public Tuple<string, string> SetOrAdd(string key, string value)
         {
-            var configFile = ConfigurationManager.OpenExeConfiguration(ConfigurationUserLevel.None);
-            var settings = configFile.AppSettings.Settings;
-            if (settings[key] == null)
+            if (AppSettings[key] == null)
             {
-                settings.Add(key, value);
+                AppSettings.Add(key, value);
             }
             else
             {
-                settings[key].Value = value;
+                AppSettings[key] = value;
             }
-            configFile.Save(ConfigurationSaveMode.Modified);
-            ConfigurationManager.RefreshSection(configFile.AppSettings.SectionInformation.Name);
+            Configuration.Save(ConfigurationSaveMode.Modified);
+            RefreshConfigurationSection();
             return new Tuple<string, string>(key, value);
         }
     }
