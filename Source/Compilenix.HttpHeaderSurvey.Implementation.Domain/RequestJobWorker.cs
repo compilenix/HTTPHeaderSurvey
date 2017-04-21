@@ -23,8 +23,8 @@ namespace Compilenix.HttpHeaderSurvey.Implementation.Domain
         private readonly TimeSpan _httpClientTimeout;
         private BufferBlock<RequestJob> _inputBufferBlock;
         private bool _isThrottling;
-        private ActionBlock<Tuple<RequestJob, bool>> _jobCompletedBlock;
-        private List<TransformBlock<RequestJob, Tuple<RequestJob, bool>>> _processJobBlocks;
+        private ActionBlock<(RequestJob job, bool isCompleted)> _jobCompletedBlock;
+        private List<TransformBlock<RequestJob, (RequestJob job, bool isCompleted)>> _processJobBlocks;
 
         // ReSharper disable once AssignNullToNotNullAttribute
         public Task Completion => _jobCompletedBlock?.Completion;
@@ -141,15 +141,9 @@ namespace Compilenix.HttpHeaderSurvey.Implementation.Domain
             _cancellationTokenSource?.Dispose();
         }
 
-        private async Task CompleteRequestJob(Tuple<RequestJob, bool> data)
+        private async Task CompleteRequestJob((RequestJob job, bool isCompleted) data)
         {
-            if (data == null)
-            {
-                return;
-            }
-
-            var job = data.Item1;
-            var saveCompleted = data.Item2;
+            var job = data.job;
 
             if (job == null)
             {
@@ -169,7 +163,7 @@ namespace Compilenix.HttpHeaderSurvey.Implementation.Domain
 
                     job.IsCurrentlyScheduled = false;
 
-                    if (saveCompleted)
+                    if (data.isCompleted)
                     {
                         job.LastTimeProcessed = DateTime.Now;
                     }
@@ -197,13 +191,13 @@ namespace Compilenix.HttpHeaderSurvey.Implementation.Domain
                 };
 
             _inputBufferBlock = new BufferBlock<RequestJob>(new DataflowBlockOptions { BoundedCapacity = 500 });
-            _processJobBlocks = new List<TransformBlock<RequestJob, Tuple<RequestJob, bool>>>();
+            _processJobBlocks = new List<TransformBlock<RequestJob, (RequestJob job, bool isCompleted)>>();
             for (var i = 0; i < Environment.ProcessorCount << 3; i++)
             {
                 // ReSharper disable once AssignNullToNotNullAttribute
-                _processJobBlocks.Add(new TransformBlock<RequestJob, Tuple<RequestJob, bool>>(job => ProcessRequestJob(job), blockOptions));
+                _processJobBlocks.Add(new TransformBlock<RequestJob, (RequestJob job, bool isCompleted)>(job => ProcessRequestJob(job), blockOptions));
             }
-            _jobCompletedBlock = new ActionBlock<Tuple<RequestJob, bool>>(CompleteRequestJob, blockOptions);
+            _jobCompletedBlock = new ActionBlock<(RequestJob job, bool isCompleted)>(CompleteRequestJob, blockOptions);
 
             foreach (var jobBlock in _processJobBlocks)
             {
@@ -282,7 +276,7 @@ namespace Compilenix.HttpHeaderSurvey.Implementation.Domain
             }
         }
 
-        private async Task<Tuple<RequestJob, bool>> ProcessRequestJob([NotNull] RequestJob requestJob)
+        private async Task<(RequestJob job, bool isCompleted)> ProcessRequestJob([NotNull] RequestJob requestJob)
         {
             if (IsThrottling)
             {
@@ -295,7 +289,7 @@ namespace Compilenix.HttpHeaderSurvey.Implementation.Domain
             }
 
             HttpResponseMessage jobResult = null;
-            var saveCompleted = true;
+            var isCompleted = true;
             try
             {
                 using (var unit = IoC.Resolve<IUnitOfWork>())
@@ -304,7 +298,7 @@ namespace Compilenix.HttpHeaderSurvey.Implementation.Domain
 
                     if (requestJob?.Uri == null)
                     {
-                        return new Tuple<RequestJob, bool>(null, false);
+                        return (job: null, isCompleted: false);
                     }
 
                     var httpClientOptions = new HttpClientRequestOptions
@@ -324,17 +318,21 @@ namespace Compilenix.HttpHeaderSurvey.Implementation.Domain
                     }
                     catch (Exception exception)
                     {
-                        if (await unit.Resolve<IResponseErrorModule>().AddAsync(responseMessage, exception, unit))
+                        var handledError = await unit.Resolve<IResponseErrorModule>().ProcessAsync(responseMessage, exception, unit);
+
+                        isCompleted = !handledError.isPermanentError;
+
+                        if (handledError.isKnownError)
                         {
                             unit.Resolve<IResponseMessageRepository>().Add(responseMessage);
                             // TODO remove
                             this.Log().Debug($"Known Error on: {requestJob.Uri}");
-                            return new Tuple<RequestJob, bool>(requestJob, true);
+                            return (requestJob, isCompleted);
                         }
 
                         // TODO give admin possibillity to add error to list of known errors
                         this.Log().Error($"Error on: {requestJob.Uri}", exception);
-                        return new Tuple<RequestJob, bool>(requestJob, true);
+                        return (requestJob, isCompleted);
                     }
 
                     if (jobResult.Headers == null)
@@ -363,7 +361,7 @@ namespace Compilenix.HttpHeaderSurvey.Implementation.Domain
                     }
                     catch (Exception exception)
                     {
-                        saveCompleted = false;
+                        isCompleted = false;
                         if (!exception.GetAllMessages().Any(e => e?.Contains($"Cannot insert duplicate key row in object 'dbo.{nameof(ResponseHeader)}s'") ?? false))
                         {
                             throw;
@@ -373,7 +371,7 @@ namespace Compilenix.HttpHeaderSurvey.Implementation.Domain
             }
             catch (Exception exception)
             {
-                saveCompleted = false;
+                isCompleted = false;
                 this.Log().Fatal(string.Empty, exception);
             }
             finally
@@ -381,7 +379,7 @@ namespace Compilenix.HttpHeaderSurvey.Implementation.Domain
                 jobResult?.Dispose();
             }
 
-            return new Tuple<RequestJob, bool>(requestJob, saveCompleted);
+            return (requestJob, isCompleted);
         }
     }
 }
