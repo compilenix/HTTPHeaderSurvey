@@ -21,12 +21,15 @@ namespace Compilenix.HttpHeaderSurvey.Implementation.DataAccess.EntityConfigurat
 
             HasRequired(p => p.RequestJob);
 
-            HasMany(j => j.ResponseHeaders)?.WithMany(h => h.ResponseMessages)?.Map(m =>
-                {
-                    m?.ToTable($"Linked{nameof(ResponseMessage)}{nameof(ResponseHeader)}s");
-                    m?.MapLeftKey($"{nameof(ResponseMessage)}Id");
-                    m?.MapRightKey($"{nameof(ResponseHeader)}Id");
-                });
+            HasMany(j => j.ResponseHeaders)
+                ?.WithMany(h => h.ResponseMessages)
+                ?.Map(
+                    m =>
+                        {
+                            m?.ToTable($"Linked{nameof(ResponseMessage)}{nameof(ResponseHeader)}s");
+                            m?.MapLeftKey($"{nameof(ResponseMessage)}Id");
+                            m?.MapRightKey($"{nameof(ResponseHeader)}Id");
+                        });
 
             Property(p => p.DateCreated)?.IsRequired();
 

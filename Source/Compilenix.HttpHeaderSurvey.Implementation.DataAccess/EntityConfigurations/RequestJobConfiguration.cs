@@ -29,12 +29,15 @@ namespace Compilenix.HttpHeaderSurvey.Implementation.DataAccess.EntityConfigurat
 
             Property(p => p.UriHash)?.IsRequired()?.HasMaxLength(64)?.HasColumnAnnotation(IndexAnnotation.AnnotationName, new IndexAnnotation(new IndexAttribute()));
 
-            HasMany(j => j.Headers)?.WithMany(h => h.RequestJobs)?.Map(m =>
-                {
-                    m?.ToTable($"Linked{nameof(RequestJob)}{nameof(RequestHeader)}s");
-                    m?.MapLeftKey($"{nameof(RequestJob)}Id");
-                    m?.MapRightKey($"{nameof(RequestHeader)}Id");
-                });
+            HasMany(j => j.Headers)
+                ?.WithMany(h => h.RequestJobs)
+                ?.Map(
+                    m =>
+                        {
+                            m?.ToTable($"Linked{nameof(RequestJob)}{nameof(RequestHeader)}s");
+                            m?.MapLeftKey($"{nameof(RequestJob)}Id");
+                            m?.MapRightKey($"{nameof(RequestHeader)}Id");
+                        });
 
             Property(p => p.DateCreated)?.IsRequired();
         }

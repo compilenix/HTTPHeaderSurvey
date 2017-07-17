@@ -18,7 +18,7 @@ namespace Compilenix.HttpHeaderSurvey.Implementation.Domain
         [UsedImplicitly]
         public string this[[NotNull] string key]
         {
-            get { return Get(key); }
+            get => Get(key);
             set
             {
                 if (value != null)

@@ -19,7 +19,8 @@ namespace Compilenix.HttpHeaderSurvey.Implementation.Domain
         }
 
         [NotNull]
-        public static TTarget Map<TTarget>([NotNull] object source, [NotNull] object target) where TTarget : class
+        public static TTarget Map<TTarget>([NotNull] object source, [NotNull] object target)
+            where TTarget : class
         {
             // ReSharper disable once AssignNullToNotNullAttribute
             return Mapper.Map(source, target) as TTarget;

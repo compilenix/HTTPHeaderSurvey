@@ -22,6 +22,7 @@ namespace Compilenix.HttpHeaderSurvey.Implementation.Shared
                 GC.Collect(i, GCCollectionMode.Forced, blocking: true);
             }
         }
+
         /// <summary>
         /// Invoke the garbage collector, wait for pending finalizer's and collect again.
         /// Use this if you really want to tell the garbage collector to collect NOW and wait until it's done.

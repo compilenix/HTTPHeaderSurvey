@@ -20,24 +20,31 @@ namespace Compilenix.HttpHeaderSurvey.Integration.Shared.IoC
         IIocContainer Register([NotNull] Type from, [NotNull] Type to, InstanceLifetimeType lifetime);
 
         [NotNull]
-        IIocContainer Register<TInterface>([NotNull] TInterface instance) where TInterface : class;
+        IIocContainer Register<TInterface>([NotNull] TInterface instance)
+            where TInterface : class;
 
         [NotNull]
-        IIocContainer Register<TInterface>([NotNull] TInterface instance, InstanceLifetimeType lifetime) where TInterface : class;
+        IIocContainer Register<TInterface>([NotNull] TInterface instance, InstanceLifetimeType lifetime)
+            where TInterface : class;
 
         [NotNull]
-        IIocContainer Register<T>() where T : class;
+        IIocContainer Register<T>()
+            where T : class;
 
         [NotNull]
-        IIocContainer Register<T>(InstanceLifetimeType lifetime) where T : class;
+        IIocContainer Register<T>(InstanceLifetimeType lifetime)
+            where T : class;
 
         [NotNull]
-        IIocContainer Register<TFrom, TTo>() where TFrom : class where TTo : class, TFrom;
+        IIocContainer Register<TFrom, TTo>()
+            where TFrom : class where TTo : class, TFrom;
 
         [NotNull]
-        IIocContainer Register<TFrom, TTo>(InstanceLifetimeType lifetime) where TFrom : class where TTo : class, TFrom;
+        IIocContainer Register<TFrom, TTo>(InstanceLifetimeType lifetime)
+            where TFrom : class where TTo : class, TFrom;
 
         [NotNull]
-        T Resolve<T>() where T : class;
+        T Resolve<T>()
+            where T : class;
     }
 }

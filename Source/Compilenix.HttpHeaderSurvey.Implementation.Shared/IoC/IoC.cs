@@ -25,6 +25,7 @@ namespace Compilenix.HttpHeaderSurvey.Implementation.Shared.IoC
         }
 
         [NotNull]
-        public static T Resolve<T>() where T : class => CurrentContainer.Resolve<T>();
+        public static T Resolve<T>()
+            where T : class => CurrentContainer.Resolve<T>();
     }
 }

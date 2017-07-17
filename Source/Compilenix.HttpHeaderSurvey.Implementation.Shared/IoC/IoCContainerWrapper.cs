@@ -40,12 +40,14 @@ namespace Compilenix.HttpHeaderSurvey.Implementation.Shared.IoC
             }
         }
 
-        public IIocContainer Register<TFrom, TTo>() where TFrom : class where TTo : class, TFrom
+        public IIocContainer Register<TFrom, TTo>()
+            where TFrom : class where TTo : class, TFrom
         {
             return Register<TFrom, TTo>(InstanceLifetimeType.Transient);
         }
 
-        public IIocContainer Register<TFrom, TTo>(InstanceLifetimeType lifetime) where TFrom : class where TTo : class, TFrom
+        public IIocContainer Register<TFrom, TTo>(InstanceLifetimeType lifetime)
+            where TFrom : class where TTo : class, TFrom
         {
             _container.Register<TFrom, TTo>(ConvertLifetimeType(lifetime));
             _onRegistrationsFinnished += () => DiagnosticWarningDisposableTransientHandler(typeof(TFrom));
@@ -63,12 +65,14 @@ namespace Compilenix.HttpHeaderSurvey.Implementation.Shared.IoC
             return this;
         }
 
-        public IIocContainer Register<TInterface>(TInterface instance) where TInterface : class
+        public IIocContainer Register<TInterface>(TInterface instance)
+            where TInterface : class
         {
             return Register(instance, InstanceLifetimeType.SingleInstance);
         }
 
-        public IIocContainer Register<TInterface>(TInterface instance, InstanceLifetimeType lifetime) where TInterface : class
+        public IIocContainer Register<TInterface>(TInterface instance, InstanceLifetimeType lifetime)
+            where TInterface : class
         {
             _container.Register(() => instance);
             return this;
@@ -90,18 +94,21 @@ namespace Compilenix.HttpHeaderSurvey.Implementation.Shared.IoC
             Register(assembly, whereFunc, InstanceLifetimeType.Transient);
         }
 
-        public T Resolve<T>() where T : class
+        public T Resolve<T>()
+            where T : class
         {
             // ReSharper disable once AssignNullToNotNullAttribute
             return _container.GetInstance<T>();
         }
 
-        public IIocContainer Register<T>() where T : class
+        public IIocContainer Register<T>()
+            where T : class
         {
             return Register<T>(InstanceLifetimeType.Transient);
         }
 
-        public IIocContainer Register<T>(InstanceLifetimeType lifetime) where T : class
+        public IIocContainer Register<T>(InstanceLifetimeType lifetime)
+            where T : class
         {
             _container.Register<T>(ConvertLifetimeType(lifetime));
             _onRegistrationsFinnished += () => DiagnosticWarningDisposableTransientHandler(typeof(T));

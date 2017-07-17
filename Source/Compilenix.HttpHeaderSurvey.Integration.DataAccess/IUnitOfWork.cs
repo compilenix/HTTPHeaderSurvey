@@ -15,6 +15,7 @@ namespace Compilenix.HttpHeaderSurvey.Integration.DataAccess
         Task<int> CompleteAsync();
 
         [NotNull]
-        TRepository Resolve<TRepository>() where TRepository : class;
+        TRepository Resolve<TRepository>()
+            where TRepository : class;
     }
 }

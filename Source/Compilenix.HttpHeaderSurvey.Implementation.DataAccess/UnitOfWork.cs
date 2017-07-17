@@ -28,7 +28,8 @@ namespace Compilenix.HttpHeaderSurvey.Implementation.DataAccess
         }
 
         [DebuggerStepThrough]
-        public T Resolve<T>() where T : class
+        public T Resolve<T>()
+            where T : class
         {
             return _scope.Resolve<T>();
         }

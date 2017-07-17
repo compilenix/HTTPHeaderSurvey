@@ -9,6 +9,7 @@ namespace Compilenix.HttpHeaderSurvey.Integration.Shared.IoC
         IIoCScope BeginLifetimeScope();
 
         [NotNull]
-        T Resolve<T>() where T : class;
+        T Resolve<T>()
+            where T : class;
     }
 }

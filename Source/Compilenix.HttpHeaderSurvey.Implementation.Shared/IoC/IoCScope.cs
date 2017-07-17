@@ -32,7 +32,8 @@ namespace Compilenix.HttpHeaderSurvey.Implementation.Shared.IoC
             _scope.Dispose();
         }
 
-        public T Resolve<T>() where T : class
+        public T Resolve<T>()
+            where T : class
         {
             // ReSharper disable once AssignNullToNotNullAttribute
             return _scope.GetInstance<T>();

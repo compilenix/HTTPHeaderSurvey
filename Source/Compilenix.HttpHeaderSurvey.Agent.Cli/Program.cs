@@ -23,7 +23,8 @@ namespace Compilenix.HttpHeaderSurvey.Agent.Cli
 
         private static async Task ProcessSomeJobsAsync(int count)
         {
-            using (var worker = IoC.Resolve<IRequestJobWorker>()) {
+            using (var worker = IoC.Resolve<IRequestJobWorker>())
+            {
                 await worker.StartAsync(count);
                 await worker.Completion;
             }
