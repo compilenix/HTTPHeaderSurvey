@@ -3,17 +3,17 @@ using System.Threading.Tasks;
 using Compilenix.HttpHeaderSurvey.Implementation.Shared.IoC;
 using Compilenix.HttpHeaderSurvey.Integration.DataAccess;
 using Compilenix.HttpHeaderSurvey.Integration.Shared.IoC;
-using JetBrains.Annotations;
+
 
 namespace Compilenix.HttpHeaderSurvey.Implementation.DataAccess
 {
-    [UsedImplicitly]
+    
     public class UnitOfWork : IUnitOfWork
     {
-        [NotNull]
+        
         private readonly IIoCScope _scope;
 
-        [NotNull]
+        
         internal readonly DataAccessContext Context;
 
         public bool SaveChanges { get; set; } = true;

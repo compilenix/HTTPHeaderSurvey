@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Diagnostics;
-using JetBrains.Annotations;
 using log4net;
 using log4net.Config;
 
@@ -11,7 +10,6 @@ namespace Compilenix.HttpHeaderSurvey.Implementation.Shared
     {
         private static bool _isLoggerInitialized;
 
-        [NotNull]
         public static ILog Log(this Type obj)
         {
             if (!_isLoggerInitialized)
@@ -24,7 +22,6 @@ namespace Compilenix.HttpHeaderSurvey.Implementation.Shared
             return LogManager.GetLogger(obj);
         }
 
-        [NotNull]
         public static ILog Log(this object obj) => Log(obj?.GetType());
     }
 }

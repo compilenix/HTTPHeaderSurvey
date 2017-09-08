@@ -1,11 +1,9 @@
 ﻿using System.ComponentModel.DataAnnotations.Schema;
 using System.Data.Entity.Infrastructure.Annotations;
 using Compilenix.HttpHeaderSurvey.Integration.DataAccess.Entitys;
-using JetBrains.Annotations;
 
 namespace Compilenix.HttpHeaderSurvey.Implementation.DataAccess.EntityConfigurations
 {
-    [UsedImplicitly]
     public class ErrorCodeConfiguration : BaseEntityConfiguration<ErrorCode>
     {
         public ErrorCodeConfiguration()

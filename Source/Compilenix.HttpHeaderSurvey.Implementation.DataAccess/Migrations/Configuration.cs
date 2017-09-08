@@ -1,9 +1,7 @@
 using System.Data.Entity.Migrations;
-using JetBrains.Annotations;
 
 namespace Compilenix.HttpHeaderSurvey.Implementation.DataAccess.Migrations
 {
-    [UsedImplicitly]
     internal sealed class Configuration : DbMigrationsConfiguration<DataAccessContext>
     {
         public Configuration()

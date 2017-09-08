@@ -1,9 +1,7 @@
 ﻿using Compilenix.HttpHeaderSurvey.Integration.DataAccess.Entitys;
-using JetBrains.Annotations;
 
 namespace Compilenix.HttpHeaderSurvey.Implementation.DataAccess.EntityConfigurations
 {
-    [UsedImplicitly]
     public class ResponseErrorConfiguration : BaseEntityConfiguration<ResponseError>
     {
         public ResponseErrorConfiguration()

@@ -8,17 +8,17 @@ using Compilenix.HttpHeaderSurvey.Integration.DataAccess;
 using Compilenix.HttpHeaderSurvey.Integration.DataAccess.Entitys;
 using Compilenix.HttpHeaderSurvey.Integration.DataAccess.Repositories;
 using Compilenix.HttpHeaderSurvey.Integration.Domain.Modules;
-using JetBrains.Annotations;
+
 
 namespace Compilenix.HttpHeaderSurvey.Implementation.Domain.Modules
 {
-    [UsedImplicitly]
+    
     public class ResponseErrorModule : BaseModule<IResponseErrorRepository, ResponseError>, IResponseErrorModule
     {
-        [NotNull]
+        
         private readonly IResponseErrorRepository _repository;
 
-        public ResponseErrorModule([NotNull] IResponseErrorRepository repository) : base(repository)
+        public ResponseErrorModule( IResponseErrorRepository repository) : base(repository)
         {
             _repository = repository;
         }
@@ -80,7 +80,7 @@ namespace Compilenix.HttpHeaderSurvey.Implementation.Domain.Modules
             return (isKnownError: false, isPermanentError: true);
         }
 
-        private async Task HandleErrorDefaultAsync([NotNull] string message, int errorCode, [ItemNotNull] [NotNull] IEnumerable<string> messages, [NotNull] ResponseMessage messageWithError, [NotNull] Exception error, [NotNull] IErrorCodeRepository errorCodes)
+        private async Task HandleErrorDefaultAsync( string message, int errorCode,   IEnumerable<string> messages,  ResponseMessage messageWithError,  Exception error,  IErrorCodeRepository errorCodes)
         {
             var code = await errorCodes.AddIfNotExistingAsync(
                            new ErrorCode

@@ -3,11 +3,11 @@ using System.Collections;
 using System.Collections.Specialized;
 using System.Configuration;
 using Compilenix.HttpHeaderSurvey.Integration.Domain;
-using JetBrains.Annotations;
+
 
 namespace Compilenix.HttpHeaderSurvey.Implementation.Domain
 {
-    [UsedImplicitly]
+    
     public class ApplicationConfigurationCollection : IApplicationConfigurationCollection
     {
         /// <summary>
@@ -15,8 +15,8 @@ namespace Compilenix.HttpHeaderSurvey.Implementation.Domain
         /// </summary>
         /// <param name="key"></param>
         /// <returns>the current value (after the process)</returns>
-        [UsedImplicitly]
-        public string this[[NotNull] string key]
+        
+        public string this[ string key]
         {
             get => Get(key);
             set
@@ -44,14 +44,14 @@ namespace Compilenix.HttpHeaderSurvey.Implementation.Domain
         /// <returns>true if access to the <see cref="T:System.Collections.ICollection" /> is synchronized (thread safe); otherwise, false.</returns>
         public bool IsSynchronized => false;
 
-        [NotNull]
+        
         private static Configuration Configuration => ConfigurationManager.OpenExeConfiguration(ConfigurationUserLevel.None);
 
-        [NotNull]
+        
         // ReSharper disable once AssignNullToNotNullAttribute
         private static string AppSettingsSectionName => Configuration.AppSettings?.SectionInformation.Name;
 
-        [NotNull]
+        
         // ReSharper disable once AssignNullToNotNullAttribute
         private static NameValueCollection AppSettings => ConfigurationManager.AppSettings;
 

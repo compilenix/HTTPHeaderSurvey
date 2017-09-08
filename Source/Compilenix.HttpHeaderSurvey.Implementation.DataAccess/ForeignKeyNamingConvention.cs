@@ -3,7 +3,6 @@ using System.Data.Entity.Core.Metadata.Edm;
 using System.Data.Entity.Infrastructure;
 using System.Data.Entity.ModelConfiguration.Conventions;
 using System.Linq;
-using JetBrains.Annotations;
 
 // ReSharper disable All
 
@@ -11,7 +10,7 @@ namespace Compilenix.HttpHeaderSurvey.Implementation.DataAccess
 {
     public class ForeignKeyNamingConvention : IStoreModelConvention<AssociationType>
     {
-        private static bool DoPropertiesHaveDefaultNames([NotNull] IReadOnlyCollection<EdmProperty> properties, [ItemNotNull] [NotNull] IReadOnlyList<EdmProperty> otherEndProperties)
+        private static bool DoPropertiesHaveDefaultNames( IReadOnlyCollection<EdmProperty> properties,   IReadOnlyList<EdmProperty> otherEndProperties)
         {
             if (properties.Count != otherEndProperties.Count)
             {
@@ -59,7 +58,7 @@ namespace Compilenix.HttpHeaderSurvey.Implementation.DataAccess
             }
         }
 
-        public void Apply([NotNull] AssociationType association, [NotNull] DbModel model)
+        public void Apply( AssociationType association,  DbModel model)
         {
             if (!association.IsForeignKey)
             {

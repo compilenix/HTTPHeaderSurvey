@@ -8,7 +8,6 @@ using System.Security.Cryptography.X509Certificates;
 using System.Threading;
 using System.Threading.Tasks;
 using Compilenix.HttpHeaderSurvey.Integration.DataAccess.Entitys;
-using JetBrains.Annotations;
 
 namespace Compilenix.HttpHeaderSurvey.Implementation.Shared
 {
@@ -29,8 +28,6 @@ namespace Compilenix.HttpHeaderSurvey.Implementation.Shared
             return true;
         }
 
-        [ItemNotNull]
-        [NotNull]
         public static async Task<HttpResponseMessage> InvokeWebRequestAsync(HttpClientRequestOptions options)
         {
             if (options == null)
@@ -45,7 +42,6 @@ namespace Compilenix.HttpHeaderSurvey.Implementation.Shared
             }
         }
 
-        [NotNull]
         public static HttpRequestMessage NewHttpRequestMessage(string method, Uri uri, ICollection<RequestHeader> headers = null, Version httpVersion = null)
         {
             if (httpVersion == null)
@@ -66,8 +62,6 @@ namespace Compilenix.HttpHeaderSurvey.Implementation.Shared
             return request;
         }
 
-        [ItemNotNull]
-        [NotNull]
         public static async Task<HttpResponseMessage> InvokeHttpClientRequestAsync(HttpRequestMessage requestMessage, HttpClient httpClient, CancellationToken cancellationToken, bool headersOnly = false)
         {
             if (httpClient == null)
@@ -93,13 +87,11 @@ namespace Compilenix.HttpHeaderSurvey.Implementation.Shared
         /// <summary>
         /// Create a new WebRequestHandler, which will NOT allow autoredirection and ignores all server certificate validation errors.
         /// </summary>
-        [NotNull]
         public static WebRequestHandler NewWebRequestHandler()
         {
             return new WebRequestHandler { AllowAutoRedirect = false, ServerCertificateValidationCallback = ServerCertificateValidationCallbackHandler };
         }
 
-        [NotNull]
         public static HttpClient NewHttpClient(WebRequestHandler requestHandler)
         {
             if (requestHandler == null)

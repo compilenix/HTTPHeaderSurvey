@@ -2,11 +2,9 @@ using System.ComponentModel.DataAnnotations.Schema;
 using System.Data.Entity.Infrastructure.Annotations;
 using System.Data.Entity.ModelConfiguration;
 using Compilenix.HttpHeaderSurvey.Integration.DataAccess.Entitys;
-using JetBrains.Annotations;
 
 namespace Compilenix.HttpHeaderSurvey.Implementation.DataAccess.EntityConfigurations
 {
-    [UsedImplicitly]
     public class ResponseMessageConfiguration : EntityTypeConfiguration<ResponseMessage>
     {
         public ResponseMessageConfiguration()

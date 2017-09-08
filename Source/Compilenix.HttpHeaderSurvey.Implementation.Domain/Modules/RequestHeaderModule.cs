@@ -4,17 +4,17 @@ using System.Threading.Tasks;
 using Compilenix.HttpHeaderSurvey.Integration.DataAccess.Entitys;
 using Compilenix.HttpHeaderSurvey.Integration.DataAccess.Repositories;
 using Compilenix.HttpHeaderSurvey.Integration.Domain.Modules;
-using JetBrains.Annotations;
+
 
 namespace Compilenix.HttpHeaderSurvey.Implementation.Domain.Modules
 {
-    [UsedImplicitly]
+    
     public class RequestHeaderModule : BaseModule<IRequestHeaderRepository, RequestHeader>, IRequestHeaderModule
     {
-        [NotNull]
+        
         private readonly IRequestHeaderRepository _repository;
 
-        public RequestHeaderModule([NotNull] IRequestHeaderRepository repository) : base(repository)
+        public RequestHeaderModule( IRequestHeaderRepository repository) : base(repository)
         {
             _repository = repository;
         }

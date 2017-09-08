@@ -3,7 +3,6 @@ using System.Diagnostics;
 using System.Linq;
 using System.Reflection;
 using Compilenix.HttpHeaderSurvey.Integration.Shared.IoC;
-using JetBrains.Annotations;
 using SimpleInjector;
 using SimpleInjector.Diagnostics;
 using SimpleInjector.Extensions.LifetimeScoping;
@@ -13,7 +12,6 @@ namespace Compilenix.HttpHeaderSurvey.Implementation.Shared.IoC
     [DebuggerStepThrough]
     public class IoCContainerWrapper : IIocContainer
     {
-        [NotNull]
         private readonly Container _container;
 
         private bool _containerFinnishedRegistrations;

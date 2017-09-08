@@ -10,15 +10,15 @@ using Compilenix.HttpHeaderSurvey.Implementation.Shared;
 using Compilenix.HttpHeaderSurvey.Integration.DataAccess.Entitys;
 using Compilenix.HttpHeaderSurvey.Integration.Domain;
 using Compilenix.HttpHeaderSurvey.Integration.Domain.DataTransferObjects;
-using JetBrains.Annotations;
+
 
 namespace Compilenix.HttpHeaderSurvey.Implementation.Domain
 {
     public class DataTransferObjectConverter : IDataTransferObjectConverter
     {
-        [ItemNotNull]
-        [NotNull]
-        private static async Task<DataTable> ConvertCsvToDataTable([NotNull] string filePath, char seperator)
+        
+        
+        private static async Task<DataTable> ConvertCsvToDataTable( string filePath, char seperator)
         {
             var dataTable = new DataTable();
 
@@ -109,7 +109,7 @@ namespace Compilenix.HttpHeaderSurvey.Implementation.Domain
             return dataTable;
         }
 
-        private static DataColumn[] GetDataColumnsFromCsvHeader(char seperator, [NotNull] TextReader streamReader)
+        private static DataColumn[] GetDataColumnsFromCsvHeader(char seperator,  TextReader streamReader)
         {
             return streamReader.ReadLine()?.Split(seperator).Select(column => new DataColumn(column)).ToArray();
         }

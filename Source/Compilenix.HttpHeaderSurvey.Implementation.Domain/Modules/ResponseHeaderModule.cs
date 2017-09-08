@@ -5,14 +5,14 @@ using Compilenix.HttpHeaderSurvey.Integration.DataAccess;
 using Compilenix.HttpHeaderSurvey.Integration.DataAccess.Entitys;
 using Compilenix.HttpHeaderSurvey.Integration.DataAccess.Repositories;
 using Compilenix.HttpHeaderSurvey.Integration.Domain.Modules;
-using JetBrains.Annotations;
+
 
 namespace Compilenix.HttpHeaderSurvey.Implementation.Domain.Modules
 {
-    [UsedImplicitly]
+    
     public class ResponseHeaderModule : BaseModule<IResponseHeaderRepository, ResponseHeader>, IResponseHeaderModule
     {
-        public ResponseHeaderModule([NotNull] IResponseHeaderRepository repository) : base(repository)
+        public ResponseHeaderModule( IResponseHeaderRepository repository) : base(repository)
         {
         }
 

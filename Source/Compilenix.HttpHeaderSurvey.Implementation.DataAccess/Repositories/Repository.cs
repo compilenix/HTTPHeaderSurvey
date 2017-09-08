@@ -6,23 +6,20 @@ using System.Linq.Expressions;
 using System.Threading.Tasks;
 using Compilenix.HttpHeaderSurvey.Integration.DataAccess.Entitys;
 using Compilenix.HttpHeaderSurvey.Integration.DataAccess.Repositories;
-using JetBrains.Annotations;
 
 namespace Compilenix.HttpHeaderSurvey.Implementation.DataAccess.Repositories
 {
     public class Repository<TEntity> : IRepository<TEntity>
         where TEntity : BaseEntity
     {
-        [NotNull]
         protected readonly DataAccessContext Context;
 
         public IQueryable<TEntity> EntitiesAsQueryable => Entities.AsQueryable();
 
-        [NotNull]
         // ReSharper disable once AssignNullToNotNullAttribute
         protected DbSet<TEntity> Entities => Context.Set<TEntity>();
 
-        protected Repository([NotNull] DataAccessContext context)
+        protected Repository( DataAccessContext context)
         {
             Context = context;
         }

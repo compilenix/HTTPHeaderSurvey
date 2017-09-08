@@ -2,14 +2,12 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
-using JetBrains.Annotations;
 
 namespace Compilenix.HttpHeaderSurvey.Implementation.Shared
 {
     [DebuggerStepThrough]
     public static class ExeptionExtensions
     {
-        [NotNull]
         public static IEnumerable<string> GetAllMessages(this Exception exception)
         {
             var messages = new List<string>();

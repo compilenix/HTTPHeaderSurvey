@@ -2,13 +2,11 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
-using JetBrains.Annotations;
 
 namespace Compilenix.HttpHeaderSurvey.Integration.DataAccess.Entitys
 {
     [DebuggerStepThrough]
     [SuppressMessage("ReSharper", "ClassWithVirtualMembersNeverInherited.Global")]
-    [UsedImplicitly]
     [SuppressMessage("ReSharper", "MemberCanBeProtected.Global")]
     [SuppressMessage("ReSharper", "UnusedAutoPropertyAccessor.Global")]
     [SuppressMessage("ReSharper", "VirtualMemberCallInConstructor")]

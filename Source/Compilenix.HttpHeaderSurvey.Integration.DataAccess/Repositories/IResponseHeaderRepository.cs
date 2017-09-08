@@ -2,7 +2,6 @@
 using System.Diagnostics.CodeAnalysis;
 using System.Threading.Tasks;
 using Compilenix.HttpHeaderSurvey.Integration.DataAccess.Entitys;
-using JetBrains.Annotations;
 
 namespace Compilenix.HttpHeaderSurvey.Integration.DataAccess.Repositories
 {
@@ -10,16 +9,12 @@ namespace Compilenix.HttpHeaderSurvey.Integration.DataAccess.Repositories
     [SuppressMessage("ReSharper", "UnusedMemberInSuper.Global")]
     public interface IResponseHeaderRepository : IRepository<ResponseHeader>
     {
-        [NotNull]
-        Task<ResponseHeader> AddIfNotExistingAsync([NotNull] ResponseHeader header);
+        Task<ResponseHeader> AddIfNotExistingAsync(ResponseHeader header);
 
-        [NotNull]
-        Task<bool> ContainsResponseHeaderAsync([NotNull] string header, [NotNull] string headerValue);
+        Task<bool> ContainsResponseHeaderAsync(string header, string headerValue);
 
-        [NotNull]
-        Task<ResponseHeader> GetByHeaderAndValueAsync([NotNull] string header, [NotNull] string value);
+        Task<ResponseHeader> GetByHeaderAndValueAsync(string header, string value);
 
-        [NotNull]
-        Task<IEnumerable<ResponseHeader>> GetByHeaderAsync([NotNull] string header);
+        Task<IEnumerable<ResponseHeader>> GetByHeaderAsync(string header);
     }
 }

@@ -2,14 +2,13 @@
 using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
-using JetBrains.Annotations;
 
 namespace Compilenix.HttpHeaderSurvey.Implementation.Shared
 {
     [DebuggerStepThrough]
     public static class HashUtils
     {
-        public static string Hash([NotNull] string data)
+        public static string Hash(string data)
         {
             using (var alg = SHA256.Create())
             {

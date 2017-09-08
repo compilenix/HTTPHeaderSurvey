@@ -5,7 +5,6 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
 using Compilenix.HttpHeaderSurvey.Integration.DataAccess.Entitys;
-using JetBrains.Annotations;
 
 namespace Compilenix.HttpHeaderSurvey.Integration.DataAccess.Repositories
 {
@@ -13,28 +12,22 @@ namespace Compilenix.HttpHeaderSurvey.Integration.DataAccess.Repositories
     public interface IRepository<TEntity>
         where TEntity : BaseEntity
     {
-        [NotNull]
         IQueryable<TEntity> EntitiesAsQueryable { get; }
 
-        TEntity Add([NotNull] TEntity entity);
+        TEntity Add(TEntity entity);
 
-        [NotNull]
         Task<int> CountAsync();
 
-        [NotNull]
-        Task<IEnumerable<TEntity>> FindAsync([NotNull] Expression<Func<TEntity, bool>> predicate);
+        Task<IEnumerable<TEntity>> FindAsync(Expression<Func<TEntity, bool>> predicate);
 
-        [ItemNotNull]
-        [NotNull]
         Task<IEnumerable<TEntity>> GetAllAsync();
 
-        [NotNull]
-        Task<TEntity> GetAsync<TTarget>([NotNull] TTarget id);
+        Task<TEntity> GetAsync<TTarget>(TTarget id);
 
-        void Remove([NotNull] TEntity entity);
+        void Remove(TEntity entity);
 
-        Task<TEntity> SingleOrDefaultAsync([NotNull] Expression<Func<TEntity, bool>> predicate);
+        Task<TEntity> SingleOrDefaultAsync(Expression<Func<TEntity, bool>> predicate);
 
-        TEntity UpdateExisting([NotNull] TEntity entity);
+        TEntity UpdateExisting(TEntity entity);
     }
 }

@@ -3,7 +3,7 @@ using System.Threading.Tasks;
 using Compilenix.HttpHeaderSurvey.Integration.DataAccess;
 using Compilenix.HttpHeaderSurvey.Integration.DataAccess.Entitys;
 using Compilenix.HttpHeaderSurvey.Integration.DataAccess.Repositories;
-using JetBrains.Annotations;
+
 
 namespace Compilenix.HttpHeaderSurvey.Integration.Domain.Modules
 {
@@ -12,7 +12,7 @@ namespace Compilenix.HttpHeaderSurvey.Integration.Domain.Modules
         /// <summary>
         /// Returns true if this was a known error.
         /// </summary>
-        [NotNull]
-        Task<(bool isKnownError, bool isPermanentError)> ProcessAsync([NotNull] ResponseMessage messageWithError, [NotNull] Exception error, [NotNull] IUnitOfWork unit);
+        
+        Task<(bool isKnownError, bool isPermanentError)> ProcessAsync( ResponseMessage messageWithError,  Exception error,  IUnitOfWork unit);
     }
 }

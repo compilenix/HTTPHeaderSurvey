@@ -3,7 +3,7 @@ using System.Diagnostics.CodeAnalysis;
 using AutoMapper;
 using Compilenix.HttpHeaderSurvey.Integration.DataAccess.Entitys;
 using Compilenix.HttpHeaderSurvey.Integration.Domain.DataTransferObjects;
-using JetBrains.Annotations;
+
 
 namespace Compilenix.HttpHeaderSurvey.Implementation.Domain
 {
@@ -12,22 +12,22 @@ namespace Compilenix.HttpHeaderSurvey.Implementation.Domain
     {
         private static bool IsMappingInitialized { get; set; }
 
-        [NotNull]
-        public static TTarget Map<TTarget>([NotNull] object source)
+        
+        public static TTarget Map<TTarget>( object source)
         {
             return Mapper.Map<TTarget>(source);
         }
 
-        [NotNull]
-        public static TTarget Map<TTarget>([NotNull] object source, [NotNull] object target)
+        
+        public static TTarget Map<TTarget>( object source,  object target)
             where TTarget : class
         {
             // ReSharper disable once AssignNullToNotNullAttribute
             return Mapper.Map(source, target) as TTarget;
         }
 
-        [NotNull]
-        public static IEnumerable<TTarget> MapRange<TTarget>([ItemNotNull] [NotNull] IEnumerable<object> sources)
+        
+        public static IEnumerable<TTarget> MapRange<TTarget>(  IEnumerable<object> sources)
         {
             var mappedRange = new LinkedList<TTarget>();
 

@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Diagnostics.CodeAnalysis;
 using System.Threading.Tasks;
-using JetBrains.Annotations;
 
 namespace Compilenix.HttpHeaderSurvey.Integration.DataAccess
 {
@@ -11,10 +10,8 @@ namespace Compilenix.HttpHeaderSurvey.Integration.DataAccess
     {
         bool SaveChanges { get; set; }
 
-        [NotNull]
         Task<int> CompleteAsync();
 
-        [NotNull]
         TRepository Resolve<TRepository>()
             where TRepository : class;
     }

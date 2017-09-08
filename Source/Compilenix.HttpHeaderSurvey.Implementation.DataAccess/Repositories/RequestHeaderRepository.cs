@@ -6,14 +6,12 @@ using System.Threading.Tasks;
 using Compilenix.HttpHeaderSurvey.Implementation.Shared;
 using Compilenix.HttpHeaderSurvey.Integration.DataAccess.Entitys;
 using Compilenix.HttpHeaderSurvey.Integration.DataAccess.Repositories;
-using JetBrains.Annotations;
 
 namespace Compilenix.HttpHeaderSurvey.Implementation.DataAccess.Repositories
 {
-    [UsedImplicitly]
     public class RequestHeaderRepository : Repository<RequestHeader>, IRequestHeaderRepository
     {
-        public RequestHeaderRepository([NotNull] DataAccessContext context) : base(context)
+        public RequestHeaderRepository( DataAccessContext context) : base(context)
         {
         }
 

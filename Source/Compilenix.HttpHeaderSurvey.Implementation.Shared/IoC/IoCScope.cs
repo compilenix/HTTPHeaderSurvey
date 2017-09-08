@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Diagnostics;
 using Compilenix.HttpHeaderSurvey.Integration.Shared.IoC;
-using JetBrains.Annotations;
 using SimpleInjector;
 
 namespace Compilenix.HttpHeaderSurvey.Implementation.Shared.IoC
@@ -9,7 +8,6 @@ namespace Compilenix.HttpHeaderSurvey.Implementation.Shared.IoC
     [DebuggerStepThrough]
     public class IoCScope : IIoCScope
     {
-        [NotNull]
         private readonly Scope _scope;
 
         public IoCScope(Scope scope)

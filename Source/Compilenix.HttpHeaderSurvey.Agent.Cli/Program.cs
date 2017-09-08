@@ -5,7 +5,7 @@ using Compilenix.HttpHeaderSurvey.Integration.DataAccess;
 using Compilenix.HttpHeaderSurvey.Integration.DataAccess.Entitys;
 using Compilenix.HttpHeaderSurvey.Integration.Domain;
 using Compilenix.HttpHeaderSurvey.Integration.Domain.Modules;
-using JetBrains.Annotations;
+
 
 namespace Compilenix.HttpHeaderSurvey.Agent.Cli
 {
@@ -16,7 +16,6 @@ namespace Compilenix.HttpHeaderSurvey.Agent.Cli
         {
             Bootstrapper.Initialize();
 
-            AddDefaultRequestHeadersAsync().Wait();
             ImportRequestJobsIfThereAreNoneAsync(@"C:\Temp\top-1m.csv").Wait();
             ProcessSomeJobsAsync(int.MaxValue).Wait();
         }
@@ -30,8 +29,10 @@ namespace Compilenix.HttpHeaderSurvey.Agent.Cli
             }
         }
 
-        private static async Task ImportRequestJobsIfThereAreNoneAsync([NotNull] string fromCsvFile)
+        private static async Task ImportRequestJobsIfThereAreNoneAsync( string fromCsvFile)
         {
+            await AddDefaultRequestHeadersAsync();
+
             using (var unit = IoC.Resolve<IUnitOfWork>())
             {
                 if (unit.Resolve<IRequestJobModule>().Count < 1)

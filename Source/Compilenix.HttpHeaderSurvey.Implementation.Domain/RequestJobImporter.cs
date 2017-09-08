@@ -8,17 +8,17 @@ using Compilenix.HttpHeaderSurvey.Integration.DataAccess;
 using Compilenix.HttpHeaderSurvey.Integration.DataAccess.Entitys;
 using Compilenix.HttpHeaderSurvey.Integration.Domain;
 using Compilenix.HttpHeaderSurvey.Integration.Domain.Modules;
-using JetBrains.Annotations;
+
 
 namespace Compilenix.HttpHeaderSurvey.Implementation.Domain
 {
-    [UsedImplicitly]
+    
     public class RequestJobImporter : IRequestJobImporter
     {
-        [NotNull]
+        
         private readonly IUnitOfWork _unit;
 
-        public RequestJobImporter([NotNull] IUnitOfWork unit)
+        public RequestJobImporter( IUnitOfWork unit)
         {
             _unit = unit;
         }
