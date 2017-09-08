@@ -1,25 +1,25 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 14
-VisualStudioVersion = 14.0.25420.1
+# Visual Studio 15
+VisualStudioVersion = 15.0.26730.12
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Agent.Cli", "Source\Compilenix.HttpHeaderSurvey.Agent.Cli\Compilenix.HttpHeaderSurvey.Agent.Cli.csproj", "{310F80CC-A274-46E4-B50D-419511E45605}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Compilenix.HttpHeaderSurvey.Agent.Cli", "Source\Compilenix.HttpHeaderSurvey.Agent.Cli\Compilenix.HttpHeaderSurvey.Agent.Cli.csproj", "{310F80CC-A274-46E4-B50D-419511E45605}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Integration", "Compilenix.HttpHeaderSurvey.Integration", "{CAA6FE71-41D1-453B-BCB5-C1C6CD3A0DFC}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Integration", "Integration", "{CAA6FE71-41D1-453B-BCB5-C1C6CD3A0DFC}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Implementation", "Compilenix.HttpHeaderSurvey.Implementation", "{43273581-1856-48BD-AB37-8BEEE09AEA82}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Implementation", "Implementation", "{43273581-1856-48BD-AB37-8BEEE09AEA82}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DataAccess", "Source\Compilenix.HttpHeaderSurvey.Integration.DataAccess\Compilenix.HttpHeaderSurvey.Integration.DataAccess.csproj", "{E22A9B2D-CD61-49B9-B8BA-361B0CFF2A0A}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Compilenix.HttpHeaderSurvey.Integration.DataAccess", "Source\Compilenix.HttpHeaderSurvey.Integration.DataAccess\Compilenix.HttpHeaderSurvey.Integration.DataAccess.csproj", "{E22A9B2D-CD61-49B9-B8BA-361B0CFF2A0A}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Shared", "Source\Compilenix.HttpHeaderSurvey.Implementation.Shared\Compilenix.HttpHeaderSurvey.Implementation.Shared.csproj", "{8F742D4C-794D-4365-BA89-2C67BFC4477F}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Compilenix.HttpHeaderSurvey.Implementation.Shared", "Source\Compilenix.HttpHeaderSurvey.Implementation.Shared\Compilenix.HttpHeaderSurvey.Implementation.Shared.csproj", "{8F742D4C-794D-4365-BA89-2C67BFC4477F}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DataAccess", "Source\Compilenix.HttpHeaderSurvey.Implementation.DataAccess\Compilenix.HttpHeaderSurvey.Implementation.DataAccess.csproj", "{0971BE82-E8BA-486D-A44B-9C0A8C9FF82F}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Compilenix.HttpHeaderSurvey.Implementation.DataAccess", "Source\Compilenix.HttpHeaderSurvey.Implementation.DataAccess\Compilenix.HttpHeaderSurvey.Implementation.DataAccess.csproj", "{0971BE82-E8BA-486D-A44B-9C0A8C9FF82F}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Domain", "Source\Compilenix.HttpHeaderSurvey.Integration.Domain\Compilenix.HttpHeaderSurvey.Integration.Domain.csproj", "{E9ACA8CB-41ED-4168-9742-0471AE8FF6AA}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Compilenix.HttpHeaderSurvey.Integration.Domain", "Source\Compilenix.HttpHeaderSurvey.Integration.Domain\Compilenix.HttpHeaderSurvey.Integration.Domain.csproj", "{E9ACA8CB-41ED-4168-9742-0471AE8FF6AA}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Domain", "Source\Compilenix.HttpHeaderSurvey.Implementation.Domain\Compilenix.HttpHeaderSurvey.Implementation.Domain.csproj", "{010FCD06-1FFC-407C-8FB0-68CC6DB24512}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Compilenix.HttpHeaderSurvey.Implementation.Domain", "Source\Compilenix.HttpHeaderSurvey.Implementation.Domain\Compilenix.HttpHeaderSurvey.Implementation.Domain.csproj", "{010FCD06-1FFC-407C-8FB0-68CC6DB24512}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Shared", "Source\Compilenix.HttpHeaderSurvey.Integration.Shared\Compilenix.HttpHeaderSurvey.Integration.Shared.csproj", "{FF08798B-A665-4687-92A8-23AB2868C9F0}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Compilenix.HttpHeaderSurvey.Integration.Shared", "Source\Compilenix.HttpHeaderSurvey.Integration.Shared\Compilenix.HttpHeaderSurvey.Integration.Shared.csproj", "{FF08798B-A665-4687-92A8-23AB2868C9F0}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -66,5 +66,8 @@ Global
 		{E9ACA8CB-41ED-4168-9742-0471AE8FF6AA} = {CAA6FE71-41D1-453B-BCB5-C1C6CD3A0DFC}
 		{010FCD06-1FFC-407C-8FB0-68CC6DB24512} = {43273581-1856-48BD-AB37-8BEEE09AEA82}
 		{FF08798B-A665-4687-92A8-23AB2868C9F0} = {CAA6FE71-41D1-453B-BCB5-C1C6CD3A0DFC}
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {8E03FA21-BE17-4484-9BC8-6A7C85CF63D0}
 	EndGlobalSection
 EndGlobal

@@ -6,7 +6,6 @@ using Compilenix.HttpHeaderSurvey.Integration.DataAccess.Entitys;
 using Compilenix.HttpHeaderSurvey.Integration.Domain;
 using Compilenix.HttpHeaderSurvey.Integration.Domain.Modules;
 
-
 namespace Compilenix.HttpHeaderSurvey.Agent.Cli
 {
     internal static class Program
@@ -29,7 +28,7 @@ namespace Compilenix.HttpHeaderSurvey.Agent.Cli
             }
         }
 
-        private static async Task ImportRequestJobsIfThereAreNoneAsync( string fromCsvFile)
+        private static async Task ImportRequestJobsIfThereAreNoneAsync(string fromCsvFile)
         {
             await AddDefaultRequestHeadersAsync();
 

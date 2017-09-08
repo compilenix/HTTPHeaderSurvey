@@ -8,7 +8,6 @@ namespace Compilenix.HttpHeaderSurvey.Integration.Domain
     [SuppressMessage("ReSharper", "UnusedMemberInSuper.Global")]
     public interface IDataTransferObjectConverter
     {
-        
-        Task<IEnumerable<RequestJob>> RequestJobsFromCsv( string filePath, char seperator);
+        Task<IEnumerable<RequestJob>> RequestJobsFromCsv(string filePath, char seperator);
     }
 }

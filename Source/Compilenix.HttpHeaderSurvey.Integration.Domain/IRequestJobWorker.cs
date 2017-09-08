@@ -7,7 +7,6 @@ namespace Compilenix.HttpHeaderSurvey.Integration.Domain
     [SuppressMessage("ReSharper", "UnusedMemberInSuper.Global")]
     public interface IRequestJobWorker : IDisposable
     {
-        
         Task Completion { get; }
 
         bool IsThrottling { get; set; }
@@ -16,10 +15,8 @@ namespace Compilenix.HttpHeaderSurvey.Integration.Domain
 
         uint CurrentItemsPerSecond { get; }
 
-        
         Task StartAsync(int countOfJobsToProcess);
 
-        
         Task StopAsync();
     }
 }

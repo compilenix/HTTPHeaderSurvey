@@ -10,21 +10,19 @@ using Compilenix.HttpHeaderSurvey.Integration.DataAccess;
 using Compilenix.HttpHeaderSurvey.Integration.DataAccess.Entitys;
 using Compilenix.HttpHeaderSurvey.Integration.DataAccess.Repositories;
 
-
 namespace Compilenix.HttpHeaderSurvey.Implementation.DataAccess.Repositories
 {
-    
     public class RequestJobRepository : Repository<RequestJob>, IRequestJobRepository
     {
         //TODO Where to store / get from, this value?
         private TimeSpan _scheduleDays;
 
-        public RequestJobRepository( DataAccessContext context) : base(context)
+        public RequestJobRepository(DataAccessContext context) : base(context)
         {
             _scheduleDays = TimeSpan.FromDays(30);
         }
 
-        private static IQueryable<RequestJob> RequestJobWithHeadersQueryable( IQueryable<RequestJob> query, bool doInclude)
+        private static IQueryable<RequestJob> RequestJobWithHeadersQueryable(IQueryable<RequestJob> query, bool doInclude)
         {
             return doInclude ? query.Include(h => h.Headers) : query;
         }
@@ -115,7 +113,7 @@ namespace Compilenix.HttpHeaderSurvey.Implementation.DataAccess.Repositories
         }
 
         // TODO move into domain layer
-        private async Task CheckoutAsync( IEnumerable<RequestJob> someJobs)
+        private async Task CheckoutAsync(IEnumerable<RequestJob> someJobs)
         {
             foreach (var job in someJobs)
             {

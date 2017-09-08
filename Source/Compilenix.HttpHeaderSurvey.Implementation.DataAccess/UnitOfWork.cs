@@ -4,16 +4,12 @@ using Compilenix.HttpHeaderSurvey.Implementation.Shared.IoC;
 using Compilenix.HttpHeaderSurvey.Integration.DataAccess;
 using Compilenix.HttpHeaderSurvey.Integration.Shared.IoC;
 
-
 namespace Compilenix.HttpHeaderSurvey.Implementation.DataAccess
 {
-    
     public class UnitOfWork : IUnitOfWork
     {
-        
         private readonly IIoCScope _scope;
 
-        
         internal readonly DataAccessContext Context;
 
         public bool SaveChanges { get; set; } = true;

@@ -4,7 +4,6 @@ using Compilenix.HttpHeaderSurvey.Integration.DataAccess;
 using Compilenix.HttpHeaderSurvey.Integration.DataAccess.Entitys;
 using Compilenix.HttpHeaderSurvey.Integration.DataAccess.Repositories;
 
-
 namespace Compilenix.HttpHeaderSurvey.Integration.Domain.Modules
 {
     public interface IResponseErrorModule : IBaseModule<IResponseErrorRepository, ResponseError>
@@ -12,7 +11,6 @@ namespace Compilenix.HttpHeaderSurvey.Integration.Domain.Modules
         /// <summary>
         /// Returns true if this was a known error.
         /// </summary>
-        
-        Task<(bool isKnownError, bool isPermanentError)> ProcessAsync( ResponseMessage messageWithError,  Exception error,  IUnitOfWork unit);
+        Task<(bool isKnownError, bool isPermanentError)> ProcessAsync(ResponseMessage messageWithError, Exception error, IUnitOfWork unit);
     }
 }

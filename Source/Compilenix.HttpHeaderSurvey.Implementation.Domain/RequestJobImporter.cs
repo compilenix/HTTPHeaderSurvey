@@ -9,16 +9,13 @@ using Compilenix.HttpHeaderSurvey.Integration.DataAccess.Entitys;
 using Compilenix.HttpHeaderSurvey.Integration.Domain;
 using Compilenix.HttpHeaderSurvey.Integration.Domain.Modules;
 
-
 namespace Compilenix.HttpHeaderSurvey.Implementation.Domain
 {
-    
     public class RequestJobImporter : IRequestJobImporter
     {
-        
         private readonly IUnitOfWork _unit;
 
-        public RequestJobImporter( IUnitOfWork unit)
+        public RequestJobImporter(IUnitOfWork unit)
         {
             _unit = unit;
         }

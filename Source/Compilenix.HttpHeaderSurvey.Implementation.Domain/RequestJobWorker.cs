@@ -13,10 +13,8 @@ using Compilenix.HttpHeaderSurvey.Integration.DataAccess.Repositories;
 using Compilenix.HttpHeaderSurvey.Integration.Domain;
 using Compilenix.HttpHeaderSurvey.Integration.Domain.Modules;
 
-
 namespace Compilenix.HttpHeaderSurvey.Implementation.Domain
 {
-    
     public class RequestJobWorker : IRequestJobWorker
     {
         private readonly CancellationTokenSource _cancellationTokenSource;
@@ -70,7 +68,7 @@ namespace Compilenix.HttpHeaderSurvey.Implementation.Domain
             IsThrottling = bool.Parse(config.Get("RequestJobWorkerThrottlingEnabled") ?? "False");
         }
 
-        private static async Task FillConsumerAsync(int countOfJobsToProcess,  ITargetBlock<RequestJob> targetBlock, CancellationToken token)
+        private static async Task FillConsumerAsync(int countOfJobsToProcess, ITargetBlock<RequestJob> targetBlock, CancellationToken token)
         {
             int itemsGot;
             do
@@ -209,7 +207,7 @@ namespace Compilenix.HttpHeaderSurvey.Implementation.Domain
             }
         }
 
-        private void InitThrottlingTask( IApplicationConfigurationCollection config)
+        private void InitThrottlingTask(IApplicationConfigurationCollection config)
         {
             ThrottlingItemsPerSecond = uint.Parse(config.Get("RequestJobWorkerThrottlingItemsPerSecond") ?? "10");
 
@@ -276,7 +274,7 @@ namespace Compilenix.HttpHeaderSurvey.Implementation.Domain
             }
         }
 
-        private async Task<(RequestJob job, bool isCompleted)> ProcessRequestJob( RequestJob requestJob)
+        private async Task<(RequestJob job, bool isCompleted)> ProcessRequestJob(RequestJob requestJob)
         {
             if (IsThrottling)
             {

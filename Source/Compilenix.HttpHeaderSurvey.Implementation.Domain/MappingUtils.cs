@@ -4,7 +4,6 @@ using AutoMapper;
 using Compilenix.HttpHeaderSurvey.Integration.DataAccess.Entitys;
 using Compilenix.HttpHeaderSurvey.Integration.Domain.DataTransferObjects;
 
-
 namespace Compilenix.HttpHeaderSurvey.Implementation.Domain
 {
     [SuppressMessage("ReSharper", "MemberCanBePrivate.Global")]
@@ -12,22 +11,19 @@ namespace Compilenix.HttpHeaderSurvey.Implementation.Domain
     {
         private static bool IsMappingInitialized { get; set; }
 
-        
-        public static TTarget Map<TTarget>( object source)
+        public static TTarget Map<TTarget>(object source)
         {
             return Mapper.Map<TTarget>(source);
         }
 
-        
-        public static TTarget Map<TTarget>( object source,  object target)
+        public static TTarget Map<TTarget>(object source, object target)
             where TTarget : class
         {
             // ReSharper disable once AssignNullToNotNullAttribute
             return Mapper.Map(source, target) as TTarget;
         }
 
-        
-        public static IEnumerable<TTarget> MapRange<TTarget>(  IEnumerable<object> sources)
+        public static IEnumerable<TTarget> MapRange<TTarget>(IEnumerable<object> sources)
         {
             var mappedRange = new LinkedList<TTarget>();
 

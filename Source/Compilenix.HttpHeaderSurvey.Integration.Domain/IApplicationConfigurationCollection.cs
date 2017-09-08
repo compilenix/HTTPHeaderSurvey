@@ -9,13 +9,11 @@ namespace Compilenix.HttpHeaderSurvey.Integration.Domain
     [SuppressMessage("ReSharper", "UnusedMethodReturnValue.Global")]
     public interface IApplicationConfigurationCollection : ICollection
     {
-        bool Exists( string key);
-        string Get( string key);
+        bool Exists(string key);
+        string Get(string key);
 
-        
-        Tuple<bool, string, string> Remove( string key);
+        Tuple<bool, string, string> Remove(string key);
 
-        
-        Tuple<string, string> SetOrAdd( string key,  string value);
+        Tuple<string, string> SetOrAdd(string key, string value);
     }
 }

@@ -8,13 +8,11 @@ using Compilenix.HttpHeaderSurvey.Implementation.Shared;
 using Compilenix.HttpHeaderSurvey.Integration.DataAccess.Entitys;
 using Compilenix.HttpHeaderSurvey.Integration.DataAccess.Repositories;
 
-
 namespace Compilenix.HttpHeaderSurvey.Implementation.DataAccess.Repositories
 {
-    
     public class ResponseHeaderRepository : Repository<ResponseHeader>, IResponseHeaderRepository
     {
-        public ResponseHeaderRepository( DataAccessContext context) : base(context)
+        public ResponseHeaderRepository(DataAccessContext context) : base(context)
         {
         }
 

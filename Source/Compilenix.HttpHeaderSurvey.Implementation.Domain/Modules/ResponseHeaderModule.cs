@@ -6,13 +6,11 @@ using Compilenix.HttpHeaderSurvey.Integration.DataAccess.Entitys;
 using Compilenix.HttpHeaderSurvey.Integration.DataAccess.Repositories;
 using Compilenix.HttpHeaderSurvey.Integration.Domain.Modules;
 
-
 namespace Compilenix.HttpHeaderSurvey.Implementation.Domain.Modules
 {
-    
     public class ResponseHeaderModule : BaseModule<IResponseHeaderRepository, ResponseHeader>, IResponseHeaderModule
     {
-        public ResponseHeaderModule( IResponseHeaderRepository repository) : base(repository)
+        public ResponseHeaderModule(IResponseHeaderRepository repository) : base(repository)
         {
         }
 

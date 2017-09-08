@@ -9,7 +9,7 @@ namespace Compilenix.HttpHeaderSurvey.Implementation.DataAccess.Repositories
 {
     public class ErrorCodeRepository : Repository<ErrorCode>, IErrorCodeRepository
     {
-        public ErrorCodeRepository( DataAccessContext context) : base(context)
+        public ErrorCodeRepository(DataAccessContext context) : base(context)
         {
         }
 

@@ -10,7 +10,7 @@ namespace Compilenix.HttpHeaderSurvey.Implementation.DataAccess
 {
     public class ForeignKeyNamingConvention : IStoreModelConvention<AssociationType>
     {
-        private static bool DoPropertiesHaveDefaultNames( IReadOnlyCollection<EdmProperty> properties,   IReadOnlyList<EdmProperty> otherEndProperties)
+        private static bool DoPropertiesHaveDefaultNames(IReadOnlyCollection<EdmProperty> properties, IReadOnlyList<EdmProperty> otherEndProperties)
         {
             if (properties.Count != otherEndProperties.Count)
             {
@@ -58,7 +58,7 @@ namespace Compilenix.HttpHeaderSurvey.Implementation.DataAccess
             }
         }
 
-        public void Apply( AssociationType association,  DbModel model)
+        public void Apply(AssociationType association, DbModel model)
         {
             if (!association.IsForeignKey)
             {

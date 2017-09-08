@@ -1,5 +1,4 @@
-﻿
-namespace Compilenix.HttpHeaderSurvey.Integration.Shared.IoC
+﻿namespace Compilenix.HttpHeaderSurvey.Integration.Shared.IoC
 {
     public interface IContainer : IIoCScope
     {

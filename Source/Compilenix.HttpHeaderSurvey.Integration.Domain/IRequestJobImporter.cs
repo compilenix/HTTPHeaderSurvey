@@ -9,13 +9,10 @@ namespace Compilenix.HttpHeaderSurvey.Integration.Domain
     [SuppressMessage("ReSharper", "UnusedMemberInSuper.Global")]
     public interface IRequestJobImporter : IDisposable
     {
-        
-        Task FromCsvAsync( string filePath, char delimiter = ',');
+        Task FromCsvAsync(string filePath, char delimiter = ',');
 
-        
-        Task FromCsvAsync( string filePath,   IEnumerable<RequestHeader> requestHeaders, char delimiter = ',');
+        Task FromCsvAsync(string filePath, IEnumerable<RequestHeader> requestHeaders, char delimiter = ',');
 
-        
-        Task ImportAsync( RequestJob requestJob,  IEnumerable<RequestHeader> headers);
+        Task ImportAsync(RequestJob requestJob, IEnumerable<RequestHeader> headers);
     }
 }

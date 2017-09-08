@@ -6,19 +6,18 @@ using Compilenix.HttpHeaderSurvey.Integration.DataAccess.Entitys;
 using Compilenix.HttpHeaderSurvey.Integration.DataAccess.Repositories;
 using Compilenix.HttpHeaderSurvey.Integration.Domain.Modules;
 
-
 namespace Compilenix.HttpHeaderSurvey.Implementation.Domain.Modules
 {
     public class BaseModule<TRepository, TItem> : IBaseModule<TRepository, TItem>
         where TItem : BaseEntity where TRepository : class, IRepository<TItem>
     {
         // ReSharper disable once MemberCanBePrivate.Global
-        
+
         protected readonly IRepository<TItem> Repository;
 
         public virtual int Count => Repository.CountAsync().Result;
 
-        protected BaseModule( TRepository repository)
+        protected BaseModule(TRepository repository)
         {
             Repository = repository;
         }

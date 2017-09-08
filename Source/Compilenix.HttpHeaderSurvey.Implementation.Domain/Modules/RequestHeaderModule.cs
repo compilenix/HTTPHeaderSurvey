@@ -5,16 +5,13 @@ using Compilenix.HttpHeaderSurvey.Integration.DataAccess.Entitys;
 using Compilenix.HttpHeaderSurvey.Integration.DataAccess.Repositories;
 using Compilenix.HttpHeaderSurvey.Integration.Domain.Modules;
 
-
 namespace Compilenix.HttpHeaderSurvey.Implementation.Domain.Modules
 {
-    
     public class RequestHeaderModule : BaseModule<IRequestHeaderRepository, RequestHeader>, IRequestHeaderModule
     {
-        
         private readonly IRequestHeaderRepository _repository;
 
-        public RequestHeaderModule( IRequestHeaderRepository repository) : base(repository)
+        public RequestHeaderModule(IRequestHeaderRepository repository) : base(repository)
         {
             _repository = repository;
         }

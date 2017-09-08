@@ -18,30 +18,24 @@ namespace Compilenix.HttpHeaderSurvey.Integration.Domain.Modules
         /// <summary>
         /// Add item, without checking for existing
         /// </summary>
-        TItem Add( TItem item);
+        TItem Add(TItem item);
 
         /// <summary>
         /// Add item or update existing
         /// </summary>
-        
-        Task<TItem> AddOrUpdateAsync( TItem item);
+        Task<TItem> AddOrUpdateAsync(TItem item);
 
-        
-        
-        Task<IEnumerable<TItem>> FindAsync( Expression<Func<TItem, bool>> predicate);
+        Task<IEnumerable<TItem>> FindAsync(Expression<Func<TItem, bool>> predicate);
 
         /// <summary>
         /// Keep in mind that the result may be huge
         /// </summary>
-        
-        
         Task<IEnumerable<TItem>> GetAllAsync();
 
-        
-        Task<TItem> GetAsync<TId>( TId id);
+        Task<TItem> GetAsync<TId>(TId id);
 
-        void Remove( TItem item);
+        void Remove(TItem item);
 
-        TItem UpdateExisting( TItem item);
+        TItem UpdateExisting(TItem item);
     }
 }

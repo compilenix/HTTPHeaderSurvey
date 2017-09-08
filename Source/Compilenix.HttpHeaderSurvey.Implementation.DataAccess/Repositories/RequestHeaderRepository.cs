@@ -11,7 +11,7 @@ namespace Compilenix.HttpHeaderSurvey.Implementation.DataAccess.Repositories
 {
     public class RequestHeaderRepository : Repository<RequestHeader>, IRequestHeaderRepository
     {
-        public RequestHeaderRepository( DataAccessContext context) : base(context)
+        public RequestHeaderRepository(DataAccessContext context) : base(context)
         {
         }
 

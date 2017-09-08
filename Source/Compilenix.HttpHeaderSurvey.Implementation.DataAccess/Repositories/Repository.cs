@@ -19,7 +19,7 @@ namespace Compilenix.HttpHeaderSurvey.Implementation.DataAccess.Repositories
         // ReSharper disable once AssignNullToNotNullAttribute
         protected DbSet<TEntity> Entities => Context.Set<TEntity>();
 
-        protected Repository( DataAccessContext context)
+        protected Repository(DataAccessContext context)
         {
             Context = context;
         }
