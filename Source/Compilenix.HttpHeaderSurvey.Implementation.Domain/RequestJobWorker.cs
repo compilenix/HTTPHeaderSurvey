@@ -83,19 +83,11 @@ namespace Compilenix.HttpHeaderSurvey.Implementation.Domain
 
                     foreach (var job in jobs)
                     {
-                        if ((targetBlock.Completion?.IsCanceled ?? true) || targetBlock.Completion.IsFaulted || token.IsCancellationRequested)
-                        {
-                            break;
-                        }
+                        if ((targetBlock.Completion?.IsCanceled ?? true) || targetBlock.Completion.IsFaulted || token.IsCancellationRequested) break;
 
                         itemsGot++;
 
-                        // ReSharper disable once MethodSupportsCancellation
-                        var sendAsync = targetBlock.SendAsync(job);
-                        if (sendAsync != null)
-                        {
-                            await sendAsync;
-                        }
+                        await targetBlock.SendAsync(job);
                     }
 
                     countOfJobsToProcess -= itemsGot;

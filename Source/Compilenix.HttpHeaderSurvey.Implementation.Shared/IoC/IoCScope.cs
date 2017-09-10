@@ -12,12 +12,7 @@ namespace Compilenix.HttpHeaderSurvey.Implementation.Shared.IoC
 
         public IoCScope(Scope scope)
         {
-            if (scope == null)
-            {
-                throw new ArgumentNullException(nameof(scope));
-            }
-
-            _scope = scope;
+            _scope = scope ?? throw new ArgumentNullException(nameof(scope));
         }
 
         public IIoCScope BeginLifetimeScope()

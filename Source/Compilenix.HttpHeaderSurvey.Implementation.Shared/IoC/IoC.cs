@@ -10,8 +10,8 @@ namespace Compilenix.HttpHeaderSurvey.Implementation.Shared.IoC
 
         public static IIocContainer CurrentContainer
         {
-            get { return _currentContainer ?? (_currentContainer = new IoCContainerWrapper()); }
-            set { _currentContainer = value; }
+            get => _currentContainer ?? (_currentContainer = new IoCContainerWrapper());
+            set => _currentContainer = value;
         }
 
         public static IIoCScope BeginLifetimeScope()

@@ -8,7 +8,9 @@ namespace Compilenix.HttpHeaderSurvey.Integration.Shared.IoC
         IIoCScope BeginScope();
 
         void Build();
+
         void Register(Assembly assembly, Func<Type, bool> whereFunc);
+
         void Register(Assembly assembly, Func<Type, bool> whereFunc, InstanceLifetimeType lifetime);
 
         IIocContainer Register(Type from, Type to);
