@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Threading.Tasks.Dataflow;
+using Compilenix.HttpHeaderSurvey.Implementation.Shared;
 using Compilenix.HttpHeaderSurvey.Implementation.Shared.IoC;
 using Compilenix.HttpHeaderSurvey.Integration.DataAccess;
 using Compilenix.HttpHeaderSurvey.Integration.DataAccess.Entitys;
@@ -20,49 +21,55 @@ namespace Compilenix.HttpHeaderSurvey.Implementation.Domain
             _unit = unit;
         }
 
-        public async Task FromCsvAsync(string filePath, IEnumerable<RequestHeader> requestHeaders, char delimiter = ',')
+        public async Task FromCsvAsync(
+            string filePath,
+            IEnumerable<RequestHeader> requestHeaders,
+            char seperator = ',')
         {
-            var jobsFromCsv = await new DataTransferObjectConverter().RequestJobsFromCsv(filePath, delimiter);
-
-            var input = new BufferBlock<RequestJob>();
-            var processingList = new List<ActionBlock<RequestJob>>();
-
-            for (var i = 0; i < 4; i++)
+            void ProcessBlock(RequestJob job)
             {
-                var item = new ActionBlock<RequestJob>(
-                    job =>
-                        {
-                            if (job != null)
-                            {
-                                ImportAsync(job, requestHeaders).Wait();
-                            }
-                        }, new ExecutionDataflowBlockOptions
-                        {
-                            BoundedCapacity = 3,
-                            TaskScheduler = new ConcurrentExclusiveSchedulerPair().ConcurrentScheduler,
-                            MaxDegreeOfParallelism = Environment.ProcessorCount
-                        });
-                input.LinkTo(item);
-                input.Completion?.ContinueWith(task => item.Complete());
-                processingList.Add(item);
+                try
+                {
+                    if (job != null) ImportAsync(job, requestHeaders).Wait();
+                }
+                catch (Exception exception)
+                {
+                    this.Log()?.Error("Import error", exception);
+                }
             }
 
-            foreach (var requestJob in jobsFromCsv)
-            {
-                // ReSharper disable once PossibleNullReferenceException
-                while (!await input.SendAsync(requestJob)) { }
-            }
-            // ReSharper disable once RedundantAssignment
-            jobsFromCsv = null;
+            var processingBlock = new ActionBlock<RequestJob>(
+                (Action<RequestJob>)ProcessBlock,
+                new ExecutionDataflowBlockOptions
+                    {
+                        MaxDegreeOfParallelism = Environment.ProcessorCount << 1,
+                        BoundedCapacity = Environment.ProcessorCount << 2
+                    });
 
-            input.Complete();
-            Task.WaitAll(processingList.Select(x => x?.Completion).ToArray());
+            using (var requestJobIterator = new DataTransferObjectConverter(seperator).RequestJobsFromCsv(filePath).GetEnumerator())
+            {
+                int itemsGot;
+                const int BatchSize = 5000;
+                do
+                {
+                    itemsGot = 0;
+
+                    for (var i = 0; i < BatchSize && requestJobIterator.MoveNext(); i++)
+                    {
+                        itemsGot++;
+                        await processingBlock.SendAsync(requestJobIterator.Current);
+                    }
+                }
+                while (itemsGot > 0);
+                processingBlock.Complete();
+            }
+
+            await processingBlock.Completion;
         }
 
         public async Task FromCsvAsync(string filePath, char delimiter = ',')
         {
-            var module = _unit.Resolve<IRequestHeaderModule>();
-            await FromCsvAsync(filePath, await module.GetDefaultRequestHeadersAsync(), delimiter);
+            await FromCsvAsync(filePath, await _unit.Resolve<IRequestHeaderModule>().GetDefaultRequestHeadersAsync(), delimiter);
         }
 
         public async Task ImportAsync(RequestJob requestJob, IEnumerable<RequestHeader> headers)
@@ -84,7 +91,7 @@ namespace Compilenix.HttpHeaderSurvey.Implementation.Domain
             }
         }
 
-        /// <summary>Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.</summary>
+        /// <inheritdoc />
         public void Dispose()
         {
             _unit.Dispose();

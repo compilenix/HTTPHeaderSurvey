@@ -11,7 +11,7 @@ namespace Compilenix.HttpHeaderSurvey.Integration.Domain
     {
         Task FromCsvAsync(string filePath, char delimiter = ',');
 
-        Task FromCsvAsync(string filePath, IEnumerable<RequestHeader> requestHeaders, char delimiter = ',');
+        Task FromCsvAsync(string filePath, IEnumerable<RequestHeader> requestHeaders, char seperator = ',');
 
         Task ImportAsync(RequestJob requestJob, IEnumerable<RequestHeader> headers);
     }
