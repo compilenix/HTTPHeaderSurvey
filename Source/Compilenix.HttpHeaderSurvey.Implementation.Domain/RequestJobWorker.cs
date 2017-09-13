@@ -308,7 +308,8 @@ namespace Compilenix.HttpHeaderSurvey.Implementation.Domain
                     {
                         var handledError = await unit.Resolve<IResponseErrorModule>().ProcessAsync(responseMessage, exception, unit);
 
-                        isCompleted = !handledError.isPermanentError;
+                        //isCompleted = !handledError.isPermanentError;
+                        isCompleted = true;
 
                         if (handledError.isKnownError)
                         {
