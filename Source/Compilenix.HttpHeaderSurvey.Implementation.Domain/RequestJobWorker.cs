@@ -35,15 +35,13 @@ namespace Compilenix.HttpHeaderSurvey.Implementation.Domain
                 _isThrottling = value;
 
                 // ReSharper disable once InvertIf
-                if (value)
+                if (IsThrottling)
                 {
-                    InitThrottlingTask(IoC.Resolve<IApplicationConfigurationCollection>());
+                    InitTaskThrottling();
 
-                    if (!IsThrottlingTaskStarted)
-                    {
-                        IsThrottlingTaskStarted = true;
-                        ThrottlingTask?.Start();
-                    }
+                    if (IsThrottlingTaskStarted) return;
+                    IsThrottlingTaskStarted = true;
+                    ThrottlingTask?.Start();
                 }
             }
         }
@@ -59,12 +57,9 @@ namespace Compilenix.HttpHeaderSurvey.Implementation.Domain
         public RequestJobWorker()
         {
             _cancellationTokenSource = new CancellationTokenSource();
-            IsThrottlingTaskStarted = false;
-
             var config = IoC.Resolve<IApplicationConfigurationCollection>();
             _httpClientTimeout = TimeSpan.FromSeconds(int.Parse(config.Get("HttpClientTimeoutSeconds") ?? "60"));
             HttpClientUtils.DefaultTimeout = _httpClientTimeout;
-
             IsThrottling = bool.Parse(config.Get("RequestJobWorkerThrottlingEnabled") ?? "False");
         }
 
@@ -205,8 +200,9 @@ namespace Compilenix.HttpHeaderSurvey.Implementation.Domain
             }
         }
 
-        private void InitThrottlingTask(IApplicationConfigurationCollection config)
+        private void InitTaskThrottling()
         {
+            var config = IoC.Resolve<IApplicationConfigurationCollection>();
             ThrottlingItemsPerSecond = uint.Parse(config.Get("RequestJobWorkerThrottlingItemsPerSecond") ?? "10");
 
             if (ThrottlingItemsPerSecond == 0)
